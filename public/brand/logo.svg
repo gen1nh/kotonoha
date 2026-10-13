@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 256" width="960" height="256" role="img" aria-labelledby="logoTitle">
+  <title id="logoTitle">Kotonoha — 言の葉</title>
+  <defs>
+    <linearGradient id="logoBambooGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#a06d82" />
+      <stop offset="100%" stop-color="#612a40" />
+    </linearGradient>
+  </defs>
+
+  <!-- Símbolo da Marca: Folha de Bambu + Kanji 言 (Koto/Palavra) -->
+  <g transform="translate(42, 10) scale(0.92)">
+    <!-- Folha de Bambu Principal -->
+    <path
+      d="M 128 18
+         C 168 34, 206 80, 208 134
+         C 210 180, 174 218, 128 234
+         C 82 218, 46 180, 48 134
+         C 50 80, 88 34, 128 18 Z"
+      fill="url(#logoBambooGrad)"
+    />
+
+    <!-- Haste orgânica da folha -->
+    <path
+      d="M 125 232
+         C 125 240, 123 248, 118 254
+         C 123 254, 128 251, 132 246
+         C 134 241, 131 235, 131 232 Z"
+      fill="#612a40"
+    />
+
+    <!-- Traços do Kanji 言 (Koto) gravados na folha -->
+    <!-- Primeiro traço superior -->
+    <rect x="94" y="58" width="68" height="13" rx="5" fill="#ffffff" />
+    <!-- Detalhe ocre dourado (ponto do coração / kokoro no tane) -->
+    <circle cx="168" cy="64.5" r="4.5" fill="#c999ac" />
+
+    <!-- Segundo traço longo -->
+    <rect x="76" y="83" width="104" height="13" rx="5" fill="#ffffff" />
+
+    <!-- Terceiro traço -->
+    <rect x="88" y="108" width="80" height="12" rx="4.5" fill="#ffffff" />
+
+    <!-- Quarto traço -->
+    <rect x="88" y="132" width="80" height="12" rx="4.5" fill="#ffffff" />
+
+    <!-- Radical 口 (boca / fala) -->
+    <rect x="86" y="158" width="84" height="42" rx="7" fill="#ffffff" />
+    <rect x="100" y="170" width="56" height="18" rx="4" fill="#813e58" />
+  </g>
+
+  <!-- Tipografia Principal "Kotonoha" (Vectorizada para renderização perfeita) -->
+  <g transform="translate(280, 74) scale(1.16)">
+    <g fill="#29262b" fill-rule="evenodd">
+      <!-- K -->
+      <path transform="translate(0 0)" d="M0 0H12V34L46 0H62L23 39L64 80H47L12 45V80H0Z"/>
+      <!-- o -->
+      <path transform="translate(75 0)" d="M28 18C46 18 56 30 56 50C56 70 46 82 28 82C10 82 0 70 0 50C0 30 10 18 28 18ZM28 29C17 29 12 37 12 50C12 63 17 71 28 71C39 71 44 63 44 50C44 37 39 29 28 29Z"/>
+      <!-- t -->
+      <path transform="translate(145 0)" d="M10 4H22V20H39V31H22V60C22 68 25 71 32 71H39V82H31C17 82 10 75 10 60V31H0V20H10Z"/>
+      <!-- o -->
+      <path transform="translate(198 0)" d="M28 18C46 18 56 30 56 50C56 70 46 82 28 82C10 82 0 70 0 50C0 30 10 18 28 18ZM28 29C17 29 12 37 12 50C12 63 17 71 28 71C39 71 44 63 44 50C44 37 39 29 28 29Z"/>
+      <!-- n -->
+      <path transform="translate(269 0)" d="M0 20H12V27C17 21 24 18 32 18C48 18 56 28 56 46V80H44V47C44 35 39 29 30 29C19 29 12 37 12 48V80H0Z"/>
+      <!-- o -->
+      <path transform="translate(340 0)" d="M28 18C46 18 56 30 56 50C56 70 46 82 28 82C10 82 0 70 0 50C0 30 10 18 28 18ZM28 29C17 29 12 37 12 50C12 63 17 71 28 71C39 71 44 63 44 50C44 37 39 29 28 29Z"/>
+      <!-- h -->
+      <path transform="translate(411 0)" d="M0 0H12V27C17 21 24 18 32 18C48 18 56 28 56 46V80H44V47C44 35 39 29 30 29C19 29 12 37 12 48V80H0Z"/>
+      <!-- a -->
+      <path transform="translate(482 0)" d="M28 18C35 18 41 21 45 26V20H57V80H45V74C41 79 35 82 28 82C10 82 0 70 0 50C0 30 10 18 28 18ZM28 29C17 29 12 37 12 50C12 63 17 71 28 71C39 71 45 63 45 50C45 37 39 29 28 29Z"/>
+    </g>
+  </g>
+
+  <!-- Carimbo Kanji e Subtítulo Autêntico: 言の葉 (Kotonoha) em Ocre Dourado -->
+  <g transform="translate(906, 122)">
+    <!-- Hanko/Carimbo vertical em ocre -->
+    <rect x="-14" y="-38" width="28" height="66" rx="4" fill="none" stroke="#c999ac" stroke-width="2.5" opacity="0.85"/>
+    <text x="0" y="-18" font-family="'Yu Mincho', 'Hiragino Mincho ProN', serif" font-size="16" font-weight="600" fill="#c999ac" text-anchor="middle">言</text>
+    <text x="0" y="1" font-family="'Yu Mincho', 'Hiragino Mincho ProN', serif" font-size="14" font-weight="600" fill="#c999ac" text-anchor="middle">の</text>
+    <text x="0" y="20" font-family="'Yu Mincho', 'Hiragino Mincho ProN', serif" font-size="16" font-weight="600" fill="#c999ac" text-anchor="middle">葉</text>
+  </g>
+</svg>

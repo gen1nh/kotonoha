@@ -1,0 +1,164 @@
+import React, { useState } from "react";
+import Icon from "./Icon.jsx";
+import {
+  Button,
+  Card,
+  ProgressBar,
+  Segmented,
+  Stat,
+} from "./ui/index.jsx";
+import {
+  JLPT_BENCHMARKS,
+  formatPercent,
+  hoursProgress,
+  skillMeters,
+  todayStudySeconds,
+  activeDaysIn,
+  totalStudySeconds,
+} from "../progress.js";
+import { formatDuration } from "../timer.js";
+
+const MINUTE_OPTIONS = [5, 15, 30, 45, 60].map((m) => ({
+  value: m,
+  label: `${m} min`,
+}));
+
+function meterTone(value) {
+  if (value === null) return null;
+  if (value >= 70) return "success";
+  if (value >= 40) return "warn";
+  return "neutral";
+}
+
+/** Tempo e progresso REAIS: só o que o cronômetro e as atividades registraram. */
+export default function JlptDiagnostic({ state, update, toast }) {
+  const level = state.selectedLevel || "N5";
+  const bench = JLPT_BENCHMARKS[level];
+  const [dailyMinutes, setDailyMinutes] = useState(
+    state.jlptGoals?.minutesPerDay || 15,
+  );
+
+  const hours = hoursProgress(state, level);
+  const meters = skillMeters(state, level);
+  const total = totalStudySeconds(state);
+  const today = todayStudySeconds(state);
+  const activeDays = activeDaysIn(state, 7);
+
+  // Previsão só existe com ritmo real; senão não inventamos número.
+  const forecastDays =
+    total >= 600 ? Math.ceil((hours.remainingHours * 60) / dailyMinutes) : null;
+
+  const saveGoal = () => {
+    update((s) => {
+      s.jlptGoals = {
+        ...(s.jlptGoals || {}),
+        targetLevel: level,
+        minutesPerDay: dailyMinutes,
+      };
+    });
+    toast?.("Meta diária salva.");
+  };
+
+  return (
+    <Card aria-labelledby="diag-title" className="mb-6 space-y-6">
+      <header>
+        <h2 id="diag-title" className="mt-2 text-2xl font-bold text-ink">
+          Quanto você já estudou
+        </h2>
+        <p className="mt-1 text-sm text-muted">
+          O tempo só conta enquanto você usa o app com a tela aberta e ativa
+          (cliques, toques ou digitação). Abrir a página e deixar parada não
+          soma.
+        </p>
+      </header>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full min-w-0">
+        <Stat
+          label="Hoje"
+          value={today > 0 ? formatDuration(today) : "0 min"}
+          note={`${activeDays} de 7 dias com estudo`}
+        />
+        <Stat
+          label="Total no Kotonoha"
+          value={total > 0 ? formatDuration(total) : "0 min"}
+          note="Tempo ativo cronometrado"
+        />
+        <Stat
+          label={`Meta de referência ${level}`}
+          value={formatPercent(hours.percent)}
+          note={`${formatDuration(hours.seconds)} de ${bench.hoursMin} h`}
+        />
+      </div>
+
+      <div>
+        <ProgressBar
+          value={hours.percent}
+          label={`Horas estudadas em relação à referência do ${level}`}
+        />
+        <p className="mt-2 text-sm text-muted">
+          Cálculo: tempo ativo ÷ {bench.hoursMin} h. Referências de{" "}
+          {bench.hoursMin}–{bench.hoursMax} h para o {level} são estimativas
+          comuns para quem parte do zero — variam por pessoa e não são oficiais.
+          Por isso o avanço de poucos minutos aparece como “
+          {formatPercent(0.05)}”.
+        </p>
+      </div>
+
+      <section aria-labelledby="meters-title">
+        <h3 id="meters-title" className="text-lg font-bold text-ink">
+          Sua atividade em {level}
+        </h3>
+        <p className="text-sm text-muted">
+          Medido por cartões vistos, lições concluídas e respostas reais.
+        </p>
+        <ul className="mt-3 grid gap-3 sm:grid-cols-2">
+          {meters.map((meter) => (
+            <li
+              key={meter.id}
+              className="rounded-md border border-line bg-paper p-4"
+            >
+              <div className="flex items-center justify-between gap-2">
+                <strong className="text-sm text-ink">{meter.label}</strong>
+                {meter.value === null ? (
+                  <span className="text-xs font-bold text-[#777777]">Sem dados ainda</span>
+                ) : (
+                  <span className="text-xs font-black text-[#58cc02] tabular-nums">{meter.value}%</span>
+                )}
+              </div>
+              <ProgressBar
+                className="mt-2"
+                value={meter.value}
+                label={meter.label}
+              />
+              <p className="mt-2 text-xs text-muted">{meter.detail}</p>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section
+        aria-labelledby="goal-title"
+        className="rounded-md border border-line bg-paper p-4"
+      >
+        <h3 id="goal-title" className="text-lg font-bold text-ink">
+          Sua meta diária
+        </h3>
+        <Segmented
+          className="mt-2"
+          label="Minutos por dia"
+          options={MINUTE_OPTIONS}
+          value={dailyMinutes}
+          onChange={setDailyMinutes}
+        />
+        <p className="mt-3 text-sm text-muted" aria-live="polite">
+          {forecastDays === null
+            ? "Registre 10 minutos para comparar suas horas com a meta escolhida. Isso não mede prontidão para a prova."
+            : `Mantendo ${dailyMinutes} min por dia, a referência de ${bench.hoursMin} h do ${level} leva cerca de ${forecastDays.toLocaleString("pt-BR")} dias. Projeção da meta de tempo, sem previsão de aprovação.`}
+        </p>
+        <Button variant="primary" className="mt-3" onClick={saveGoal}>
+          <Icon name="check" /> Salvar meta
+        </Button>
+      </section>
+    </Card>
+  );
+}

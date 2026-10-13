@@ -1,0 +1,71 @@
+{
+  "title": "Escolha a estrutura de estudo",
+  "question": "Você pediu uma mão mais familiar. Qual estrutura parece mais direta para estudar todo dia?",
+  "options": [
+    {
+      "id": "lesson-queue",
+      "label": "Uma pergunta por vez",
+      "kicker": "FAMILIAR 01",
+      "lineage": "Exercícios digitais de resposta imediata",
+      "thesis": "A sessão apresenta uma pergunta curta, recolhe sua resposta e explica o ponto antes da próxima.",
+      "palette": ["#F3F0E8", "#1D1E1C", "#A83B32", "#E9E5DB"],
+      "materials": ["texto de exercício", "opções nomeadas", "feedback por resposta"],
+      "viewport": "Navegação padrão do Kotonoha; pergunta japonesa no centro com leitura auxiliar; respostas clicáveis; explicação e próxima questão aparecem após responder; estado da sessão fica no alto.",
+      "risk": "Formato comum; os exemplos japoneses e feedback preciso precisam dar personalidade sem esconder o exercício.",
+      "html": ".impeccable/mocks/decision/lesson-queue.html",
+      "comp": ".impeccable/mocks/decision/lesson-queue.webp"
+    },
+    {
+      "id": "recall-cards",
+      "label": "Fila de revisão",
+      "kicker": "FAMILIAR 02",
+      "lineage": "Sessões de repetição espaçada",
+      "thesis": "Uma fila pequena mostra o que está pronto para recordar e como a próxima revisão se ajusta.",
+      "palette": ["#F3F0E8", "#1D1E1C", "#A83B32", "#E9E5DB"],
+      "materials": ["cartões tipográficos", "fila ordenada", "estados de memória"],
+      "viewport": "Revisão pendente em primeiro plano; prompt japonês e ação de revelar; depois da resposta, botões de dificuldade com texto e prazo; fila total permanece visível.",
+      "risk": "A repetição espaçada já está no app; a nova composição não deve dar a entender uma mudança no algoritmo.",
+      "html": ".impeccable/mocks/decision/recall-cards.html",
+      "comp": ".impeccable/mocks/decision/recall-cards.webp"
+    },
+    {
+      "id": "course-outline",
+      "label": "Índice de níveis e lições",
+      "kicker": "FAMILIAR 03",
+      "lineage": "Sumários de cursos e livros didáticos",
+      "thesis": "Uma lista estruturada mostra o conteúdo disponível, o nível atual e o que vem depois.",
+      "palette": ["#F3F0E8", "#1D1E1C", "#A83B32", "#E9E5DB"],
+      "materials": ["sumário impresso", "números de seção", "marcas de andamento"],
+      "viewport": "N5–N1 em tabs simples; lições em linhas legíveis com assunto, estado e duração; linha selecionada revela botão para começar.",
+      "risk": "Uma tabela sozinha não ensina; a tela inicial precisa manter a ação diária em destaque.",
+      "html": ".impeccable/mocks/decision/course-outline.html",
+      "comp": ".impeccable/mocks/decision/course-outline.webp"
+    },
+    {
+      "id": "canon",
+      "label": "Painel familiar de estudo",
+      "kicker": "PADRÃO DA CATEGORIA",
+      "lineage": "Dashboard de aprendizagem convencional",
+      "thesis": "Tarefa, revisão e progresso em áreas familiares, com rótulos e estados diretos.",
+      "palette": ["#FFFFFF", "#111827", "#2563EB", "#F3F4F6"],
+      "materials": ["grade de produto", "progresso visível", "estados claros"],
+      "viewport": "Navegação no topo, tarefa diária em destaque e dois blocos menores para revisão e percurso; componentes comuns de app web.",
+      "risk": "É o ponto de comparação mais conhecido; deixa menos identidade própria para Kotonoha.",
+      "html": ".impeccable/mocks/decision/canon-safe.html",
+      "comp": ".impeccable/mocks/decision/canon-safe.webp"
+    }
+  ],
+  "reroll": { "registers": ["safer", "bolder"] },
+  "buildPath": { "value": "code", "toggle": true },
+  "canon": true,
+  "canonCard": {
+    "label": "Padrão da categoria, executado com cuidado",
+    "thesis": "O Kotonoha coloca clareza familiar e tarefas previsíveis acima da novidade visual.",
+    "palette": ["#FFFFFF", "#111827", "#2563EB"],
+    "materials": ["grade de aprendizagem", "tarefas e estados explícitos", "navegação convencional"],
+    "viewport": "Inspirado na leitura fácil do fluxo pergunta–resposta de Duolingo, no foco em recuperação de itens de WaniKani e no estudo de gramática de Bunpro; preserva o escopo pessoal e local do Kotonoha.",
+    "risk": "A clareza é familiar por definição e a diferença visual será menor.",
+    "comp": ".impeccable/mocks/decision/canon-safe.webp"
+  },
+  "steer": true
+}

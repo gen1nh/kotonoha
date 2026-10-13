@@ -1,0 +1,40 @@
+{
+  "brand": "Kotonoha",
+  "tagline": "Seu japonês, um dia de cada vez.",
+  "brief": "Um espaço pessoal, calmo e acolhedor para aprender japonês.",
+  "adjectives": [
+    "calmo",
+    "claro",
+    "acolhedor"
+  ],
+  "industry": "consumer-app",
+  "nav": [
+    "Aprender",
+    "Revisar",
+    "No papel"
+  ],
+  "brand_color": "#2c7458",
+  "greyscale": false,
+  "final": true,
+  "concepts": [
+    {
+      "name": "Folha de conversa",
+      "symbol": "symbol-color.svg",
+      "lockup": "horizontal-color.svg",
+      "stacked": "stacked-color.svg",
+      "symbol_on_tile": "symbol-white.svg",
+      "lockup_on_dark": "horizontal-white.svg",
+      "idea": "Uma folha com palavras: aprender é cultivar sua própria voz.",
+      "rationale": [
+        "Silhueta compacta para celular e computador.",
+        "Verde do projeto preservado.",
+        "Letras desenhadas em vetor, sem dependência de fontes."
+      ]
+    }
+  ],
+  "recommendation": "Direção A escolhida. Marca preparada para o app, ícones e materiais de estudo.",
+  "next_steps": [
+    "Usar os arquivos vetoriais como originais.",
+    "Consultar o guia de uso incluído."
+  ]
+}

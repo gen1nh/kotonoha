@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256" role="img" aria-labelledby="iconTitle">
+  <title id="iconTitle">Kotonoha — 言</title>
+  <defs>
+    <filter id="cardShadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="8" stdDeviation="6" flood-color="#3d8300" flood-opacity="0.35" />
+    </filter>
+  </defs>
+
+  <!-- Base 3D shadow layer (Duolingo physical bottom elevation) -->
+  <rect x="16" y="24" width="224" height="216" rx="52" fill="#58a700" filter="url(#cardShadow)" />
+  
+  <!-- Top tactile vibrant face -->
+  <rect x="16" y="16" width="224" height="212" rx="52" fill="#58cc02" />
+
+  <!-- Kanji 言 (Koto / Word) in crisp white rounded strokes -->
+  <g transform="translate(0, 4)">
+    <!-- Top dot / stroke of 言 -->
+    <rect x="96" y="46" width="64" height="15" rx="7.5" fill="#ffffff" />
+    <!-- Golden streak leaf spark -->
+    <circle cx="174" cy="53.5" r="5.5" fill="#ffc800" />
+
+    <!-- Second horizontal stroke (long balance bar) -->
+    <rect x="68" y="74" width="120" height="15" rx="7.5" fill="#ffffff" />
+
+    <!-- Third horizontal stroke -->
+    <rect x="84" y="102" width="88" height="14" rx="7" fill="#ffffff" />
+
+    <!-- Fourth horizontal stroke -->
+    <rect x="84" y="128" width="88" height="14" rx="7" fill="#ffffff" />
+
+    <!-- Radical 口 (Mouth / Speech) - Outer frame -->
+    <rect x="80" y="156" width="96" height="46" rx="10" fill="#ffffff" />
+    <!-- Inner cutout with green depth -->
+    <rect x="96" y="168" width="64" height="22" rx="6" fill="#58cc02" />
+  </g>
+</svg>

@@ -1,0 +1,115 @@
+{
+  "generatedAt": "2026-10-12T21:34:52.2873488Z",
+  "schemaVersion": 2,
+  "narrative": {
+    "keyCharacteristics": [
+      "Superfícies planas e bordas discretas.",
+      "Hierarquia por tipografia, espaço e contraste.",
+      "Metadados em texto, sem chips decorativos."
+    ],
+    "donts": [
+      "Don't restaurar verde e amarelo como paleta decorativa do produto.",
+      "Don't usar chips decorativos para metadados ou títulos redundantes.",
+      "Don't adicionar sombras às superfícies."
+    ],
+    "overview": "Kotonoha organiza a prática de japonês em uma interface editorial simples. Superfícies neutras, texto carvão e acento sakura sustentam a leitura e identificam ações. A direção atual substitui os fundos esverdeados e os destaques amarelos anteriores.",
+    "rules": [],
+    "dos": [
+      "Do preservar a marca Kotonoha e a legibilidade de português e japonês.",
+      "Do usar acento sakura para ações e estados, mantendo superfícies neutras.",
+      "Do manter foco visível, rótulos e navegação por teclado."
+    ]
+  },
+  "components": [
+    {
+      "css": ".ds-primary{min-height:44px;padding:0 16px;border:1px solid var(--color-primary,#813e58);border-radius:8px;background:var(--color-primary,#813e58);color:var(--color-surface,#fff);font:600 14px \"Inter Variable\",sans-serif;cursor:pointer;transition:background 150ms,transform 150ms}.ds-primary:hover{background:var(--color-primary-strong,#612a40)}.ds-primary:active{transform:translateY(1px)}.ds-primary:disabled{opacity:.5;cursor:not-allowed}.ds-primary:focus-visible{outline:2px solid var(--color-edge,#8a7b84);outline-offset:2px}",
+      "html": "<button class=\"ds-primary\">Estudar agora</button>",
+      "description": "Ação principal compartilhada, tamanho md.",
+      "refersTo": "button-primary",
+      "kind": "button",
+      "name": "Botão primário"
+    },
+    {
+      "css": ".ds-secondary{min-height:44px;padding:0 16px;border:1px solid var(--color-edge,#8a7b84);border-radius:8px;background:var(--color-surface,#fff);color:var(--color-ink,#29262b);font:600 14px \"Inter Variable\",sans-serif;cursor:pointer;transition:background 150ms,transform 150ms}.ds-secondary:hover{background:var(--color-accent-soft,#f3e8ed)}.ds-secondary:active{transform:translateY(1px)}.ds-secondary:disabled{opacity:.5;cursor:not-allowed}.ds-secondary:focus-visible{outline:2px solid var(--color-edge,#8a7b84);outline-offset:2px}",
+      "html": "<button class=\"ds-secondary\">Voltar</button>",
+      "description": "Ação complementar compartilhada.",
+      "refersTo": "button-secondary",
+      "kind": "button",
+      "name": "Botão secundário"
+    },
+    {
+      "css": ".ds-label{display:block;color:var(--color-ink,#29262b);font:500 14px \"Inter Variable\",sans-serif}.ds-input{display:block;min-height:44px;padding:0 12px;margin-top:8px;border:1px solid var(--color-edge,#8a7b84);border-radius:8px;background:var(--color-surface,#fff);color:var(--color-ink,#29262b);font:400 14px \"Inter Variable\",sans-serif;caret-color:var(--color-primary,#813e58)}.ds-input:hover{border-color:var(--color-primary,#813e58)}.ds-input:focus-visible{outline:2px solid var(--color-primary,#813e58);outline-offset:2px}",
+      "html": "<label class=\"ds-label\" for=\"ds-name\">Nome<input class=\"ds-input\" id=\"ds-name\" placeholder=\"Seu nome\"></label>",
+      "description": "Campo com rótulo e foco, como em Preferências.",
+      "refersTo": "input",
+      "kind": "input",
+      "name": "Campo de texto"
+    },
+    {
+      "css": ".ds-card{padding:20px;border:1px solid var(--color-line,#ded8dd);border-radius:12px;background:var(--color-surface,#fff);color:var(--color-ink,#29262b);font-family:\"Inter Variable\",sans-serif}.ds-title{margin:0;font-size:18px;font-weight:700;letter-spacing:-.025em}.ds-copy{margin:4px 0 0;font-size:12px;color:var(--color-muted,#66606a)}@media(min-width:768px){.ds-card{padding:24px}}",
+      "html": "<section class=\"ds-card\"><h2 class=\"ds-title\">No seu ritmo</h2><p class=\"ds-copy\">Pequenos encontros com o japonês.</p></section>",
+      "description": "Superfície plana para agrupar conteúdo.",
+      "refersTo": "card",
+      "kind": "card",
+      "name": "Card"
+    },
+    {
+      "css": ".ds-nav{display:flex;align-items:center;gap:12px;width:100%;padding:10px 14px;border:1px solid color-mix(in srgb,var(--color-primary,#813e58) 30%,transparent);border-radius:12px;background:color-mix(in srgb,var(--color-accent-soft,#f3e8ed) 60%,transparent);color:var(--color-primary-strong,#612a40);font:700 14px \"Inter Variable\",sans-serif;cursor:pointer;transition:color 150ms}.ds-nav:hover{color:var(--color-primary,#813e58)}.ds-nav:focus-visible{outline:2px solid var(--color-edge,#8a7b84);outline-offset:2px}",
+      "html": "<nav aria-label=\"Áreas de estudo\"><button class=\"ds-nav\" aria-current=\"page\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" aria-hidden=\"true\"><path d=\"m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1Z\"/></svg>Meu estudo</button></nav>",
+      "description": "Item ativo com ícone SVG e identificação de página.",
+      "refersTo": "navigation",
+      "kind": "nav",
+      "name": "Navegação lateral"
+    }
+  ],
+  "title": "Design System: Kotonoha",
+  "extensions": {
+    "motion": [
+      {
+        "purpose": "Estados de botão.",
+        "value": "150ms",
+        "name": "button"
+      },
+      {
+        "purpose": "Animações e transições sob prefers-reduced-motion.",
+        "value": "0.01ms",
+        "name": "reduced-motion"
+      }
+    ],
+    "shadows": [
+      {
+        "purpose": "Superfícies planas; box-shadow removido globalmente.",
+        "value": "none",
+        "name": "none"
+      }
+    ],
+    "colorMeta": {
+      "ink": {
+        "role": "neutral",
+        "displayName": "Carvão"
+      },
+      "primary": {
+        "role": "primary",
+        "displayName": "Sakura escuro"
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Papel neutro"
+      }
+    },
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "md",
+        "value": "768px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      }
+    ]
+  }
+}

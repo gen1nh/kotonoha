@@ -1,0 +1,108 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-12T15:06:55Z",
+  "title": "Design System: Kotonoha",
+  "extensions": {
+    "colorMeta": {
+      "primary": { "role": "primary", "displayName": "Vermelho editorial", "canonical": "#A83B32", "tonalRamp": ["oklch(15% 0.13 27)", "oklch(25% 0.13 27)", "oklch(35% 0.13 27)", "oklch(45% 0.13 27)", "oklch(55% 0.13 27)", "oklch(65% 0.13 27)", "oklch(80% 0.10 27)", "oklch(95% 0.04 27)"] },
+      "paper": { "role": "neutral", "displayName": "Papel claro", "canonical": "#F3F0E8", "tonalRamp": ["oklch(15% 0.015 85)", "oklch(25% 0.015 85)", "oklch(35% 0.015 85)", "oklch(45% 0.015 85)", "oklch(55% 0.015 85)", "oklch(65% 0.015 85)", "oklch(80% 0.015 85)", "oklch(95% 0.015 85)"] },
+      "surface": { "role": "neutral", "displayName": "Superfície de leitura", "canonical": "#F8F6F0", "tonalRamp": ["oklch(15% 0.015 85)", "oklch(25% 0.015 85)", "oklch(35% 0.015 85)", "oklch(45% 0.015 85)", "oklch(55% 0.015 85)", "oklch(65% 0.015 85)", "oklch(80% 0.015 85)", "oklch(95% 0.015 85)"] },
+      "surface-raised": { "role": "neutral", "displayName": "Papel elevado", "canonical": "#E9E5DB", "tonalRamp": ["oklch(15% 0.025 85)", "oklch(25% 0.025 85)", "oklch(35% 0.025 85)", "oklch(45% 0.025 85)", "oklch(55% 0.025 85)", "oklch(65% 0.025 85)", "oklch(80% 0.025 85)", "oklch(95% 0.025 85)"] },
+      "ink": { "role": "neutral", "displayName": "Tinta", "canonical": "#1D1E1C", "tonalRamp": ["oklch(15% 0.005 145)", "oklch(25% 0.005 145)", "oklch(35% 0.005 145)", "oklch(45% 0.005 145)", "oklch(55% 0.005 145)", "oklch(65% 0.005 145)", "oklch(80% 0.005 145)", "oklch(95% 0.005 145)"] },
+      "muted": { "role": "neutral", "displayName": "Tinta secundária", "canonical": "#5D605A", "tonalRamp": ["oklch(15% 0.015 130)", "oklch(25% 0.015 130)", "oklch(35% 0.015 130)", "oklch(45% 0.015 130)", "oklch(55% 0.015 130)", "oklch(65% 0.015 130)", "oklch(80% 0.015 130)", "oklch(95% 0.015 130)"] },
+      "line": { "role": "neutral", "displayName": "Linha de papel", "canonical": "#C9C3B8", "tonalRamp": ["oklch(15% 0.02 80)", "oklch(25% 0.02 80)", "oklch(35% 0.02 80)", "oklch(45% 0.02 80)", "oklch(55% 0.02 80)", "oklch(65% 0.02 80)", "oklch(80% 0.02 80)", "oklch(95% 0.02 80)"] },
+      "line-strong": { "role": "neutral", "displayName": "Linha marcada", "canonical": "#99958C", "tonalRamp": ["oklch(15% 0.015 80)", "oklch(25% 0.015 80)", "oklch(35% 0.015 80)", "oklch(45% 0.015 80)", "oklch(55% 0.015 80)", "oklch(65% 0.015 80)", "oklch(80% 0.015 80)", "oklch(95% 0.015 80)"] },
+      "red-soft": { "role": "neutral", "displayName": "Vermelho lavado", "canonical": "#F0E0DC", "tonalRamp": ["oklch(15% 0.025 30)", "oklch(25% 0.025 30)", "oklch(35% 0.025 30)", "oklch(45% 0.025 30)", "oklch(55% 0.025 30)", "oklch(65% 0.025 30)", "oklch(80% 0.025 30)", "oklch(95% 0.025 30)"] },
+      "success": { "role": "tertiary", "displayName": "Verde de acerto", "canonical": "#315F49", "tonalRamp": ["oklch(15% 0.08 155)", "oklch(25% 0.08 155)", "oklch(35% 0.08 155)", "oklch(45% 0.08 155)", "oklch(55% 0.08 155)", "oklch(65% 0.08 155)", "oklch(80% 0.06 155)", "oklch(95% 0.03 155)"] },
+      "success-soft": { "role": "neutral", "displayName": "Verde lavado", "canonical": "#E2E9E2", "tonalRamp": ["oklch(15% 0.02 145)", "oklch(25% 0.02 145)", "oklch(35% 0.02 145)", "oklch(45% 0.02 145)", "oklch(55% 0.02 145)", "oklch(65% 0.02 145)", "oklch(80% 0.02 145)", "oklch(95% 0.02 145)"] },
+      "danger": { "role": "primary", "displayName": "Vermelho de erro", "canonical": "#8B2924", "tonalRamp": ["oklch(15% 0.14 25)", "oklch(25% 0.14 25)", "oklch(35% 0.14 25)", "oklch(45% 0.14 25)", "oklch(55% 0.14 25)", "oklch(65% 0.14 25)", "oklch(80% 0.11 25)", "oklch(95% 0.04 25)"] },
+      "focus": { "role": "primary", "displayName": "Foco escuro", "canonical": "#87332C", "tonalRamp": ["oklch(15% 0.12 25)", "oklch(25% 0.12 25)", "oklch(35% 0.12 25)", "oklch(45% 0.12 25)", "oklch(55% 0.12 25)", "oklch(65% 0.12 25)", "oklch(80% 0.09 25)", "oklch(95% 0.04 25)"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Título de página", "purpose": "Aberturas de página e boas-vindas." },
+      "headline": { "displayName": "Pergunta", "purpose": "Perguntas diárias e títulos de lição." },
+      "title": { "displayName": "Título de seção", "purpose": "Cabeçalhos de grupos de conteúdo." },
+      "body": { "displayName": "Texto de leitura", "purpose": "Instruções, explicações e conteúdo geral." },
+      "label": { "displayName": "Metadados mono", "purpose": "Contadores e rótulos curtos." }
+    },
+    "shadows": [],
+    "motion": [
+      { "name": "state-color", "value": "140ms ease", "purpose": "Transições curtas de cor e borda em navegação e escolhas." },
+      { "name": "progress", "value": "180ms ease", "purpose": "Atualização da faixa de progresso da lição." },
+      { "name": "reduced-motion", "value": "0.01ms", "purpose": "Reduz transições e animações quando o sistema solicita movimento reduzido." }
+    ],
+    "breakpoints": [
+      { "name": "tablet", "value": "960px" },
+      { "name": "mobile", "value": "760px" },
+      { "name": "small-mobile", "value": "430px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Ação primária",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "A ação principal após responder ou concluir uma etapa.",
+      "html": "<button class=\"ds-button-primary\">Continuar a trilha</button>",
+      "css": ".ds-button-primary { min-height: 44px; padding: 0 15px; border: 1px solid transparent; border-radius: 2px; background: #A83B32; color: #F3F0E8; font: 700 12px/1.5 \"Noto Sans JP\", \"Yu Gothic UI\", Meiryo, sans-serif; cursor: pointer; transition: background-color 140ms ease, border-color 140ms ease, color 140ms ease; } .ds-button-primary:hover { background: #8E3029; } .ds-button-primary:focus-visible { outline: 3px solid #87332C; outline-offset: 3px; } .ds-button-primary:active { filter: brightness(0.94); } .ds-button-primary:disabled { cursor: not-allowed; opacity: 0.7; }"
+    },
+    {
+      "name": "Escolha de resposta",
+      "kind": "button",
+      "refersTo": "answer-choice",
+      "description": "Opção de resposta rotulada para a pergunta atual.",
+      "html": "<button class=\"ds-answer-choice\"><span>A</span> Resposta</button>",
+      "css": ".ds-answer-choice { min-height: 54px; padding: 11px 14px; display: flex; align-items: center; gap: 12px; border: 1px solid #99958C; border-radius: 2px; background: #F8F6F0; color: #1D1E1C; text-align: left; line-height: 1.4; cursor: pointer; transition: border-color 140ms ease, background-color 140ms ease; } .ds-answer-choice span { flex: 0 0 24px; color: #A83B32; font: 13px ui-monospace, SFMono-Regular, Consolas, monospace; } .ds-answer-choice:hover { border-color: #A83B32; } .ds-answer-choice:focus-visible { outline: 3px solid #87332C; outline-offset: 3px; }"
+    },
+    {
+      "name": "Campo de texto",
+      "kind": "input",
+      "description": "Campo de preferências com foco visível.",
+      "html": "<label class=\"ds-field\">Nome do estudo<input class=\"ds-input\" value=\"Kotonoha\" /></label>",
+      "css": ".ds-field { display: grid; gap: 6px; color: #5D605A; font: 400 12px/1.5 \"Noto Sans JP\", \"Yu Gothic UI\", Meiryo, sans-serif; } .ds-input { min-height: 38px; width: 100%; padding: 0 11px; border: 1px solid #C9C3B8; border-radius: 2px; background: #F8F6F0; color: #1D1E1C; font: 400 16px/1.5 \"Noto Sans JP\", \"Yu Gothic UI\", Meiryo, sans-serif; } .ds-input:focus { border-color: #87332C; box-shadow: 0 0 0 3px #F0E0DC; outline: 3px solid #87332C; outline-offset: 3px; }"
+    },
+    {
+      "name": "Navegação superior",
+      "kind": "nav",
+      "description": "Rotas principais em barra horizontal com sublinhado ativo.",
+      "html": "<nav class=\"ds-nav\"><button>Aprender</button><button aria-current=\"page\">Revisar</button><button>No papel</button></nav>",
+      "css": ".ds-nav { display: flex; align-items: stretch; gap: 8px; border-bottom: 1px solid #C9C3B8; background: #F3F0E8; } .ds-nav button { min-height: 44px; padding: 10px 11px; border: 0; border-bottom: 2px solid transparent; background: transparent; color: #5D605A; font: 550 14px/1.5 \"Noto Sans JP\", \"Yu Gothic UI\", Meiryo, sans-serif; cursor: pointer; } .ds-nav button:hover { color: #1D1E1C; } .ds-nav button[aria-current=\"page\"] { color: #A83B32; border-bottom-color: #A83B32; } .ds-nav button:focus-visible { outline: 3px solid #87332C; outline-offset: 3px; }"
+    },
+    {
+      "name": "Cartão de tarefa",
+      "kind": "card",
+      "refersTo": "study-card",
+      "description": "Atalho para revisão, aprendizagem ou prática no papel.",
+      "html": "<button class=\"ds-study-card\"><strong>Revisão espaçada</strong><span>Seu próximo bloco está pronto</span></button>",
+      "css": ".ds-study-card { min-height: 88px; padding: 14px 15px; display: grid; gap: 4px; border: 1px solid #C9C3B8; border-radius: 2px; background: #F8F6F0; color: #1D1E1C; text-align: left; cursor: pointer; transition: border-color 140ms ease, background-color 140ms ease; } .ds-study-card span { color: #5D605A; font: 400 14px/1.35 \"Noto Sans JP\", \"Yu Gothic UI\", Meiryo, sans-serif; } .ds-study-card:hover { border-color: #A83B32; } .ds-study-card:focus-visible { outline: 3px solid #87332C; outline-offset: 3px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "O Caderno Editorial Japonês",
+    "overview": "Kotonoha apresenta o estudo como uma página de caderno: papel claro, tinta escura, divisórias finas e um acento vermelho usado com medida. A interface mantém controles familiares e deixa o conteúdo japonês e a prática conduzirem a experiência. Sua cadência é deliberada: uma pergunta, uma resposta, uma explicação breve e um próximo passo.\n\nO espaço de estudo é pessoal e local-first. O progresso permanece no dispositivo, e a composição funciona em celular e desktop. A marca usa o wordmark vetorial existente; a interface não depende de ilustrações.",
+    "keyCharacteristics": [
+      "Papel claro e tinta escura, com painéis tonais discretos.",
+      "Vermelho reservado a seleção, foco e progresso atual.",
+      "Tipografia sans legível, com fallback japonês do sistema.",
+      "Controles web convencionais e estados acessíveis."
+    ],
+    "rules": [
+      { "name": "A Regra do Vermelho Editorial", "body": "O vermelho sinaliza estado e ação; a cor não é o único meio de comunicar acerto, erro ou seleção. Associe-a a texto e semântica acessíveis.", "section": "colors" },
+      { "name": "A Regra da Leitura Japonesa", "body": "Use Noto Sans JP local para os glifos latinos cobertos e deixe os fallbacks do sistema atenderem ao japonês; não presuma que o subset latino contenha kana ou kanji. O arquivo local acompanha a licença SIL Open Font License 1.1 em `src/assets/OFL-NotoSansJP.txt`.", "section": "typography" },
+      { "name": "A Regra da Superfície Plana", "body": "Use tom e divisória para separar superfícies; sombras não fazem parte do repouso visual.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do mantenha a página em papel claro, com tinta escura e divisórias finas.",
+      "Do reserve o vermelho editorial para ação, seleção e progresso atual.",
+      "Do mostre uma pergunta por vez e acompanhe a resposta com explicação breve e próximo passo.",
+      "Do mantenha rótulos explícitos, foco visível e alvos de toque confortáveis em celular e desktop.",
+      "Do preserve a marca existente em `public/brand/logo.svg`."
+    ],
+    "donts": [
+      "Don't acrescente ilustrações decorativas; a direção confirmada não usa ilustrações.",
+      "Don't comunique estados apenas por cor.",
+      "Don't use sombras como profundidade padrão nem troque as superfícies de papel por cartões arredondados e pesados.",
+      "Don't use o vermelho como cor dominante de grandes áreas; mantenha-o como acento de estado e ação."
+    ]
+  }
+}

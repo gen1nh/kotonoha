@@ -1,0 +1,286 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900;1000&family=M+PLUS+Rounded+1c:wght@700;800;900&display=swap');
+
+/*
+  Kotonoha — Design System Gamificado (Padrão Duolingo)
+  - Tipografia: Nunito (arredondada, amigável e de alto impacto visual)
+  - Botões táteis 3D com borda inferior de 4px e clique mecânico afundando
+  - Cores Oficiais Duolingo:
+    • Feather Green (#58cc02) para Ações Primárias e Avanço
+    • Macaw Blue (#1cb0f6) para Revisões, Áudio e Explicações
+    • Fox Orange (#ff9600) para Ofensiva (Streak) e Foco
+    • Cardinal Red (#ff4b4b) para Erros e Correções
+    • Crown Yellow (#ffc800) para XP, Conquistas e Destaques
+    • Amethyst Purple (#ce82ff) para Sensei Hiroshi e Diálogo
+*/
+@theme {
+  --color-paper: #ffffff;
+  --color-surface: #ffffff;
+  --color-raised: #f7f7f7;
+  --color-index: #f0f0f0;
+  --color-ink: #4b4b4b;
+  --color-ink-strong: #3c3c3c;
+  --color-muted: #777777;
+  --color-line: #e5e5e5;
+  --color-edge: #cecece;
+
+  /* Duolingo Green (Primária) */
+  --color-primary: #58cc02;
+  --color-primary-dark: #58a700;
+  --color-primary-strong: #46a302;
+  --color-accent-soft: #d7ffb8;
+
+  /* Duolingo Blue */
+  --color-blue: #1cb0f6;
+  --color-blue-dark: #1899d6;
+  --color-blue-soft: #ddf4ff;
+
+  /* Duolingo Flame / Orange */
+  --color-flame: #ff9600;
+  --color-flame-dark: #e68600;
+  --color-flame-soft: #ffebd1;
+  --color-flame-ink: #b86200;
+
+  /* Duolingo Red / Danger */
+  --color-danger: #ff4b4b;
+  --color-danger-dark: #ea2b2b;
+  --color-danger-soft: #ffdada;
+
+  /* Duolingo Gold / Crown */
+  --color-gold: #ffc800;
+  --color-gold-dark: #e6b400;
+  --color-gold-soft: #fff5c7;
+  --color-gold-ink: #a67c00;
+
+  /* Duolingo Purple (Sensei Hiroshi) */
+  --color-purple: #ce82ff;
+  --color-purple-dark: #b963ff;
+  --color-purple-soft: #f5e6ff;
+  --color-purple-ink: #892bd4;
+
+  /* Review Alias */
+  --color-review: #1cb0f6;
+  --color-review-soft: #ddf4ff;
+  --color-review-ink: #0b80ba;
+
+  --color-amber: #ff9600;
+  --color-amber-soft: #ffebd1;
+  --color-amber-ink: #b86200;
+
+  --color-indigo: #ce82ff;
+  --color-indigo-soft: #f5e6ff;
+  --color-indigo-ink: #892bd4;
+
+  --color-success: #58cc02;
+  --color-success-soft: #d7ffb8;
+
+  --font-sans:
+    "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    "M PLUS Rounded 1c", sans-serif;
+  --font-jp: "M PLUS Rounded 1c", "Hiragino Maru Gothic ProN", Meiryo, sans-serif;
+}
+
+@layer base {
+  :root, html, body {
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    margin: 0;
+    min-height: 100vh;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  *, *::before, *::after {
+    font-family: inherit;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-sans);
+    font-weight: 900;
+    letter-spacing: -0.015em;
+    color: var(--color-ink-strong);
+  }
+
+  button, input, textarea, select, dialog, summary {
+    caret-color: var(--color-primary);
+    font-family: var(--font-sans);
+  }
+
+  [lang="ja"] {
+    font-family: var(--font-jp) !important;
+  }
+}
+
+/* Escala de Tipografia Padronizada Duolingo (Tokens para Mobile & Web) */
+.type-display {
+  font-size: 1.625rem;
+  line-height: 1.15;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  color: var(--color-ink-strong);
+}
+@media (min-width: 640px) {
+  .type-display {
+    font-size: 2.25rem;
+    line-height: 1.2;
+  }
+}
+
+.type-h1 {
+  font-size: 1.25rem;
+  line-height: 1.25;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  color: var(--color-ink-strong);
+}
+@media (min-width: 640px) {
+  .type-h1 {
+    font-size: 1.75rem;
+  }
+}
+
+.type-h2 {
+  font-size: 1.0625rem;
+  line-height: 1.3;
+  font-weight: 900;
+  letter-spacing: -0.01em;
+  color: var(--color-ink-strong);
+}
+@media (min-width: 640px) {
+  .type-h2 {
+    font-size: 1.25rem;
+  }
+}
+
+.type-h3 {
+  font-size: 0.9375rem;
+  line-height: 1.35;
+  font-weight: 900;
+  color: var(--color-ink-strong);
+}
+@media (min-width: 640px) {
+  .type-h3 {
+    font-size: 1.0625rem;
+  }
+}
+
+.type-body {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  font-weight: 700;
+  color: var(--color-ink);
+}
+@media (min-width: 640px) {
+  .type-body {
+    font-size: 0.9375rem;
+  }
+}
+
+.type-body-sm {
+  font-size: 0.75rem;
+  line-height: 1.45;
+  font-weight: 700;
+  color: var(--color-muted);
+}
+@media (min-width: 640px) {
+  .type-body-sm {
+    font-size: 0.8125rem;
+  }
+}
+
+.type-caption {
+  font-size: 0.6875rem;
+  line-height: 1.2;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+@media (min-width: 640px) {
+  .type-caption {
+    font-size: 0.75rem;
+  }
+}
+
+.type-button {
+  font-size: 0.875rem;
+  line-height: 1.2;
+  font-weight: 900;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+@media (min-width: 640px) {
+  .type-button {
+    font-size: 0.9375rem;
+  }
+}
+
+/* Botões 3D Gamificados Padrão Duolingo */
+.btn-duo-green {
+  background-color: #58cc02;
+  border-color: #58a700;
+  color: #ffffff;
+}
+.btn-duo-green:hover:not(:disabled) {
+  background-color: #61e002;
+}
+.btn-duo-green:active:not(:disabled) {
+  border-bottom-width: 2px;
+  transform: translateY(2px);
+}
+
+.btn-duo-blue {
+  background-color: #1cb0f6;
+  border-color: #1899d6;
+  color: #ffffff;
+}
+.btn-duo-blue:hover:not(:disabled) {
+  background-color: #24baff;
+}
+.btn-duo-blue:active:not(:disabled) {
+  border-bottom-width: 2px;
+  transform: translateY(2px);
+}
+
+.btn-duo-orange {
+  background-color: #ff9600;
+  border-color: #e68600;
+  color: #ffffff;
+}
+.btn-duo-orange:hover:not(:disabled) {
+  background-color: #ffa31a;
+}
+.btn-duo-orange:active:not(:disabled) {
+  border-bottom-width: 2px;
+  transform: translateY(2px);
+}
+
+.btn-duo-purple {
+  background-color: #ce82ff;
+  border-color: #b963ff;
+  color: #ffffff;
+}
+.btn-duo-purple:hover:not(:disabled) {
+  background-color: #d796ff;
+}
+.btn-duo-purple:active:not(:disabled) {
+  border-bottom-width: 2px;
+  transform: translateY(2px);
+}
+
+.btn-duo-white {
+  background-color: #ffffff;
+  border-color: #e5e5e5;
+  color: #4b4b4b;
+}
+.btn-duo-white:hover:not(:disabled) {
+  background-color: #f7f7f7;
+  border-color: #cecece;
+}
+.btn-duo-white:active:not(:disabled) {
+  border-bottom-width: 2px;
+  transform: translateY(2px);
+}
+
