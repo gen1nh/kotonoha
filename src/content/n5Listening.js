@@ -24,7 +24,7 @@ Sala de aula|教科書を開いてください。|O que a pessoa pede?|Abrir o l
 Transporte|私はバスで学校に行きます。|Como a pessoa vai à escola?|De ônibus|De bicicleta|De trem|A pé|バスで indica meio de transporte ônibus.
 No mercado|牛乳はどこですか。|Qual produto é procurado?|Leite|Açúcar|Sal|Pão|牛乳 significa leite.
 Ligação|もしもし、田中さんはいますか。|Com quem a pessoa deseja falar?|Tanaka|Suzuki|Yamada|Sato|田中さんはいますか pergunta por Tanaka.
-Após a escola|授業が終わったら、図書館に行きます。|Para onde a pessoa vai após a aula?|Biblioteca|Casa|Hospital|Restaurante|図書館に行きます indica destino biblioteca.
+Após a escola|授業のあとで、図書館に行きます。|Para onde a pessoa vai depois da aula?|Biblioteca|Casa|Hospital|Restaurante|授業のあとで significa depois da aula; 図書館に行きます indica biblioteca.
 Horário|今は七時半です。|Que horas são?|7h30|7h15|8h30|6h30|七時半 significa sete e meia.
 Objetos|机の上に鍵があります。|O que está sobre a mesa?|Chaves|Celular|Jornal|Carteira|鍵 significa chave.
 Esportes|日曜日に公園でサッカーをします。|Que atividade será realizada?|Jogar futebol|Nadar|Correr|Ler|サッカーをします significa jogar futebol.
@@ -35,11 +35,11 @@ No hospital|頭が痛いです。|Qual é o problema mencionado?|Dor de cabeça|
 Visita|友達は明日来ます。|Quando o amigo virá?|Amanhã|Hoje|Ontem|Semana que vem|明日 significa amanhã.
 Na cozinha|母は今、料理をしています。|O que a mãe está fazendo agora?|Cozinhando|Dormindo|Estudando|Comprando|料理をしています descreve cozinhar agora.
 No ônibus|次のバス停で降ります。|Onde a pessoa vai descer?|No próximo ponto|Na última estação|No aeroporto|Na escola|次のバス停 indica o próximo ponto de ônibus.
-Na escola|宿題は金曜日までに出してください。|Até quando é preciso entregar a lição?|Sexta-feira|Segunda-feira|Quarta-feira|Domingo|金曜日までに indica até sexta-feira.
+Na escola|金曜日に宿題を出してください。|Em que dia é preciso entregar a lição?|Sexta-feira|Segunda-feira|Quarta-feira|Domingo|金曜日に indica na sexta-feira.
 Despedida|じゃあ、また明日。|Quando as pessoas se verão novamente?|Amanhã|Hoje à noite|Na próxima semana|No mês que vem|また明日 significa até amanhã.
 Preferência|コーヒーは飲みません。お茶をください。|O que a pessoa deseja beber?|Chá|Café|Água|Suco|お茶をください significa dê-me chá, por favor.
 Descrição|このかばんは新しいです。|Como é a bolsa?|Nova|Velha|Pequena|Cara|新しい significa nova.
-Passeio|駅からここまで歩いて十分です。|Quanto tempo leva a pé da estação até aqui?|Dez minutos|Cinco minutos|Quinze minutos|Vinte minutos|十分です, neste contexto, significa dez minutos.
+Passeio|駅からここまで歩いて10分かかります。|Quanto tempo leva a pé da estação até aqui?|Dez minutos|Cinco minutos|Quinze minutos|Vinte minutos|10分かかります indica que leva dez minutos.
 Em uma foto|右の人は兄です。左の人は友達です。|Quem está à direita?|Irmão mais velho|Amigo|Pai|Professor|右の人は兄です indica irmão à direita.
 Problema no quarto|この部屋は暑いです。窓を開けてもいいですか。|O que a pessoa pede permissão para fazer?|Abrir a janela|Fechar a porta|Ligar o computador|Entrar no quarto|窓を開けてもいいですか pergunta se pode abrir a janela.
 Consulta|すみません。もう一度言ってください。|O que a pessoa solicita?|Que repitam a fala|Que esperem um pouco|Que escrevam o nome|Que telefonem depois|もう一度言ってください significa diga mais uma vez.

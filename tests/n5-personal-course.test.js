@@ -131,3 +131,13 @@ test('unfinished personal review resumes from backup without modifying certifica
  assert.equal(restored.n5Practice.played.length,1);
  assert.deepEqual(restored.pedagogy.assessmentHistory,[]);
 });
+
+
+test('listening includes unambiguous ten-minute reading and introductory post-class phrasing',()=>{
+ const ten=N5_LISTENING_TASKS.find(q=>q.context==='Passeio');
+ const after=N5_LISTENING_TASKS.find(q=>q.context==='Após a escola');
+ const homework=N5_LISTENING_TASKS.find(q=>q.context==='Na escola');
+ assert.match(ten.spokenText,/10分かかります/);
+ assert.match(after.spokenText,/授業のあとで/);
+ assert.match(homework.spokenText,/金曜日に宿題を出してください/);
+});
