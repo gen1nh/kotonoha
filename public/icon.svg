@@ -2,35 +2,60 @@
   <title id="iconTitle">Kotonoha — 言</title>
   <defs>
     <filter id="cardShadow" x="-10%" y="-10%" width="120%" height="130%">
-      <feDropShadow dx="0" dy="8" stdDeviation="6" flood-color="#3d8300" flood-opacity="0.35" />
+      <feDropShadow dx="0" dy="10" stdDeviation="6" flood-color="#1e4e00" flood-opacity="0.32" />
     </filter>
+    <linearGradient id="tactileFace" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#5ed802" />
+      <stop offset="100%" stop-color="#50be00" />
+    </linearGradient>
+    <linearGradient id="goldSpark" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffe266" />
+      <stop offset="100%" stop-color="#ffb800" />
+    </linearGradient>
+    <linearGradient id="mouthDepth" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#46a800" />
+      <stop offset="100%" stop-color="#50be00" />
+    </linearGradient>
   </defs>
 
-  <!-- Base 3D shadow layer (Duolingo physical bottom elevation) -->
-  <rect x="16" y="24" width="224" height="216" rx="52" fill="#58a700" filter="url(#cardShadow)" />
+  <!-- Base 3D shadow layer (tactile physical bottom elevation) -->
+  <rect x="16" y="26" width="224" height="214" rx="52" fill="#357300" filter="url(#cardShadow)" />
   
   <!-- Top tactile vibrant face -->
-  <rect x="16" y="16" width="224" height="212" rx="52" fill="#58cc02" />
+  <rect x="16" y="16" width="224" height="212" rx="52" fill="url(#tactileFace)" />
+  <rect x="17" y="17" width="222" height="210" rx="51" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-opacity="0.25" />
 
-  <!-- Kanji 言 (Koto / Word) in crisp white rounded strokes -->
-  <g transform="translate(0, 4)">
-    <!-- Top dot / stroke of 言 -->
-    <rect x="96" y="46" width="64" height="15" rx="7.5" fill="#ffffff" />
-    <!-- Golden streak leaf spark -->
-    <circle cx="174" cy="53.5" r="5.5" fill="#ffc800" />
+  <!-- Símbolo da Marca: Folha de Bambu + Kanji 言 (Koto) + Centelha Kokoro -->
+  <g id="kotonoha-symbol">
+    <!-- Kokoro Spark / Semente de Ouro (brilho sutil da fala) -->
+    <circle cx="138" cy="35" r="6.5" fill="url(#goldSpark)" />
 
-    <!-- Second horizontal stroke (long balance bar) -->
-    <rect x="68" y="74" width="120" height="15" rx="7.5" fill="#ffffff" />
+    <!-- Folha de bambu principal (apontando suavemente para a esquerda-cima) -->
+    <path d="M 72 36
+             C 86 34, 102 42, 108 53
+             C 96 56, 82 50, 72 36 Z" 
+          fill="#ffffff" />
+    
+    <!-- Folha secundária menor (apontando para a esquerda) -->
+    <path d="M 68 56
+             C 80 54, 98 56, 106 61
+             C 94 65, 78 66, 68 56 Z" 
+          fill="#ffffff" />
 
-    <!-- Third horizontal stroke -->
-    <rect x="84" y="102" width="88" height="14" rx="7" fill="#ffffff" />
+    <!-- Haste e traço superior de 言 -->
+    <rect x="100" y="49" width="62" height="15" rx="7.5" fill="#ffffff" />
 
-    <!-- Fourth horizontal stroke -->
-    <rect x="84" y="128" width="88" height="14" rx="7" fill="#ffffff" />
+    <!-- Segundo traço (barra de equilíbrio horizontal principal de 言) -->
+    <rect x="66" y="80" width="124" height="15" rx="7.5" fill="#ffffff" />
 
-    <!-- Radical 口 (Mouth / Speech) - Outer frame -->
-    <rect x="80" y="156" width="96" height="46" rx="10" fill="#ffffff" />
-    <!-- Inner cutout with green depth -->
-    <rect x="96" y="168" width="64" height="22" rx="6" fill="#58cc02" />
+    <!-- Terceiro traço -->
+    <rect x="84" y="108" width="88" height="14" rx="7" fill="#ffffff" />
+
+    <!-- Quarto traço -->
+    <rect x="84" y="134" width="88" height="14" rx="7" fill="#ffffff" />
+
+    <!-- Radical 口 (Boca / Fala) -->
+    <rect x="80" y="160" width="96" height="46" rx="11" fill="#ffffff" />
+    <rect x="96" y="172" width="64" height="22" rx="6" fill="url(#mouthDepth)" />
   </g>
 </svg>

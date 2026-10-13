@@ -5,3 +5,8 @@ dist/
 test-results/
 playwright-report/
 *.zip
+
+.vercel
+.env*
+__pycache__/
+*.pyc

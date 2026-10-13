@@ -32,6 +32,12 @@ Os valores implementados estão em `src/index.css` (`@theme`); não introduzir h
 
 **Não** usar o verde `#58cc02` como texto pequeno sobre branco: o contraste é insuficiente. Em modo escuro, use as variantes semânticas do tema e teste contrastes novamente.
 
+## Identidade de marca, logotipo e favicon
+
+- **Símbolo aprovado:** Squircle tátil 3D (`#58cc02` com elevação física `#357300`) unindo folha de bambu (*sasa/kotonoha*) como primeiro traço do kanji 言, centelha dourada (*kokoro no tane*, `#ffb800` / `#ffe266`) e traços arredondados de alto contraste.
+- **Logotipo horizontal (`public/brand/logo.svg`):** Símbolo tátil, tipografia Kotonoha em tom `ink-strong` (`#162019`) e selo vertical autêntico Hanko japonês em ouro Kokoro com a inscrição `言の葉`.
+- **Favicon e PWA (`public/`):** SVG responsivo (`icon.svg`), ICO multi-tamanho (`favicon.ico` 16/32/48px), `apple-touch-icon.png` (180px), `icon-192.png`, `icon-512.png` e `maskable-512.png` com zona de segurança Android de 80%.
+
 ## Componentes e estados
 
 - Reutilizar `src/components/ui/index.jsx`: `Button`, `Card`, `Badge`, controles, estados vazios. Botões primários têm borda inferior mais espessa e reação visual ao toque; links textuais continuam links.

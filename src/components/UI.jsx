@@ -17,9 +17,12 @@ export function Brand({ compact = false, onClick }) {
       aria-label="Kotonoha, início"
     >
       <div className="flex items-center gap-2.5">
-        <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary text-white text-xl font-black shadow-xs">
-          言
-        </span>
+        <img
+          src="/icon.svg"
+          alt=""
+          aria-hidden="true"
+          className="h-10 w-10 shrink-0 select-none pointer-events-none"
+        />
         <span className="type-h2 text-ink-strong tracking-tight">
           Kotonoha
         </span>
