@@ -1,4 +1,5 @@
 import React from "react";
+import N5ListeningPractice from "./N5ListeningPractice.jsx";
 import Icon from "./Icon.jsx";
 import { Button, Card } from "./ui/index.jsx";
 import { PageHeading } from "./UI.jsx";
@@ -11,6 +12,7 @@ export default function PracticeHub({ state, go, changeLevel }) {
 
   return (
     <div className="w-full space-y-6 min-w-0">
+      <N5ListeningPractice />
       {/* Cabeçalho Oficial do Hub */}
       <PageHeading
         title="Prática & Laboratórios"
