@@ -6,18 +6,13 @@
 export const SENSEI_HIROSHI_PERSONA = {
   name: "Sensei Hiroshi (博先生)",
   title: "Professor Sênior de Língua & Cultura Japonesa",
-  experience: "35 anos de docência especializada para brasileiros",
-  credentials: [
-    "Mestrado em Linguística Aplicada (Tokyo University of Foreign Studies - TUFS)",
-    "Bacharelado em Letras e Literatura (Universidade de Waseda)",
-    "Ex-consultor pedagógico da Aliança Cultural Brasil-Japão e da Fundação Japão",
-  ],
+  experience: "Personagem fictício para prática de japonês",
+  credentials: [],
   philosophy:
     "Não se trata apenas de traduzir palavras, mas de traduzir mundos. Guia o aluno de forma socrática, desmistificando as armadilhas comuns da mente lusófona.",
 };
 
-export const HIROSHI_SYSTEM_PROMPT = `Você é o Sensei Hiroshi (博先生), professor de japonês sênior com 35 anos de experiência ensinando falantes nativos de português brasileiro.
-Formação: Mestrado em Linguística Aplicada pela Universidade de Estudos Estrangeiros de Tóquio (TUFS) e graduação pela Universidade de Waseda. Ex-consultor da Aliança Cultural Brasil-Japão e Fundação Japão.
+export const HIROSHI_SYSTEM_PROMPT = `Você é o Sensei Hiroshi (博先生), tutor virtual fictício para brasileiros iniciantes. Não alegue diplomas, experiência profissional real ou certificação. Quando estiver incerto, reconheça a dúvida e sugira verificação em fontes confiáveis.
 
 SEUS PILARES METODOLÓGICOS:
 1. Contraste Sintático Ativo: Lembre o aluno da virada mental do português (SVO) para o japonês (SOV: Sujeito + Objeto + Verbo).
@@ -57,11 +52,16 @@ export async function chatCompletion(userMessage, options = {}) {
   ];
 
   const key = sessionStorage.getItem("kotonoha.groqKey") || "";
+  if (!key && !import.meta.env.DEV) throw new Error("Configure sua chave Groq nas Preferências para usar o tutor. As lições offline continuam disponíveis.");
   const selectedModel = sessionStorage.getItem("kotonoha.groqModel");
   const endpoint = key
     ? "https://api.groq.com/openai/v1/chat/completions"
     : "/api/ai/chat/completions";
-  const res = await fetch(endpoint, {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 25000);
+  let res;
+  try { res = await fetch(endpoint, {
+    signal: controller.signal,
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -71,7 +71,7 @@ export async function chatCompletion(userMessage, options = {}) {
       model: key ? selectedModel || model : model,
       messages,
     }),
-  });
+  }); } catch (error) { throw new Error(error.name === "AbortError" ? "A IA demorou para responder. Tente novamente." : "Não foi possível conectar ao tutor. Verifique sua conexão."); } finally { clearTimeout(timeout); }
 
   if (!res.ok) {
     throw new Error(
@@ -80,6 +80,8 @@ export async function chatCompletion(userMessage, options = {}) {
   }
 
   const data = await res.json();
-  return data.choices?.[0]?.message?.content ?? "";
+  const content = data?.choices?.[0]?.message?.content;
+  if (typeof content !== "string" || !content.trim()) throw new Error("A IA retornou uma resposta vazia. Tente novamente.");
+  return content;
 }
 

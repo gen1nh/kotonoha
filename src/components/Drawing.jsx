@@ -23,7 +23,6 @@ export default function Drawing({ character, random, save }) {
   const isDrawing = useRef(false);
 
   const [activeStep, setActiveStep] = useState(0);
-  const [showIndicators, setShowIndicators] = useState(true);
   const [modelOpacity, setModelOpacity] = useState("guide"); // "guide" (25%), "clear" (60%), "hidden" (0%)
   const [inkColor, setInkColor] = useState(INK_COLORS[0].hex);
   const [brushSize, setBrushSize] = useState(BRUSH_SIZES[1].width);
@@ -38,7 +37,8 @@ export default function Drawing({ character, random, save }) {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
+    const width=canvas.clientWidth,height=canvas.clientHeight;
 
     for (const stroke of strokesHistory.current) {
       if (stroke.points.length < 2) continue;
@@ -47,9 +47,9 @@ export default function Drawing({ character, random, save }) {
       ctx.lineWidth = stroke.size;
       ctx.lineCap = "round";
       ctx.lineJoin = "round";
-      ctx.moveTo(stroke.points[0].x, stroke.points[0].y);
+      ctx.moveTo(stroke.points[0].x*width, stroke.points[0].y*height);
       for (let i = 1; i < stroke.points.length; i++) {
-        ctx.lineTo(stroke.points[i].x, stroke.points[i].y);
+        ctx.lineTo(stroke.points[i].x*width, stroke.points[i].y*height);
       }
       ctx.stroke();
     }
@@ -63,7 +63,7 @@ export default function Drawing({ character, random, save }) {
     canvas.width = Math.round(rect.width * dpr);
     canvas.height = Math.round(rect.height * dpr);
     const ctx = canvas.getContext("2d");
-    ctx.scale(dpr, dpr);
+    ctx.setTransform(dpr,0,0,dpr,0,0);
     redrawAll();
   };
 
@@ -83,7 +83,7 @@ export default function Drawing({ character, random, save }) {
     const canvas = canvasRef.current;
     if (canvas) {
       const ctx = canvas.getContext("2d");
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
     }
   }, [character]);
 
@@ -94,7 +94,7 @@ export default function Drawing({ character, random, save }) {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
   };
 
   const undo = () => {
@@ -109,8 +109,8 @@ export default function Drawing({ character, random, save }) {
     if (!canvas) return { x: 0, y: 0 };
     const rect = canvas.getBoundingClientRect();
     return {
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top,
+      x: Math.min(1,Math.max(0,(e.clientX - rect.left)/Math.max(1,rect.width))),
+      y: Math.min(1,Math.max(0,(e.clientY - rect.top)/Math.max(1,rect.height))),
     };
   };
 
@@ -140,8 +140,8 @@ export default function Drawing({ character, random, save }) {
     if (pts.length >= 2) {
       const p1 = pts[pts.length - 2];
       const p2 = pts[pts.length - 1];
-      ctx.moveTo(p1.x, p1.y);
-      ctx.lineTo(p2.x, p2.y);
+      ctx.moveTo(p1.x*canvas.clientWidth, p1.y*canvas.clientHeight);
+      ctx.lineTo(p2.x*canvas.clientWidth, p2.y*canvas.clientHeight);
       ctx.stroke();
     }
   };
@@ -163,15 +163,15 @@ export default function Drawing({ character, random, save }) {
   return (
     <div className="w-full min-w-0 space-y-5">
       {/* 1. Barra de Ações Superior */}
-      <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b-2 border-[#e5e5e5]">
+      <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b-2 border-line">
         <div className="flex items-center gap-2.5">
-          <span className="text-xs font-black text-[#777777] uppercase tracking-wider">
+          <span className="text-xs font-black text-muted uppercase tracking-wider">
             Lousa de Caligrafia
           </span>
-          <span className="text-xs font-black text-[#58cc02] uppercase tracking-wider">
+          <span className="text-xs font-black text-primary-strong uppercase tracking-wider">
             {totalStrokes} {totalStrokes === 1 ? "traço" : "traços"}
           </span>
-          <span className="hidden sm:inline-block text-xs font-bold text-[#777777]">
+          <span className="hidden sm:inline-block text-xs font-bold text-muted">
             · Siga a ordem numérica
           </span>
         </div>
@@ -206,18 +206,18 @@ export default function Drawing({ character, random, save }) {
       </div>
 
       {/* 2. Banner de Orientação: Onde Começar a Desenhar Primeiro */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl border-2 border-[#ff9600]/40 bg-[#ffebd1]/40 text-[#4b4b4b]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl border-2 border-flame/40 bg-flame-soft/40 text-ink">
         <div className="flex items-center gap-2.5 min-w-0">
-          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-[#ff9600] text-white text-xs font-black">
+          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-flame text-white text-xs font-black">
             {currentStepInfo?.n || 1}
           </span>
           <div className="min-w-0">
-            <strong className="text-xs font-black text-[#3c3c3c] block sm:inline mr-2">
+            <strong className="text-xs font-black text-ink-strong block sm:inline mr-2">
               {activeStep === 0
                 ? "Comece desenhando por aqui:"
                 : `Traço ${activeStep + 1} de ${totalStrokes}:`}
             </strong>
-            <span className="text-xs text-[#777777] font-bold leading-tight">
+            <span className="text-xs text-muted font-bold leading-tight">
               {currentStepInfo?.hint}
             </span>
           </div>
@@ -225,7 +225,7 @@ export default function Drawing({ character, random, save }) {
 
         <div className="flex items-center gap-2 shrink-0 self-end sm:self-auto">
           {currentStepInfo?.dir && (
-            <span className="text-xs font-black text-[#ff9600] uppercase tracking-wider">
+            <span className="text-xs font-black text-flame uppercase tracking-wider">
               Direção: {currentStepInfo.dir}
             </span>
           )}
@@ -234,7 +234,7 @@ export default function Drawing({ character, random, save }) {
             onClick={() =>
               setActiveStep((cur) => (cur > 0 ? cur - 1 : totalStrokes - 1))
             }
-            className="px-2 py-1 rounded-md border border-line bg-surface text-xs font-semibold text-ink hover:border-edge cursor-pointer"
+            className="min-h-11 min-w-11 px-2 py-1 rounded-md border border-line bg-surface text-xs font-semibold text-ink hover:border-edge cursor-pointer"
             title="Traço anterior"
           >
             ◀
@@ -244,7 +244,7 @@ export default function Drawing({ character, random, save }) {
             onClick={() =>
               setActiveStep((cur) => (cur < totalStrokes - 1 ? cur + 1 : 0))
             }
-            className="px-2 py-1 rounded-md border border-line bg-surface text-xs font-semibold text-ink hover:border-edge cursor-pointer"
+            className="min-h-11 min-w-11 px-2 py-1 rounded-md border border-line bg-surface text-xs font-semibold text-ink hover:border-edge cursor-pointer"
             title="Próximo traço"
           >
             ▶
@@ -328,60 +328,14 @@ export default function Drawing({ character, random, save }) {
               </span>
             )}
 
-            {/* INDICATIVOS DE ONDE DESENHAR PRIMEIRO (Stroke Order Indicators) */}
-            {showIndicators &&
-              strokeData.steps.map((st, i) => {
-                const isActive = activeStep === i;
-                const isFirst = i === 0;
-                return (
-                  <div
-                    key={st.n}
-                    className="absolute z-20 pointer-events-auto -translate-x-1/2 -translate-y-1/2 flex items-center gap-1"
-                    style={{ left: `${st.x}%`, top: `${st.y}%` }}
-                  >
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setActiveStep(i);
-                      }}
-                      className={`relative flex items-center justify-center rounded-full text-xs font-bold transition-all cursor-pointer select-none ${
-                        isActive
-                          ? "h-9 w-9 bg-flame text-white ring-4 ring-flame-soft scale-110 shadow-none"
-                          : isFirst
-                            ? "h-8 w-8 bg-flame/90 text-white ring-2 ring-flame/30 hover:scale-105"
-                            : "h-7 w-7 bg-primary text-white border-2 border-surface opacity-90 hover:scale-110"
-                      }`}
-                      title={`Ponto inicial do traço ${st.n}: ${st.hint}`}
-                      aria-label={`Traço ${st.n}`}
-                    >
-                      {isActive && (
-                        <span className="absolute -inset-1 rounded-full border-2 border-flame animate-ping opacity-75" />
-                      )}
-                      <span>{st.n}</span>
-                    </button>
-
-                    {/* Seta direcional e tag 'Início' no traço ativo ou primeiro */}
-                    {(isActive || isFirst) && (
-                      <span
-                        className={`hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold border transition-all ${
-                          isActive
-                            ? "bg-flame-soft text-flame-ink border-flame/40"
-                            : "bg-surface text-ink border-line"
-                        }`}
-                      >
-                        {isFirst && !isActive ? "1º Início" : null}
-                        {st.dir && <span>{st.dir}</span>}
-                      </span>
-                    )}
-                  </div>
-                );
-              })}
+            {/* A ordem dos traços é mostrada no guia abaixo, sem sobrepor a lousa. */}
 
             {/* Canvas Nativo de Desenho */}
             <canvas
               ref={canvasRef}
-              className="absolute inset-0 w-full h-full cursor-crosshair z-10 touch-none"
+              className="absolute inset-0 w-full h-full cursor-crosshair touch-none"
+              data-drawing-surface="true"
+              aria-label={`Área de desenho para o caractere ${character}`}
               onPointerDown={onPointerDown}
               onPointerMove={onPointerMove}
               onPointerUp={onPointerUp}
@@ -399,7 +353,7 @@ export default function Drawing({ character, random, save }) {
                   key={ink.id}
                   type="button"
                   onClick={() => setInkColor(ink.hex)}
-                  className={`h-7 w-7 rounded-full border-2 transition-transform cursor-pointer ${
+                  className={`h-11 w-11 rounded-full border-2 transition-transform cursor-pointer ${
                     inkColor === ink.hex
                       ? "scale-115 border-edge ring-2 ring-primary/20"
                       : "border-transparent hover:scale-105"
@@ -419,7 +373,7 @@ export default function Drawing({ character, random, save }) {
                   key={sz.id}
                   type="button"
                   onClick={() => setBrushSize(sz.width)}
-                  className={`px-2.5 py-1 rounded-md text-xs font-semibold border transition-colors cursor-pointer ${
+                  className={`min-h-11 px-2.5 py-1 rounded-md text-xs font-semibold border transition-colors cursor-pointer ${
                     brushSize === sz.width
                       ? "bg-primary text-white border-primary"
                       : "bg-paper text-ink border-line hover:border-edge"
@@ -434,19 +388,6 @@ export default function Drawing({ character, random, save }) {
             <div className="flex items-center gap-1">
               <button
                 type="button"
-                onClick={() => setShowIndicators((v) => !v)}
-                className={`px-2.5 py-1 rounded-md text-xs font-semibold border transition-colors cursor-pointer ${
-                  showIndicators
-                    ? "bg-flame-soft text-flame-ink border-flame/30"
-                    : "bg-paper text-muted border-line"
-                }`}
-                title="Mostrar ou ocultar números dos traços"
-              >
-                ① Números: {showIndicators ? "Ligados" : "Ocultos"}
-              </button>
-
-              <button
-                type="button"
                 onClick={() =>
                   setModelOpacity((cur) =>
                     cur === "guide"
@@ -456,7 +397,7 @@ export default function Drawing({ character, random, save }) {
                         : "guide",
                   )
                 }
-                className="px-2.5 py-1 rounded-md text-xs font-semibold border border-line bg-paper text-ink hover:border-edge cursor-pointer"
+                className="min-h-11 px-2.5 py-1 rounded-md text-xs font-semibold border border-line bg-paper text-ink hover:border-edge cursor-pointer"
                 title="Alternar visibilidade do caractere de fundo"
               >
                 Modelo: {modelOpacity === "guide" ? "Guia" : modelOpacity === "clear" ? "Forte" : "Oculto"}
@@ -500,7 +441,7 @@ export default function Drawing({ character, random, save }) {
             </div>
 
             <p className="text-xs text-muted leading-relaxed">
-              Siga os pontos numerados na lousa. Clique em cada traço abaixo para focar no movimento:
+              Consulte os passos abaixo. A lousa fica livre para desenhar com dedo, caneta ou mouse.
             </p>
 
             <div className="space-y-2 pt-1">
@@ -548,7 +489,7 @@ export default function Drawing({ character, random, save }) {
 
             {/* Dica de Caligrafia */}
             <div className="mt-3 p-3 rounded-xl bg-accent-soft/40 border border-primary/20 text-xs text-primary leading-relaxed flex items-start gap-2">
-              <Icon name="sparkles" className="w-4 h-4 shrink-0 text-[#ff9600] mt-0.5" />
+              <Icon name="sparkles" className="w-4 h-4 shrink-0 text-flame mt-0.5" />
               <span>
                 <strong>Regra clássica japonesa:</strong> Sempre escreva de cima para baixo e da esquerda para a direita. Os laços são fechados em sentido horário.
               </span>

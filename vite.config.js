@@ -10,9 +10,9 @@ export default defineConfig(({ mode }) => {
       changeOrigin: true,
       rewrite: (path) => path.replace(/^\/api\/ai/, "/v1"),
       headers:
-        env.OMNIROUTE_KEY || env.VITE_OMNIROUTE_KEY
+        env.OMNIROUTE_KEY
           ? {
-              Authorization: `Bearer ${env.OMNIROUTE_KEY || env.VITE_OMNIROUTE_KEY}`,
+              Authorization: `Bearer ${env.OMNIROUTE_KEY}`,
             }
           : {},
     },
@@ -20,11 +20,11 @@ export default defineConfig(({ mode }) => {
   return {
     server: { proxy },
     preview: { proxy },
-    base: "./",
+    base: "/",
     plugins: [
       tailwindcss(),
       VitePWA({
-        registerType: "autoUpdate",
+        registerType: "prompt",
         manifest: false,
         includeAssets: ["icon.svg", "manifest.webmanifest"],
         workbox: {

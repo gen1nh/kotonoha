@@ -4,7 +4,7 @@ export function useDialogFocus(onClose) {
   close.current = onClose;
   useEffect(() => {
     const previous = document.activeElement;
-    const dialog = document.querySelector('[role="dialog"]');
+    const dialog = [...document.querySelectorAll('[role="dialog"]')].at(-1);
     if (!dialog) return;
     const focusable = () =>
       [

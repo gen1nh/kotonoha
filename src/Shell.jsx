@@ -1,367 +1,85 @@
-import React, { useState } from "react";
-import { LEVELS, cardMatchesLevel } from "./state.js";
-import { Learn } from "./components/Learn.jsx";
-import { Review } from "./components/Review.jsx";
-import { Jlpt } from "./components/Jlpt.jsx";
-import { Settings } from "./components/Settings.jsx";
-import Home from "./components/Home.jsx";
-import Icon from "./components/Icon.jsx";
-import { Brand, NAVIGATION, NavItem } from "./components/UI.jsx";
-import StreakPopover from "./components/StreakPopover.jsx";
-import SpeedQuiz from "./components/SpeedQuiz.jsx";
-import StudySession from "./components/StudySession.jsx";
-import SyntaxLab from "./components/SyntaxLab.jsx";
-import LineSimulator from "./components/LineSimulator.jsx";
-import PitchAccentLab from "./components/PitchAccentLab.jsx";
-import ErrorMemory from "./components/ErrorMemory.jsx";
-import PracticeHub from "./components/PracticeHub.jsx";
-import OnboardingModal from "./components/OnboardingModal.jsx";
+import React,{useState,useEffect} from 'react';
+import {Learn} from './components/Learn.jsx';
+import {Review} from './components/Review.jsx';
+import {Settings} from './components/Settings.jsx';
+import Home from './components/Home.jsx';
+import PathTimeline from './components/PathTimeline.jsx';
+import PracticeHub from './components/PracticeHub.jsx';
+import ProgressOverview from './components/ProgressOverview.jsx';
+import LessonPlayer from './components/LessonPlayer.jsx';
+import CheckpointPlayer from './components/CheckpointPlayer.jsx';
+import Icon from './components/Icon.jsx';
+import {Brand,NAVIGATION,NavItem} from './components/UI.jsx';
+import OnboardingModal from './components/OnboardingModal.jsx';
+import StreakPopover from './components/StreakPopover.jsx';
+import SpeedQuiz from './components/SpeedQuiz.jsx';
+import SyntaxLab from './components/SyntaxLab.jsx';
+import LineSimulator from './components/LineSimulator.jsx';
+import PitchAccentLab from './components/PitchAccentLab.jsx';
+import Notebook from './components/Notebook.jsx';
 
-const PAGES = {
-  home: [
-    "Aprender Japonês",
-    "Trilha gamificada com a mentoria socrática do Sensei Hiroshi.",
-  ],
-  practice: [
-    "Prática & Laboratórios",
-    "Ambientes imersivos calibrados com desbloqueio pedagógico para o seu nível.",
-  ],
-  syntax: [
-    "Contraste Sintático",
-    "Inverta a mente do português (SVO) para o padrão japonês (SOV com partículas).",
-  ],
-  line: [
-    "Simulador LINE",
-    "Roleplay da vida real em Tóquio e Kyoto com alternância de Keigo e Tameguchi.",
-  ],
-  pitch: [
-    "Pitch Accent de Tóquio",
-    "Grave sua voz e compare a modulação sonora com a entonação de um nativo.",
-  ],
-  errors: [
-    "Diário de Bordo",
-    "Memória persistente de erros e orientações cirúrgicas do Sensei Hiroshi.",
-  ],
-  learn: [
-    "Biblioteca & Kana",
-    "Matriz dos 46 caracteres, lousa de caligrafia digital e vocabulário.",
-  ],
-  review: [
-    "Repetição Espaçada",
-    "Fixe termos e expressões no momento exato da curva de esquecimento.",
-  ],
-  jlpt: [
-    "Minha Trilha JLPT",
-    "Currículo estruturado do N5 ao N1 para conquistas sólidas.",
-  ],
-  settings: [
-    "Preferências & Metas",
-    "Configure seu tempo diário, backups e integrações.",
-  ],
-};
+const PAGE_TITLES={home:'Início',path:'Trilha',practice:'Praticar',progress:'Progresso',learn:'Biblioteca',lesson:'Lição',checkpoint:'Checkpoint',review:'Revisão',notebook:'Caderno',errors:'Diário de erros',syntax:'Laboratório de frases',line:'Conversação',pitch:'Pronúncia',settings:'Preferências'};
+const PRACTICE_VIEWS=['learn','review','notebook','errors','syntax','line','pitch'];
+const IMMERSIVE_VIEWS=['lesson','review','checkpoint'];
 
-export default function Shell({
-  view,
-  state,
-  navigate,
-  shared,
-  message,
-  install,
-  installPrompt,
-}) {
-  const [streakOpen, setStreakOpen] = useState(false);
-  const [speedQuizOpen, setSpeedQuizOpen] = useState(false);
-  const [studySessionOpen, setStudySessionOpen] = useState(false);
-  const [sessionDuration, setSessionDuration] = useState(15);
-  const [onboardingOpen, setOnboardingOpen] = useState(() => {
-    try {
-      if (typeof window !== "undefined" && localStorage.getItem("kotonoha_onboarding_done") === "true") {
-        return false;
-      }
-    } catch {}
-    return !state.onboardingCompleted;
-  });
-
-  const due = Object.values(state.cards).filter(
-    (card) =>
-      card.seen &&
-      card.due <= Date.now() &&
-      cardMatchesLevel(card, state.selectedLevel),
-  ).length;
-
-  const item = NAVIGATION.find((item) => item.id === view);
-  const [title, description] = PAGES[view] || PAGES.home;
-  const settings = { id: "settings", label: "Preferências", icon: "settings" };
-  const xp = (state.stats?.reviews || 0) * 15 + (state.streak?.days || 1) * 30;
-
-  return (
-    <>
-      <div
-        className="flex flex-col lg:flex-row min-h-screen bg-white text-[#4b4b4b] w-full"
-        onClick={navigate}
-      >
-        <a
-          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-white focus:border-2 focus:border-[#58cc02] focus:rounded-2xl focus:text-[#3c3c3c] font-black"
-          href="#main-content"
-        >
-          Pular para o conteúdo
-        </a>
-
-        {/* Sidebar Desktop Duolingo */}
-        <aside
-          className="hidden lg:flex flex-col justify-between w-64 xl:w-72 shrink-0 bg-white border-r-2 border-[#e5e5e5] p-6 select-none sticky top-0 h-screen z-30"
-          aria-label="Navegação principal"
-        >
-          <div className="space-y-6">
-            <Brand />
-            <nav className="flex flex-col gap-2" aria-label="Áreas de estudo">
-              {NAVIGATION.map((item) => (
-                <NavItem
-                  key={item.id}
-                  item={item}
-                  active={
-                    view === item.id ||
-                    (item.id === "practice" &&
-                      ["syntax", "line", "pitch", "errors"].includes(view))
-                  }
-                  count={item.id === "review" ? due : 0}
-                  onClick={() => shared.go(item.id)}
-                />
-              ))}
-            </nav>
+export default function Shell({view,state,shared,message,install,installPrompt}) {
+  const [theme,setTheme]=useState(()=>{try{return localStorage.getItem('kotonoha_theme')||'system';}catch{return 'system';}});
+  useEffect(()=>{const media=window.matchMedia('(prefers-color-scheme: dark)');const apply=()=>{const dark=theme==='dark'||(theme==='system'&&media.matches);document.documentElement.dataset.theme=dark?'dark':'light';const meta=document.querySelector('meta[name="theme-color"]');if(meta)meta.setAttribute('content',dark?'#111714':'#ffffff');};apply();try{localStorage.setItem('kotonoha_theme',theme);}catch{}media.addEventListener?.('change',apply);return()=>media.removeEventListener?.('change',apply);},[theme]);
+  const [online,setOnline]=useState(()=>typeof navigator!=='undefined'?navigator.onLine:true);
+  useEffect(()=>{const on=()=>setOnline(true);const off=()=>setOnline(false);window.addEventListener('online',on);window.addEventListener('offline',off);return()=>{window.removeEventListener('online',on);window.removeEventListener('offline',off);};},[]);
+  const [streakOpen,setStreakOpen]=useState(false);
+  const [speedQuizOpen,setSpeedQuizOpen]=useState(false);
+  const [onboardingOpen,setOnboardingOpen]=useState(()=>!state.onboardingCompleted);
+  const immersive=IMMERSIVE_VIEWS.includes(view);
+  const due=Object.values(state.cards||{}).filter(c=>c.seen&&c.due<=Date.now()).length;
+  const xp=(state.stats?.correct||0)*15;
+  const navActive=id=>view===id||(id==='practice'&&PRACTICE_VIEWS.includes(view));
+  const onCloseOnboarding=()=>{setOnboardingOpen(false);shared.update(s=>{s.onboardingCompleted=true;});};
+  const onFinishOnboarding=()=>{setOnboardingOpen(false);shared.go('path');};
+  const back=()=>shared.goBack();
+  return <>
+    <div className="min-h-[100dvh] flex flex-col lg:flex-row bg-paper text-ink w-full">
+      <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:p-3 focus:bg-paper focus:border focus:border-primary focus:rounded-xl">Pular para o conteúdo</a>
+      {!immersive && <aside className="hidden lg:flex flex-col justify-between w-64 xl:w-72 shrink-0 bg-paper border-r border-line p-6 sticky top-0 h-screen z-30" aria-label="Navegação principal">
+        <div className="space-y-7"><Brand onClick={()=>shared.go('home')}/><nav className="flex flex-col gap-1" aria-label="Áreas de estudo">{NAVIGATION.map(item=><NavItem key={item.id} item={item} active={navActive(item.id)} onClick={()=>shared.go(item.id)} />)}</nav></div>
+        <div className="border-t border-line pt-3 space-y-2"><button type="button" onClick={()=>setOnboardingOpen(true)} className="flex w-full items-center gap-3 min-h-11 px-4 text-sm font-semibold text-muted rounded-xl hover:bg-raised"><Icon name="academic"/> Guia inicial</button><NavItem item={{id:'settings',label:'Preferências',icon:'settings'}} active={view==='settings'} onClick={()=>shared.go('settings')} /></div>
+      </aside>}
+      <div className="flex-1 min-w-0 w-full flex flex-col">
+        {immersive ? <header className="sticky top-0 z-30 border-b border-line bg-paper px-4 py-3 pt-[calc(0.75rem+env(safe-area-inset-top))] flex items-center gap-3"><button type="button" onClick={back} aria-label="Voltar" className="h-11 w-11 flex items-center justify-center rounded-xl border border-line bg-surface text-ink-strong"><Icon name="arrow" className="w-5 h-5 rotate-180"/></button><div className="flex-1 min-w-0"><p className="text-xs font-bold text-primary-strong">SESSÃO DE ESTUDO</p><p className="font-bold text-ink-strong truncate">{PAGE_TITLES[view]}</p></div><span className="text-xs text-muted">{shared.route.level||"N5"}</span></header>
+        : <header className="sticky top-0 z-20 border-b border-line bg-paper/95 backdrop-blur-sm min-h-16 px-4 sm:px-7 lg:px-10 pt-[env(safe-area-inset-top)] flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3 min-w-0 lg:hidden"><span aria-hidden="true" className="h-9 w-9 flex items-center justify-center bg-primary text-white font-jp text-lg rounded-xl">言</span><strong className="text-base text-ink-strong truncate">{PAGE_TITLES[view]||'Kotonoha'}</strong></div>
+          <div className="hidden lg:flex items-center gap-2 text-sm text-muted"><span>Kotonoha</span><span aria-hidden="true">/</span><strong className="text-ink-strong">{PAGE_TITLES[view]||'Início'}</strong></div>
+          <div className="flex items-center gap-2">
+            <span className={`h-2 w-2 rounded-full ${online?'bg-primary':'bg-flame'}`} role="status" aria-label={online?'Conectado':'Sem conexão'} title={online?'Conectado':'Offline'}/>
+            <span className="text-xs text-muted hidden sm:inline">{online?'Online':'Offline'}</span>
+            <button type="button" onClick={()=>setStreakOpen(true)} aria-label={`Sequência: ${state.streak?.days||0} dias`} className="min-h-11 px-2 flex items-center gap-1 font-bold text-flame-ink rounded-xl hover:bg-raised"><Icon name="flame" className="w-5 h-5"/><span>{state.streak?.days||0}</span></button>
+            <span className="hidden lg:flex items-center text-sm font-bold text-muted">{xp} XP</span>
+            <button type="button" onClick={()=>shared.go('settings')} className="min-h-11 min-w-11 rounded-xl flex items-center justify-center border border-line text-ink-strong" aria-label="Abrir preferências"><Icon name="settings"/></button>
           </div>
-
-          <div className="pt-4 border-t-2 border-line mt-auto space-y-2">
-            <button
-              type="button"
-              onClick={() => setOnboardingOpen(true)}
-              className="w-full flex items-center gap-3 px-4 py-2.5 rounded-2xl text-xs font-black uppercase text-purple-ink bg-purple-soft border-2 border-b-4 border-purple/40 hover:bg-purple-soft/80 cursor-pointer transition-all active:translate-y-px"
-            >
-              <Icon name="academic" className="w-4 h-4 text-purple-ink" />
-              <span>Meu Plano de Estudo</span>
-            </button>
-            <NavItem
-              item={settings}
-              active={view === "settings"}
-              onClick={() => shared.go("settings")}
-            />
-          </div>
-        </aside>
-
-        {/* Área Principal */}
-        <div className="flex-1 flex flex-col min-w-0 w-full min-h-screen bg-paper">
-          {/* Topbar Gamificada estilo Duolingo */}
-          <header className="sticky top-0 z-20 w-full min-h-16 border-b-2 border-line bg-paper/95 backdrop-blur-xs px-6 sm:px-8 lg:px-10 py-3 flex flex-wrap gap-4 items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Brand compact />
-              <div className="hidden lg:flex items-center gap-2 type-caption text-muted">
-                <span>Kotonoha</span>
-                <span>/</span>
-                <strong className="text-ink-strong">
-                  {title}
-                </strong>
-              </div>
-            </div>
-
-            {/* Status Bars Duolingo: Nível, Sequência de Fogo, Cristais XP */}
-            <div className="flex items-center gap-3 sm:gap-4">
-              {/* Seletor de Nível com Bandeira do Japão e cor neutra */}
-              <label className="flex items-center gap-2 px-3 py-1.5 rounded-2xl border-2 border-b-4 border-line bg-paper text-xs font-black text-ink-strong select-none cursor-pointer hover:border-edge active:border-b-2 active:translate-y-[2px] transition-all">
-                <Icon name="jpFlag" className="w-4 h-4 shrink-0" />
-                <select
-                  className="border-0 bg-transparent text-xs font-black text-ink-strong cursor-pointer focus:outline-none"
-                  aria-label="Filtrar por nível JLPT"
-                  value={state.selectedLevel}
-                  onChange={(event) => shared.changeLevel(event.target.value)}
-                >
-                  {LEVELS.map(([level, label]) => (
-                    <option key={level} value={level}>
-                      {level} · {label}
-                    </option>
-                  ))}
-                </select>
-              </label>
-
-              {/* Botão de Ofensiva / Streak Duolingo */}
-              <button
-                type="button"
-                onClick={() => setStreakOpen(true)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl border-2 border-b-4 border-flame/40 bg-flame-soft/60 text-flame font-black text-xs hover:scale-105 active:border-b-2 active:translate-y-[2px] transition-all cursor-pointer"
-                title="Sua ofensiva de estudo diário"
-              >
-                <Icon name="flame" className="w-4 h-4 text-flame" />
-                <span className="tabular-nums font-black text-sm">{state.streak?.days || 1}</span>
-              </button>
-
-              {/* Cristais / XP */}
-              <div
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl border-2 border-b-4 border-blue/40 bg-blue-soft/60 text-blue font-black text-xs select-none"
-                title="Seus pontos de experiência acumulados"
-              >
-                <Icon name="gem" className="w-4 h-4 text-blue" />
-                <span className="tabular-nums font-black text-sm">{xp} XP</span>
-              </div>
-
-              {installPrompt && (
-                <button
-                  className="hidden sm:inline-flex items-center gap-2 px-3.5 py-1.5 rounded-2xl border-2 border-line bg-paper text-xs font-extrabold text-ink-strong hover:bg-raised cursor-pointer transition-colors"
-                  onClick={install}
-                >
-                  <Icon name="download" />
-                  Instalar
-                </button>
-              )}
-            </div>
-          </header>
-
-          {/* Conteúdo Principal */}
-          <main
-            id="main-content"
-            tabIndex={-1}
-            className="flex-1 w-full px-6 sm:px-8 lg:px-10 py-6 sm:py-8 pb-24 lg:pb-8 min-w-0"
-          >
-            <section
-              className="w-full min-w-0 space-y-6"
-              id={`view-${view}`}
-              aria-labelledby={`${view}Title`}
-            >
-
-              {view === "home" && (
-                <Home
-                  {...shared}
-                  openSpeedQuiz={() => setSpeedQuizOpen(true)}
-                  openStudySession={(dur) => {
-                    setSessionDuration(dur || 15);
-                    setStudySessionOpen(true);
-                  }}
-                  openOnboarding={() => setOnboardingOpen(true)}
-                />
-              )}
-              {view === "practice" && (
-                <PracticeHub
-                  state={state}
-                  go={shared.go}
-                  changeLevel={shared.changeLevel}
-                />
-              )}
-              {view === "syntax" && <SyntaxLab {...shared} />}
-              {view === "line" && <LineSimulator {...shared} />}
-              {view === "pitch" && <PitchAccentLab {...shared} />}
-              {view === "errors" && <ErrorMemory state={state} update={shared.update} toast={shared.toast} speak={shared.speak} go={shared.go} />}
-              {view === "learn" && <Learn {...shared} />}
-              {view === "review" && <Review {...shared} />}
-              {view === "jlpt" && <Jlpt {...shared} />}
-              {view === "settings" && <Settings {...shared} onOpenOnboarding={() => setOnboardingOpen(true)} />}
-
-              <footer className="pt-8 pb-6 border-t-2 border-line flex flex-wrap items-center justify-between gap-4 type-body-sm text-muted">
-                <div className="flex items-center gap-2">
-                  <span className="font-jp text-sm font-black text-ink-strong">
-                    ことのは
-                  </span>
-                  <span>· Aprendizado intuitivo com o Sensei Hiroshi</span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setOnboardingOpen(true)}
-                  className="text-blue hover:underline cursor-pointer font-extrabold"
-                >
-                  Refazer pré-cadastro de metas
-                </button>
-              </footer>
-            </section>
-          </main>
-        </div>
-
-        {/* Navegação Inferior Mobile */}
-        <nav
-          className="lg:hidden fixed bottom-0 inset-x-0 min-h-16 pb-[env(safe-area-inset-bottom)] border-t-2 border-line bg-paper px-2 grid grid-cols-4 z-30 select-none shadow-xs"
-          aria-label="Navegação móvel"
-        >
-          {NAVIGATION.map((item) => (
-            <NavItem
-              key={item.id}
-              item={item}
-              active={
-                view === item.id ||
-                (item.id === "practice" &&
-                  ["syntax", "line", "pitch", "errors"].includes(view))
-              }
-              count={item.id === "review" ? due : 0}
-              mobile
-              onClick={() => shared.go(item.id)}
-            />
-          ))}
-        </nav>
+        </header>}
+        <main id="main-content" tabIndex={-1} className={`flex-1 w-full min-w-0 px-4 sm:px-7 lg:px-10 py-5 lg:py-8 ${immersive?'pb-[calc(2rem+env(safe-area-inset-bottom))]':'pb-[calc(6.5rem+env(safe-area-inset-bottom))] lg:pb-10'}`}>
+          <section id={`view-${view}`} className="w-full min-w-0">
+            {view==='home'&&<Home {...shared}/>}
+            {view==='path'&&<PathTimeline {...shared}/>}
+            {view==='lesson'&&<LessonPlayer {...shared} topic={shared.route.topic} level={shared.route.level}/>}
+            {view==='checkpoint'&&<CheckpointPlayer {...shared} topic={shared.route.topic}/>}
+            {view==='practice'&&<PracticeHub state={state} go={shared.go} openSpeedQuiz={()=>setSpeedQuizOpen(true)} openGuidedLesson={shared.openGuidedLesson} openCheckpoint={shared.openCheckpoint}/>}
+            {view==='progress'&&<ProgressOverview {...shared}/>}
+            {view==='learn'&&<Learn {...shared}/>}
+            {view==='review'&&<Review {...shared} returnToLesson={shared.reviewContext?.view==='lesson'?()=>shared.openGuidedLesson(shared.reviewContext.topic,shared.reviewContext.level):null} openGuidedCheckpoint={shared.openCheckpoint}/>}
+            {view==='notebook'&&<><h1 className="text-2xl font-black text-ink-strong mb-4">Meu caderno</h1><Notebook {...shared}/></>}
+            {view==='syntax'&&<SyntaxLab {...shared}/>}
+            {view==='line'&&<LineSimulator {...shared}/>}
+            {view==='pitch'&&<PitchAccentLab {...shared}/>}
+            {view==='settings'&&<Settings {...shared} theme={theme} setTheme={setTheme} install={install} installPrompt={installPrompt} onOpenOnboarding={()=>setOnboardingOpen(true)}/>}
+          </section>
+        </main>
+        {!immersive&&<nav aria-label="Navegação móvel" className="lg:hidden fixed inset-x-0 bottom-0 z-30 bg-paper/95 backdrop-blur-md border-t border-line grid grid-cols-4 px-2 pt-1 pb-[calc(0.5rem+env(safe-area-inset-bottom))] mobile-tabbar">{NAVIGATION.map(item=><NavItem mobile key={item.id} item={item} active={navActive(item.id)} onClick={()=>shared.go(item.id)}/>)}</nav>}
       </div>
-
-      {/* Modal de Pré-Cadastro / Onboarding */}
-      {onboardingOpen && (
-        <OnboardingModal
-          state={state}
-          update={shared.update}
-          onClose={() => {
-            setOnboardingOpen(false);
-            try {
-              localStorage.setItem("kotonoha_onboarding_done", "true");
-            } catch {}
-            shared.update((s) => {
-              s.onboardingCompleted = true;
-            });
-          }}
-          onComplete={() => {
-            setOnboardingOpen(false);
-            try {
-              localStorage.setItem("kotonoha_onboarding_done", "true");
-            } catch {}
-            shared.update((s) => {
-              s.onboardingCompleted = true;
-            });
-            shared.toast("Plano de estudos atualizado com sucesso!");
-          }}
-        />
-      )}
-
-      {studySessionOpen && (
-        <StudySession
-          state={state}
-          update={shared.update}
-          initialDuration={sessionDuration}
-          speak={shared.speak}
-          toast={shared.toast}
-          onClose={() => setStudySessionOpen(false)}
-          onNavigateToNotebook={() => {
-            setStudySessionOpen(false);
-            shared.go("errors");
-          }}
-        />
-      )}
-
-      {streakOpen && (
-        <StreakPopover state={state} onClose={() => setStreakOpen(false)} />
-      )}
-
-      {speedQuizOpen && (
-        <SpeedQuiz
-          state={state}
-          update={shared.update}
-          onClose={() => setSpeedQuizOpen(false)}
-        />
-      )}
-
-      {/* Toast Duolingo */}
-      <div
-        id="toast"
-        className={`fixed bottom-20 md:bottom-6 right-6 z-50 max-w-sm px-5 py-3.5 rounded-2xl border-2 border-primary bg-paper text-ink-strong type-h3 shadow-lg transition-all ${
-          message
-            ? "opacity-100 translate-y-0"
-            : "opacity-0 translate-y-2 pointer-events-none"
-        }`}
-        role="status"
-        aria-live="polite"
-      >
-        {message}
-      </div>
-    </>
-  );
+    </div>
+    {onboardingOpen&&<OnboardingModal state={state} update={shared.update} onClose={onCloseOnboarding} onComplete={onFinishOnboarding}/>}
+    {streakOpen&&<StreakPopover state={state} onClose={()=>setStreakOpen(false)}/>}
+    {speedQuizOpen&&<SpeedQuiz state={state} update={shared.update} onClose={()=>setSpeedQuizOpen(false)}/>}
+    <div id="toast" role="status" aria-live="polite" className={`fixed z-50 left-4 right-4 mx-auto max-w-md bottom-[calc(6rem+env(safe-area-inset-bottom))] lg:bottom-5 rounded-xl border border-line bg-paper px-4 py-3 text-sm font-semibold text-ink-strong transition-all ${message?'opacity-100':'opacity-0 pointer-events-none'}`}>{message}</div>
+  </>;
 }
-

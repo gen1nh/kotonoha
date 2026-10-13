@@ -1,16 +1,11 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import {
-  CORE_SKILLS, LEVEL_ORDER, validateItem, eligibleItems,
-  assessmentBlueprint, buildAssessment, gradeAssessment,
-  recommendPlacement, normalizePedagogyState, competencyEvidence,
-} from '../src/pedagogy/engine.js';
+import { CORE_SKILLS, LEVEL_ORDER, validateItem, eligibleItems, assessmentBlueprint, buildAssessment, gradeAssessment, recommendPlacement, normalizePedagogyState, competencyEvidence } from '../src/pedagogy/engine.js';
 
 const item = (skill, n, level='N5') => ({
   id: `n5-${skill}-${n}`, level, skill, competencyId: `n5-${skill}-core`, status: 'approved',
   prompt: `Question ${n} for ${skill}?`, choices: ['A', 'B', 'C', 'D'], answerIndex: 2,
-  explanation: 'Correct answer is C',
-  provenance: { sourceId: 'original', license: 'Original, permission granted to Kotonoha', attribution: 'Kotonoha editorial team' },
+  explanation: 'Correct answer is C', provenance: { sourceId: 'original', license: 'Original, permission granted to Kotonoha', attribution: 'Kotonoha editorial team' },
   review: { author: 'author', reviewer: 'reviewer', reviewedAt: '2026-10-13' },
   ...(skill === 'listening' ? { audio: { path: `/audio/n5/${n}.mp3`, license: 'Original' } } : {}),
 });

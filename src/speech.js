@@ -36,6 +36,7 @@ export function warmJapaneseVoices(onUpdate = () => {}) {
   update();
   try { synthesis.addEventListener?.('voiceschanged', update); }
   catch { /* Older WebKit may not expose the event. */ }
+  // Trigger asynchronous voice population if supported, but never speak automatically.
   return () => { try { synthesis.removeEventListener?.('voiceschanged', update); } catch {} };
 }
 
@@ -62,6 +63,8 @@ export function speakJapanese(text, onError = () => {}, options = {}) {
   try {
     const synthesis = window.speechSynthesis;
     const available = japaneseVoices();
+    // When getVoices() has populated other languages, a ja voice is required.
+    // With an empty list we let the browser try lang=ja-JP while it loads voices.
     if (!available.length && synthesis.getVoices().length > 0) {
       onError('Nenhuma voz japonesa encontrada. Instale ou ative uma voz em japonês no dispositivo.');
       return false;
@@ -82,6 +85,7 @@ export function speakJapanese(text, onError = () => {}, options = {}) {
         onError('Não foi possível reproduzir japonês. Verifique as vozes japonesas do aparelho e tente novamente.');
       }
     };
+    // Keep speak() in the direct click stack. No timer, Promise or network hop.
     if (synthesis.paused) synthesis.resume();
     synthesis.speak(utterance);
     return true;

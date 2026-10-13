@@ -1,49 +1,51 @@
+@import url("https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;700;800;900&family=Nunito:wght@400;600;700;800;900&display=swap");
 @import "tailwindcss";
-@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900;1000&family=M+PLUS+Rounded+1c:wght@700;800;900&display=swap');
+/* Online Nunito/M PLUS when available; rounded system fallback while offline. */
 
 /*
   Kotonoha — Design System Gamificado (Padrão Duolingo)
-  - Tipografia: Nunito (arredondada, amigável e de alto impacto visual)
+  - Tipografia: Nunito, M PLUS Rounded 1c e fallbacks locais
   - Botões táteis 3D com borda inferior de 4px e clique mecânico afundando
   - Cores Oficiais Duolingo:
-    • Feather Green (#58cc02) para Ações Primárias e Avanço
-    • Macaw Blue (#1cb0f6) para Revisões, Áudio e Explicações
-    • Fox Orange (#ff9600) para Ofensiva (Streak) e Foco
+    • Verde de marca com contraste WCAG para ações primárias
+    • Azul com contraste WCAG para revisões e áudio
+    • Fox Orange (#a95700) para Ofensiva (Streak) e Foco
     • Cardinal Red (#ff4b4b) para Erros e Correções
     • Crown Yellow (#ffc800) para XP, Conquistas e Destaques
-    • Amethyst Purple (#ce82ff) para Sensei Hiroshi e Diálogo
+    • Amethyst Purple (#713db3) para Sensei Hiroshi e Diálogo
 */
 @theme {
   --color-paper: #ffffff;
   --color-surface: #ffffff;
   --color-raised: #f7f7f7;
   --color-index: #f0f0f0;
-  --color-ink: #4b4b4b;
-  --color-ink-strong: #3c3c3c;
-  --color-muted: #777777;
+  --color-ink: #38413b;
+  --color-ink-strong: #202824;
+  --color-muted: #626e66;
   --color-line: #e5e5e5;
   --color-edge: #cecece;
 
   /* Duolingo Green (Primária) */
-  --color-primary: #58cc02;
-  --color-primary-dark: #58a700;
-  --color-primary-strong: #46a302;
-  --color-accent-soft: #d7ffb8;
+  --color-brand: #58cc02;
+  --color-primary: #2e7c26;
+  --color-primary-dark: #24641e;
+  --color-primary-strong: #276f22;
+  --color-accent-soft: #eaf5e4;
 
   /* Duolingo Blue */
-  --color-blue: #1cb0f6;
-  --color-blue-dark: #1899d6;
+  --color-blue: #146d9f;
+  --color-blue-dark: #0e5176;
   --color-blue-soft: #ddf4ff;
 
   /* Duolingo Flame / Orange */
-  --color-flame: #ff9600;
-  --color-flame-dark: #e68600;
+  --color-flame: #a95700;
+  --color-flame-dark: #874600;
   --color-flame-soft: #ffebd1;
-  --color-flame-ink: #b86200;
+  --color-flame-ink: #995000;
 
   /* Duolingo Red / Danger */
-  --color-danger: #ff4b4b;
-  --color-danger-dark: #ea2b2b;
+  --color-danger: #c62828;
+  --color-danger-dark: #981919;
   --color-danger-soft: #ffdada;
 
   /* Duolingo Gold / Crown */
@@ -53,30 +55,30 @@
   --color-gold-ink: #a67c00;
 
   /* Duolingo Purple (Sensei Hiroshi) */
-  --color-purple: #ce82ff;
-  --color-purple-dark: #b963ff;
+  --color-purple: #713db3;
+  --color-purple-dark: #55328b;
   --color-purple-soft: #f5e6ff;
   --color-purple-ink: #892bd4;
 
   /* Review Alias */
-  --color-review: #1cb0f6;
+  --color-review: #146d9f;
   --color-review-soft: #ddf4ff;
-  --color-review-ink: #0b80ba;
+  --color-review-ink: #0b6089;
+  --color-sakura: #b83264;
+  --color-blue-ink: #145a7b;
 
-  --color-amber: #ff9600;
+  --color-amber: #a95700;
   --color-amber-soft: #ffebd1;
-  --color-amber-ink: #b86200;
+  --color-amber-ink: #995000;
 
-  --color-indigo: #ce82ff;
+  --color-indigo: #713db3;
   --color-indigo-soft: #f5e6ff;
   --color-indigo-ink: #892bd4;
 
-  --color-success: #58cc02;
+  --color-success: #2e7c26;
   --color-success-soft: #d7ffb8;
 
-  --font-sans:
-    "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI",
-    "M PLUS Rounded 1c", sans-serif;
+  --font-sans: Nunito, "Arial Rounded MT Bold", ui-rounded, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-jp: "M PLUS Rounded 1c", "Hiragino Maru Gothic ProN", Meiryo, sans-serif;
 }
 
@@ -219,12 +221,12 @@
 
 /* Botões 3D Gamificados Padrão Duolingo */
 .btn-duo-green {
-  background-color: #58cc02;
-  border-color: #58a700;
+  background-color: #2e7c26;
+  border-color: #24641e;
   color: #ffffff;
 }
 .btn-duo-green:hover:not(:disabled) {
-  background-color: #61e002;
+  background-color: #276f22;
 }
 .btn-duo-green:active:not(:disabled) {
   border-bottom-width: 2px;
@@ -232,12 +234,12 @@
 }
 
 .btn-duo-blue {
-  background-color: #1cb0f6;
-  border-color: #1899d6;
+  background-color: #146d9f;
+  border-color: #0c4a70;
   color: #ffffff;
 }
 .btn-duo-blue:hover:not(:disabled) {
-  background-color: #24baff;
+  background-color: #0e5176;
 }
 .btn-duo-blue:active:not(:disabled) {
   border-bottom-width: 2px;
@@ -245,12 +247,12 @@
 }
 
 .btn-duo-orange {
-  background-color: #ff9600;
-  border-color: #e68600;
+  background-color: #a95700;
+  border-color: #874600;
   color: #ffffff;
 }
 .btn-duo-orange:hover:not(:disabled) {
-  background-color: #ffa31a;
+  background-color: #874600;
 }
 .btn-duo-orange:active:not(:disabled) {
   border-bottom-width: 2px;
@@ -258,12 +260,12 @@
 }
 
 .btn-duo-purple {
-  background-color: #ce82ff;
-  border-color: #b963ff;
+  background-color: #713db3;
+  border-color: #55328b;
   color: #ffffff;
 }
 .btn-duo-purple:hover:not(:disabled) {
-  background-color: #d796ff;
+  background-color: #55328b;
 }
 .btn-duo-purple:active:not(:disabled) {
   border-bottom-width: 2px;
@@ -284,3 +286,69 @@
   transform: translateY(2px);
 }
 
+
+/* Dark theme: semantic tokens shared by all components */
+:root[data-theme="dark"] {
+  --color-paper:#111714; --color-surface:#1d2621; --color-raised:#253129;
+  --color-index:#253129; --color-ink:#e0e8e2; --color-ink-strong:#f4f7f5;
+  --color-muted:#afc0b4; --color-line:#35443b; --color-edge:#4a5d50;
+  --color-primary:#246a3a; --color-primary-dark:#174e2d; --color-primary-strong:#9de0ab;
+  --color-accent-soft:#203c2b; --color-blue-soft:#173445; --color-flame-soft:#43301c;
+  --color-purple-soft:#342443; --color-danger-soft:#4c2529; --color-gold-soft:#423918;
+  --color-review-soft:#173445; --color-amber-soft:#43301c; --color-indigo-soft:#342443;
+  --color-blue:#55b8ed; --color-blue-dark:#1b749f; --color-flame:#ed9a45; --color-flame-ink:#ffbe7a; --color-purple:#b58af4;
+  --color-sakura:#ff94b5; --color-blue-ink:#99daff;
+  --color-success-soft:#203c2b;
+}
+:root[data-theme="dark"] .bg-white {background-color:var(--color-paper)}
+:root[data-theme="dark"] .text-white {color:#fff}
+:root[data-theme="dark"] select option {background:#1d2621;color:#f4f7f5}
+/* Avoid bottom navigation covering scroll targets on iOS */
+canvas {overscroll-behavior:contain;}
+
+/* Mobile study surfaces: keep controls separate from touch input and bottom navigation. */
+@media (max-width: 639px) {
+  #main-content { min-width: 0; }
+  canvas { max-width: 100%; }
+}
+canvas[data-drawing-surface] { touch-action: none; overscroll-behavior: contain; }
+
+/* Mobile-first structure: safe-area, native-feeling bottom navigation and touch targets. */
+html { scroll-padding: calc(5rem + env(safe-area-inset-top)) 0 calc(7rem + env(safe-area-inset-bottom)); }
+body { overflow-x: clip; }
+#root { min-height: 100dvh; }
+button, [role="button"], select { -webkit-tap-highlight-color: transparent; }
+:focus-visible { outline: 3px solid var(--color-primary-strong); outline-offset: 2px; }
+.text-primary { color: var(--color-primary-strong); }
+.text-blue { color: var(--color-blue); }
+.text-flame { color: var(--color-flame); }
+.mobile-tabbar { box-shadow: 0 -2px 12px rgba(0,0,0,.025); }
+canvas[data-drawing-surface] { display: block; touch-action: none; user-select: none; }
+@media (max-width: 1023px) {
+  #main-content { scroll-margin-top: 5rem; }
+  [role="tablist"] { max-width: 100%; overflow-x: auto; scrollbar-width: thin; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+}
+
+/* Visual gamificado consistente: preservar a cor alegre como marca e texto com contraste AA. */
+.ui-icon { width:1.25rem; height:1.25rem; }
+.mobile-tabbar { box-shadow:none; }
+.mobile-tabbar button[aria-current="page"] { background:var(--color-accent-soft); }
+button, a, input, select, textarea { touch-action:manipulation; }
+@media (max-width:639px) {
+  input,textarea,select { font-size:16px; }
+  #main-content { padding-inline:1rem; }
+  .mobile-tabbar { min-height:calc(4.5rem + env(safe-area-inset-bottom)); }
+}
+@media print {
+  @page { size:A4; margin:17mm; }
+  .mobile-tabbar,nav,aside,header,button,.no-print { display:none!important; }
+  body,#root,#main-content,.paper-practice { background:#fff!important; color:#000!important; }
+  #root * { visibility:hidden; }
+  .paper-practice,.paper-practice * { visibility:visible!important; }
+  .paper-practice { position:absolute;left:0;top:0;width:100%;border:0!important; }
+  .paper-practice li { break-inside:avoid; margin-bottom:18mm; }
+  .paper-practice li:after { content:'________________________________________________';display:block;margin-top:12mm; }
+}

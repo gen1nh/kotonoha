@@ -2,18 +2,18 @@ import React from "react";
 import Icon from "./Icon.jsx";
 
 export const NAVIGATION = [
-  { id: "home", label: "Aprender", mobile: "Aprender", icon: "home" },
-  { id: "practice", label: "Prática & Labs", mobile: "Prática", icon: "bolt" },
-  { id: "review", label: "Revisar", mobile: "Revisar", icon: "review" },
-  { id: "learn", label: "Biblioteca & Kana", mobile: "Biblioteca", icon: "learn" },
+  { id: "home", label: "Início", mobile: "Início", icon: "home" },
+  { id: "path", label: "Trilha", mobile: "Trilha", icon: "learn" },
+  { id: "practice", label: "Praticar", mobile: "Praticar", icon: "bolt" },
+  { id: "progress", label: "Progresso", mobile: "Progresso", icon: "trophy" },
 ];
 
-export function Brand({ compact = false }) {
+export function Brand({ compact = false, onClick }) {
   return (
-    <a
+    <button
+      type="button"
+      onClick={onClick}
       className={`inline-flex items-center gap-2 select-none ${compact ? "lg:hidden" : ""}`}
-      href="#inicio"
-      data-view="home"
       aria-label="Kotonoha, início"
     >
       <div className="flex items-center gap-2.5">
@@ -24,7 +24,7 @@ export function Brand({ compact = false }) {
           Kotonoha
         </span>
       </div>
-    </a>
+    </button>
   );
 }
 
@@ -33,10 +33,10 @@ export function NavItem({ item, active, mobile = false, count, onClick }) {
     return (
       <button
         onClick={onClick}
-        className={`relative flex flex-col items-center justify-center gap-1 py-1.5 px-1 type-caption text-[10px] rounded-xl transition-all cursor-pointer select-none ${
+        className={`relative flex flex-col items-center justify-center gap-0.5 py-2 px-1 min-h-14 text-xs rounded-xl transition-colors cursor-pointer select-none ${
           active
-            ? "text-primary scale-105 font-black"
-            : "text-muted hover:text-ink font-bold"
+            ? "text-primary-strong font-black"
+            : "text-muted hover:text-ink font-semibold"
         }`}
         data-view={item.id}
         aria-current={active ? "page" : undefined}
@@ -57,9 +57,9 @@ export function NavItem({ item, active, mobile = false, count, onClick }) {
   return (
     <button
       onClick={onClick}
-      className={`w-full flex items-center text-left justify-between px-4 py-3 rounded-2xl type-button text-xs transition-all cursor-pointer select-none border-2 ${
+      className={`w-full flex items-center text-left justify-between px-4 min-h-12 rounded-xl text-sm font-semibold transition-colors cursor-pointer select-none border ${
         active
-          ? "bg-blue-soft text-blue border-blue border-b-4"
+          ? "bg-accent-soft text-primary-strong border-primary"
           : "text-muted hover:bg-raised hover:text-ink-strong border-transparent"
       }`}
       data-view={item.id}
@@ -88,7 +88,7 @@ export function PageHeading({
   children,
 }) {
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-paper border-2 border-b-4 border-line">
+    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 sm:p-5 rounded-2xl bg-paper border border-line">
       <div className="space-y-1 min-w-0">
         <div className="flex items-center gap-2.5">
           {icon && (
@@ -98,9 +98,9 @@ export function PageHeading({
               <Icon name={icon} className={`w-5 h-5 ${iconColor}`} />
             </span>
           )}
-          <strong id={id} className="type-h2 text-ink-strong">
+          <h1 id={id} className="type-h2 text-ink-strong">
             {title}
-          </strong>
+          </h1>
         </div>
         {description && (
           <p className="type-body-sm text-muted">

@@ -76,7 +76,11 @@ export function assessmentBlueprint(level, perSkill = 3) {
 export function buildAssessment(items, blueprint, options = {}) {
   if (!plainObject(blueprint) || !LEVEL_ORDER.includes(blueprint.level) || !plainObject(blueprint.required)) throw new Error('Invalid blueprint');
   const excluded = new Set(Array.isArray(options.excludeIds) ? options.excludeIds : []);
-  const pool = eligibleItems(items, blueprint.level).filter(item => !excluded.has(item.id));
+  const seenIds = new Set();
+  const pool = eligibleItems(items, blueprint.level).filter(item => {
+    if (excluded.has(item.id) || seenIds.has(item.id)) return false;
+    seenIds.add(item.id); return true;
+  });
   const chosen = [];
   const shortages = {};
   for (const [skill, required] of Object.entries(blueprint.required)) {
@@ -118,7 +122,7 @@ export function recommendPlacement(results = {}) {
 }
 
 /** Backups remain local and the prior kotonoha.v1 state is never overwritten here. */
-export function createPedagogyState() { return { schemaVersion: PEDAGOGY_SCHEMA_VERSION, evidence: [], assessmentHistory: [], placement: null }; }
+export function createPedagogyState() { return { schemaVersion: PEDAGOGY_SCHEMA_VERSION, evidence: [], assessmentHistory: [], placement: null, examDraft: null }; }
 export function normalizePedagogyState(raw) {
   const base = createPedagogyState();
   if (!plainObject(raw)) return base;
@@ -128,6 +132,7 @@ export function normalizePedagogyState(raw) {
     evidence: Array.isArray(raw.evidence) ? raw.evidence.filter(e => plainObject(e) && slug(e.itemId) && slug(e.competencyId) && CORE_SKILLS.includes(e.skill) && typeof e.correct === 'boolean').slice(-5000) : [],
     assessmentHistory: Array.isArray(raw.assessmentHistory) ? raw.assessmentHistory.filter(e => plainObject(e) && LEVEL_ORDER.includes(e.level) && ['passed', 'needs_review'].includes(e.status) && e.kind === 'kotonoha-internal').slice(-250) : [],
     placement: plainObject(raw.placement) && LEVEL_ORDER.includes(raw.placement.recommendedLevel) ? { recommendedLevel: raw.placement.recommendedLevel, verifiedThrough: LEVEL_ORDER.includes(raw.placement.verifiedThrough) ? raw.placement.verifiedThrough : null, officialJlptCertification: false } : null,
+    examDraft: plainObject(raw.examDraft) && Number.isInteger(raw.examDraft.seed) && raw.examDraft.seed >= 1 && raw.examDraft.seed <= 2147483647 && plainObject(raw.examDraft.answers) ? { seed: raw.examDraft.seed, answers: Object.fromEntries(Object.entries(raw.examDraft.answers).filter(([id, value]) => slug(id) && Number.isInteger(value) && value >= 0 && value <= 3).slice(0,250)) } : null,
   };
 }
 

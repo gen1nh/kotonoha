@@ -498,14 +498,14 @@ Instruções estritas:
 
       {/* Área do Chat */}
       {/* Painel Central do Chat com Maior Altura e Borda 3D */}
-      <div className="p-4 sm:p-6 rounded-3xl border-2 border-b-6 border-[#e5e5e5] bg-white space-y-4">
+      <div className="p-4 sm:p-6 rounded-3xl border-2 border-b-6 border-line bg-white space-y-4">
         {mode === "guided" && scenario.culturalTip && (
-          <div className="p-4 rounded-2xl border-2 border-[#ff9600]/30 bg-[#ffebd1]/40 text-xs sm:text-sm text-[#b86200] flex items-start gap-2.5 leading-relaxed">
-            <span className="text-[#ff9600] pt-0.5">
+          <div className="p-4 rounded-2xl border-2 border-flame/30 bg-flame-soft/40 text-xs sm:text-sm text-flame-ink flex items-start gap-2.5 leading-relaxed">
+            <span className="text-flame pt-0.5">
               <Icon name="torii" className="w-4 h-4 shrink-0" />
             </span>
             <div>
-              <strong className="text-[#b86200] font-black">Dica de Cultura e Etiqueta:</strong>{" "}
+              <strong className="text-flame-ink font-black">Dica de Cultura e Etiqueta:</strong>{" "}
               <span>{scenario.culturalTip}</span>
             </div>
           </div>

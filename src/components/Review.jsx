@@ -3,7 +3,9 @@ import Icon from "./Icon.jsx";
 import { Card, Button, ProgressBar, EmptyState } from "./ui/index.jsx";
 import { PageHeading } from "./UI.jsx";
 import { rateCard } from "../state.js";
-export function Review({ state, queue, update, go, speak }) {
+import {recordActivity} from "../dailyPlan.js";
+import { nextGuidedAction } from "../learning.js";
+export function Review({ state, queue, update, go, speak, openGuidedCheckpoint, returnToLesson }) {
   const [index, setIndex] = useState(0);
   const [revealed, setRevealed] = useState(false);
 
@@ -15,13 +17,14 @@ export function Review({ state, queue, update, go, speak }) {
   const card = state.cards[queue[index]];
 
   if (!card) {
+    const next = nextGuidedAction(state);
     return (
       <EmptyState
-        title="Tudo revisado por hoje!"
+        title="Sessão de revisão concluída!"
         icon={<Icon name="check" />}
         action={
-          <Button variant="primary" onClick={() => go("learn")}>
-            Aprender novos cartões →
+          <Button variant="primary" onClick={() => next.kind === "checkpoint" ? openGuidedCheckpoint?.(next.lesson.id) : returnToLesson ? returnToLesson() : go("path")}>
+            {next.kind === "checkpoint" ? "Fazer checkpoint →" : returnToLesson ? "Continuar minha lição →" : "Continuar minha trilha →"}
           </Button>
         }
       >
@@ -36,13 +39,13 @@ export function Review({ state, queue, update, go, speak }) {
       {/* Cabeçalho de Revisão SRS */}
       <PageHeading
         title="Repetição Espaçada (SRS)"
-        description={`Fixe vocabulário e partículas do ${state.selectedLevel || "N5"} no momento exato da curva de esquecimento.`}
+        description="Revisão espaçada dos cartões selecionados. O nível de consulta não altera sua Trilha."
         icon="review"
         iconBg="bg-blue-soft"
         iconColor="text-blue"
       >
         <span className="type-caption text-primary bg-accent-soft px-3 py-1.5 rounded-xl border border-primary/20">
-          Nível Ativo: {state.selectedLevel || "N5"}
+          {card.type}
         </span>
       </PageHeading>
 
@@ -58,7 +61,7 @@ export function Review({ state, queue, update, go, speak }) {
         label="Cartões revisados nesta sessão"
       />
 
-      <Card className="text-center py-16 px-8 min-h-[380px] sm:min-h-[460px] flex flex-col justify-center items-center space-y-6 border-2 border-b-6 border-line bg-paper rounded-3xl shadow-xs">
+      <Card className="text-center py-6 sm:py-10 px-4 sm:px-8 min-h-[min(38dvh,320px)] flex flex-col justify-center items-center space-y-6 border-2 border-b-6 border-line bg-paper rounded-3xl shadow-xs">
         <div className="font-jp text-6xl sm:text-7xl lg:text-8xl font-black text-ink-strong my-4 select-none">
           {card.prompt}
         </div>
@@ -133,7 +136,7 @@ export function Review({ state, queue, update, go, speak }) {
               variant={item.variant}
               className="flex-col h-auto py-3.5 gap-0.5 text-center"
               onClick={() => {
-                update((s) => rateCard(s, card.id, item.rating));
+                update((s) => {rateCard(s, card.id, item.rating);if(index===queue.length-1 && queue.length>=3)recordActivity(s,'review');});
                 setIndex((i) => i + 1);
                 setRevealed(false);
               }}

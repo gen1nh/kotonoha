@@ -274,7 +274,7 @@ Formate a resposta exatamente assim:
       </div>
 
       {/* Interface do Aplicativo LINE com visual limpo e bordas 3D */}
-      <div className="rounded-3xl border-2 border-b-6 border-line bg-[#f0f6f4] overflow-hidden shadow-xs flex flex-col min-h-[660px]">
+      <div className="rounded-3xl border-2 border-b-6 border-line bg-raised overflow-hidden shadow-xs flex flex-col min-h-[min(680px,74dvh)]">
         {/* Header do Chat LINE */}
         <div className="bg-paper border-b-2 border-line text-ink-strong px-5 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -303,7 +303,7 @@ Formate a resposta exatamente assim:
         </div>
 
         {/* Área de Mensagens (Fundo Suave LINE com maior altura) */}
-        <div className="flex-1 p-4 sm:p-6 overflow-y-auto space-y-4 min-h-[480px] max-h-[580px]">
+        <div className="flex-1 p-4 sm:p-6 overflow-y-auto space-y-4 min-h-[min(320px,45dvh)] max-h-[48dvh]">
           {messages.map((m) => (
             <div
               key={m.id}

@@ -1,5 +1,7 @@
 # Kotonoha 1.0 — gate de publicação
 
+> Atualização de 2026-10-13: a refatoração foi integrada na branch de trabalho e validada localmente (82 testes unitários, build, 15 E2E aprovados e 1 ignorado). Consulte [INTEGRATION_VALIDATION.md](INTEGRATION_VALIDATION.md). O histórico abaixo registra o estado anterior; o bloqueio editorial da versão 1.0 continua válido.
+
 **Status: NÃO LIBERAR PRODUÇÃO.** A meta da 1.0 é ensinar do zero até as competências N5 e permitir a passagem ao N4 apenas após uma prova interna validada, abrangendo vocabulário/kanji, gramática, leitura e áudio. A prova não corresponde à pontuação ou certificação oficial JLPT.
 
 ## Estado atual

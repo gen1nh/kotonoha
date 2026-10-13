@@ -4,8 +4,8 @@ import { HOME_QUESTION } from "../curriculum.js";
 import { Card, Button } from "./ui/index.jsx";
 import Icon from "./Icon.jsx";
 
-export default function DailyQuestion({ state, update, go, speak }) {
-  const level = state.selectedLevel || "N5";
+export default function DailyQuestion({ state, update, go, speak, level: guidedLevel }) {
+  const level = guidedLevel || state.selectedLevel || "N5";
   const question = HOME_QUESTION[level];
   const key = `${todayKey()}:${level}`;
   const [selected, setSelected] = useState(
@@ -25,8 +25,8 @@ export default function DailyQuestion({ state, update, go, speak }) {
       next.dailyAnswers ||= {};
       next.dailyAnswers[key] = index;
       if (!alreadyAnswered) {
-        next.stats.reviews += 1;
-        if (index === question.answer) next.stats.correct += 1;
+        // Daily questions are practice, not spaced-repetition card reviews.
+        // Keep SRS accuracy and review totals tied to actual card reviews.
         markStudy(next);
       }
     });
@@ -41,7 +41,7 @@ export default function DailyQuestion({ state, update, go, speak }) {
       <Card className="flex flex-col justify-between gap-4 border-success/30 bg-success-soft/30">
         <div>
           <div className="flex items-center justify-between gap-2">
-            <span className={`flex items-center gap-1.5 text-xs font-black uppercase tracking-wider ${correct ? "text-[#58cc02]" : "text-[#ff9600]"}`}>
+            <span className={`flex items-center gap-1.5 text-xs font-black uppercase tracking-wider ${correct ? "text-primary-strong" : "text-flame"}`}>
               <Icon name="check" /> {correct ? "Acertou hoje" : "Praticou hoje"}
             </span>
             <span className="text-xs font-semibold text-muted">
@@ -64,7 +64,7 @@ export default function DailyQuestion({ state, update, go, speak }) {
         <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-line/60">
           <Button
             variant="primary"
-            onClick={() => go("jlpt")}
+            onClick={() => go?.("path")}
             className="flex-1 sm:flex-none"
           >
             Continuar na Trilha {level} →
@@ -84,7 +84,7 @@ export default function DailyQuestion({ state, update, go, speak }) {
   return (
     <Card aria-labelledby="dailyQuestionTitle" className="space-y-4">
       <div className="flex items-center justify-between gap-2">
-        <span className="text-xs font-black uppercase tracking-wider text-[#58cc02]">Desafio do dia</span>
+        <span className="text-xs font-black uppercase tracking-wider text-primary-strong">Desafio do dia</span>
         <span className="text-xs font-semibold text-muted">01 / 01</span>
       </div>
 
@@ -172,7 +172,7 @@ export default function DailyQuestion({ state, update, go, speak }) {
           </strong>
           <p className="mt-1 text-xs text-ink/90">{question.explanation}</p>
           <div className="mt-3 flex gap-2">
-            <Button variant="primary" size="sm" onClick={() => go("jlpt")}>
+            <Button variant="primary" size="sm" onClick={() => go?.("path")}>
               Continuar a trilha {level} →
             </Button>
             {showReview && (

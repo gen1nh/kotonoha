@@ -49,7 +49,7 @@ export default function N5ListeningPractice() {
           <label className="block space-y-1">Voz japonesa
             <select value={voiceURI} onChange={event => setVoiceURI(event.target.value)} className="block min-h-11 w-full rounded-lg border border-line bg-paper px-2 text-ink-strong">
               <option value="">Automática</option>
-              {voices.map((voice, i) => <option key={voice.voiceURI + '-' + i} value={voice.voiceURI}>{voice.name} ({voice.lang})</option>)}
+              {voices.map((voice, i) => <option key={`${voice.voiceURI}-${i}`} value={voice.voiceURI}>{voice.name} ({voice.lang})</option>)}
             </select>
           </label>
           <label className="block space-y-1">Velocidade ({rate.toFixed(2)}×)
@@ -69,7 +69,7 @@ export default function N5ListeningPractice() {
       {question.choices.map((choice, i) => <label key={i} className="flex min-h-11 cursor-pointer gap-2 items-center rounded-xl border border-line p-3 text-sm"><input type="radio" name="n5-formative-listening" checked={answer === i} onChange={() => setAnswer(i)} />{choice}</label>)}
     </fieldset>
     {result === null ? <Button variant="secondary" onClick={check} disabled={answer === null} className="w-full">Verificar resposta</Button> : <div className="space-y-3" role="status">
-      <strong className={result.correct ? 'text-primary-strong' : 'text-ink-strong'}>{result.correct ? 'Correto!' : 'Resposta: ' + question.choices[question.answerIndex]}</strong>
+      <strong className={result.correct ? 'text-primary-strong' : 'text-ink-strong'}>{result.correct ? 'Correto!' : `Resposta: ${question.choices[question.answerIndex]}`}</strong>
       <p className="text-sm text-muted">{question.explanation}</p>
       <p className="text-xs text-muted">{result.skillEvidence === 'reading-assistance' ? 'Você consultou o texto ou o áudio não estava disponível; este resultado conta apenas como prática de leitura.' : 'Resultado de prática auditiva com voz sintética; não é uma prova certificadora.'}</p>
       <Button variant="primary" onClick={next} className="w-full">Próxima prática →</Button>

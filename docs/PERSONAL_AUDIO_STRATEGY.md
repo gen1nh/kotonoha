@@ -1,5 +1,7 @@
 # Kotonoha pessoal — estratégia de áudio sem infraestrutura própria
 
+> Atualização de 2026-10-13: o ZIP foi integrado em `feat/pedagogical-engine-foundation`. A validação atual está em [INTEGRATION_VALIDATION.md](INTEGRATION_VALIDATION.md); as referências abaixo ao pacote ainda separado descrevem o estado anterior à integração. A `main` permanece inalterada.
+
 ## Visão
 O Kotonoha é um projeto pessoal gratuito, com PWA estático, estudo N5–N1 progressivo e progresso local. Não usar VOICEVOX, conta, servidor de áudio, armazenamento de mídia ou IA paga como dependências obrigatórias da aprendizagem.
 

@@ -61,7 +61,7 @@ export default function ErrorMemory({ state, update, toast, speak, go }) {
     setAiLoading(true);
     setAiDrillResponse("");
     try {
-      const prompt = `Como Sensei Hiroshi, com 35 anos de docência para brasileiros, faça uma micro-intervenção pedagógica personalizada sobre este erro do aluno:
+      const prompt = `Como tutor virtual fictício chamado Sensei Hiroshi, faça uma micro-intervenção pedagógica personalizada sobre este erro do aluno:
 Tópico: ${errorItem.topic}
 Frase que tentou dizer: "${errorItem.phrase}"
 Tentativa com erro: "${errorItem.wrongAnswer}"
@@ -91,7 +91,7 @@ Dê um reforço caloroso e socrático em 3 partes:
       {/* Topo do Diário de Bordo */}
       <PageHeading
         title="Diário de Bordo · Memória Persistente de Erros"
-        description="O Sensei Hiroshi memoriza suas fraquezas sintáticas para que você nunca cometa o mesmo erro duas vezes."
+        description="Registre dificuldades recorrentes e pratique com o tutor virtual opcional, sem perder o histórico de erros."
         icon="brain"
         iconBg="bg-danger-soft"
         iconColor="text-danger"
