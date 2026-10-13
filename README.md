@@ -1,6 +1,6 @@
 # Kotonoha — Japonês com jornada guiada
 
-PWA pessoal para aprender japonês com microlições, prática contextual, checkpoints, revisão espaçada (SRS), biblioteca de referência, escrita e laboratórios opcionais. **Versão 0.9.0 — preparação da 1.0 N5, lançamento bloqueado até homologação.**
+PWA pessoal para aprender japonês com microlições, prática contextual, checkpoints, revisão espaçada (SRS), biblioteca de referência, escrita e laboratórios opcionais. **Versão 0.9.1 — candidata a curso N5 pessoal. Ainda requer revisão linguística e homologação mobile antes da 1.0.**
 
 ## Como funciona
 
@@ -8,14 +8,14 @@ A **Trilha é o único currículo**. A Home retoma o próximo passo. Cada unidad
 
 A navegação mobile contém quatro áreas: **Início, Trilha, Praticar, Progresso**. As tarefas imersivas ocultam a barra inferior. O design system usa **Nunito** em português, **M PLUS Rounded 1c** em japonês e componentes arredondados/táteis inspirados na identidade original do projeto. Tema claro/escuro disponível.
 
-O conteúdo N5 inclui fundamentos em microlições de hiragana, katakana, vocabulário e gramática. N4–N1 continuam sendo **prévia autoral limitada**; ainda não são cursos completos ou provas JLPT oficiais.
+O conteúdo N5 inclui 220 microlições de hiragana, katakana, vocabulário, kanji em contexto, gramática, leitura e escuta. As seções usam capítulos recolhíveis para navegação mobile. O material expandido é uma base autoral candidata ainda não revisada linguisticamente por especialista. N4–N1 continuam sendo **prévia autoral limitada**; ainda não são cursos completos ou provas JLPT oficiais.
 
 ## Projeto rumo à 1.0 N5
 
-O fluxo de aprendizagem já separa conclusão de microlições e **aprovação interna de nível**. Concluir checkpoints permite continuar estudando, mas **não libera o N4** sem uma avaliação que cubra vocabulário/kanji, gramática, leitura e compreensão auditiva.
+O fluxo de aprendizagem já separa conclusão de microlições e **aprovação interna de nível**. Concluir checkpoints marca **o curso pessoal N5 como concluído**, mas **não libera o N4** sem uma avaliação independente abrangente. A revisão final pessoal possui 32 perguntas e nunca concede aprovação JLPT ou destrava níveis. A avaliação certificadora permanece separada e indisponível.
 
 - O painel **Progresso → Preparação N5** exibe os fundamentos estudados e os itens editoriais ainda necessários.
-- A avaliação N5 só aparece quando existir um banco amplo com itens revisados e áudios locais licenciados. Atualmente esse banco está vazio: **não há prova de passagem aprovada**.
+- A **revisão final pessoal N5** aparece após concluir todos os capítulos; apresenta 32 questões formativas distribuídas entre vocabulário, gramática, leitura e escuta via voz do navegador, sem conceder certificado. A **avaliação certificadora independente** só aparece quando existir um banco extenso com itens revisados e áudios devidamente autorizados; atualmente está vazia.
 - O catálogo editorial está em `src/pedagogy/n5Curriculum.js`, a fila de revisão em `data/editorial/n5-draft-questions.json` e o importador JMdict em `scripts/import_jmdict.py`.
 - Auditoria com falha proposital caso a 1.0 não possa ser publicada: `npm run audit:n5-release`.
 - Critérios completos e pendências em [docs/KOTONOHA_V1_0_RELEASE_GATE.md](docs/KOTONOHA_V1_0_RELEASE_GATE.md).
@@ -33,6 +33,7 @@ npm run dev
 
 ```bash
 npm test
+npm run audit:n5-course
 npm run build
 npx playwright install --with-deps chromium webkit
 npm run test:e2e
@@ -40,7 +41,7 @@ npm run test:e2e
 
 `npm run build` gera `dist/`. Para visualizar localmente: `npm run preview`.
 
-> Na geração deste pacote, **77 testes de lógica passaram** e arquivos JS/JSX foram analisados sintaticamente, mas o acesso ao npm falhou neste ambiente. Consequentemente, o **build real do Vite e o Playwright não foram executados**; a primeira publicação depende de passar no CI ou na sua máquina. WebKit emulado não substitui testes físicos em Safari/iOS.
+> A base de integração anterior passou nos testes de produção e de navegador via CI. Nesta expansão 0.9.1, os testes Node e a auditoria estrutural são executados localmente, mas a instalação do npm falha por indisponibilidade de rede no ambiente de preparação. O build/Playwright da **expansão 0.9.1** precisam ser novamente validados em CI antes de qualquer publicação; WebKit emulado não substitui Safari físico.
 
 ## Publicar na Vercel
 
@@ -60,7 +61,10 @@ Não publique nenhuma chave de IA em variáveis `VITE_*`. A integração Groq op
 
 | Caminho | Responsabilidade |
 | --- | --- |
-| `src/courseUnits.js` | Unidades pequenas do N5 e identificação dos cartões |
+| `src/courseUnits.js` | Unidades N5 e agrupamentos temáticos com IDs legados preservados |
+| `src/content/` | Dados autorais N5: palavras, kanji, gramática, leitura e escuta |
+| `src/pedagogy/n5Review.js` | Revisão pessoal formativa sem certificação |
+| `scripts/audit-n5-course.mjs` | Auditoria estrutural do conteúdo e da progressão |
 | `src/learning.js` | Nível conquistado, conclusão e próxima ação |
 | `src/routeAccess.js` | Regras de acesso também para URL direta |
 | `src/checkpoints.js` | Questões e critérios de avaliação |

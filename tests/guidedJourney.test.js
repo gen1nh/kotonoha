@@ -23,5 +23,5 @@ test('checkpoint aprovado libera próxima lição', () => {
   state.checkpoints = { hiragana: { score: 80, date: '2026-10-12' } };
   const action = nextGuidedAction(state, 'N5');
   assert.equal(action.kind, 'learn');
-  assert.equal(action.lesson.id, 'katakana:0');
+  assert.equal(action.lesson.id, 'hiragana:8'); // O progresso antigo preserva a base, mas não pula sons novos.
 });

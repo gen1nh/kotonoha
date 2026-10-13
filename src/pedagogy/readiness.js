@@ -1,6 +1,6 @@
 /** N5 certification policy: internal exam only. No JLPT score equivalence. */
 import { assessmentBlueprint, buildAssessment, CORE_SKILLS, validateItem } from './engine.js';
-import { N5_TOPICS, topicPassed } from '../courseUnits.js';
+import { N5_TOPICS, topicPassed, unitsForTopic, LEGACY_N5_UNIT_COUNTS, unitPassed } from '../courseUnits.js';
 import { N5_CURRICULUM } from './n5Curriculum.js';
 
 export const N5_CERTIFICATION_POLICY = Object.freeze({
@@ -54,6 +54,13 @@ export function hasPassedInternalN5(state) {
     Number.isInteger(record.correct) && record.correct >= Math.ceil(record.total * N5_CERTIFICATION_POLICY.minTotalFraction) &&
     record.correct <= record.total &&
     CORE_SKILLS.every(skill => N5_REQUIRED_COMPETENCIES[skill].every(id => (record.competencyIds?.[skill] || []).includes(id))));
+}
+
+/** Optional laboratories need the original beginner foundation, not full N5
+ * certification; legacy checkpoint scores still grant those exact old units. */
+export function hasCompletedN5Basics(state) {
+  return Object.entries(LEGACY_N5_UNIT_COUNTS).every(([topic,count])=>
+    unitsForTopic(topic).filter(unit=>unit.index<count).every(unit=>unitPassed(state,unit.id)));
 }
 
 export function hasCompletedN5Foundations(state) {

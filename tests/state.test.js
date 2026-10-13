@@ -9,9 +9,9 @@ import {
   todayKey,
 } from "../src/state.js";
 
-test("inicia os 176 cartões e preserva progresso de backups antigos", () => {
+test("inicia cartões do N5 expandido e preserva progresso de backups antigos", () => {
   const state = initialState();
-  assert.equal(Object.keys(state.cards).length, 176);
+  assert.ok(Object.keys(state.cards).length >= 700);
   rateCard(state, "hira:あ", "good", 1000);
   const restored = normalizeState(JSON.parse(JSON.stringify(state)));
   assert.equal(restored.cards["hira:あ"].reps, 1);

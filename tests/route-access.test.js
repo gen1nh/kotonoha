@@ -24,7 +24,8 @@ test('lições e checkpoints não são acessíveis fora de ordem',()=>{
   for(const card of Object.values(s.cards)) if(card.type==='Hiragana') card.seen=true;
   assert.equal(isAccessibleCheckpoint(s,'hiragana:0'),true);
   s.checkpoints.hiragana={score:80,date:'2026-10-13'};
-  assert.equal(isAccessibleLesson(s,'katakana:0'),true);
+  assert.equal(isAccessibleLesson(s,'hiragana:8'),true);
+  assert.equal(isAccessibleLesson(s,'katakana:0'),false); // sons novos ainda não foram estudados
   assert.equal(isAccessibleLesson(s,'words:0'),false);
 });
 test('URLs legadas resolvem para uma única Trilha',()=>{

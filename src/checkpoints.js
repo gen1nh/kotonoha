@@ -15,6 +15,15 @@ export function checkpointQuestions(state,topic,count=5,attempt=0){
      return {id:`grammar:${i}`,prompt:`Traduza: ${entry.example}`,answer:entry.meaning,options:rotate([entry.meaning,...wrong],(attempt+i)%4)};
    });
  }
+ if(unit?.kind==='reading'||unit?.kind==='listening'){
+   return unit.items.slice().map((item,i)=>({
+     id:item.id,prompt:item.prompt,answer:item.choices[item.answerIndex],
+     options:rotate(item.choices,(attempt+i)%4),
+     text:unit.kind==='reading'?item.text:null,
+     spokenText:unit.kind==='listening'?item.spokenText:null,
+     explanation:item.explanation,
+   }));
+ }
  if(unit?.kind==='grammar'){
    const g=unit.items[0];
    const i=GRAMMAR.indexOf(g);
@@ -35,7 +44,7 @@ export function checkpointQuestions(state,topic,count=5,attempt=0){
  return selected.map((card,i)=>{
    const wrong=cards.filter(x=>x.id!==card.id&&x.answer!==card.answer).map(x=>x.answer).slice(0,3);
    if(wrong.length<3)return null;
-   return {id:card.id,prompt:card.prompt,answer:card.answer,options:rotate([card.answer,...wrong],(i+attempt)%4)};
+   return {id:card.id,prompt:unit?.kind==='kanji'?`Qual leitura e sentido estão associados a ${card.prompt} neste capítulo?`:card.prompt,answer:card.answer,options:rotate([card.answer,...wrong],(i+attempt)%4)};
  }).filter(Boolean);
 }
 function rotate(options,shift){return [...options.slice(shift),...options.slice(0,shift)];}

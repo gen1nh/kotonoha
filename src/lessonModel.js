@@ -1,3 +1,4 @@
+import {HIRAGANA_EXTENSIONS,KATAKANA_EXTENSIONS} from "./content/n5Kana.js";
 import {GRAMMAR,HIRAGANA,KATAKANA,VOCAB} from './data.js';
 import {CURRICULUM} from './curriculum.js';
 import {unitById,unitProgress,cardIdsForUnit} from './courseUnits.js';
@@ -22,9 +23,9 @@ export function guidedLessonProgress(state,id){
 }
 export function guidedSamples(id){
  const unit=unitById(id);
- if(unit){return unit.items.map(row=>unit.kind==='grammar'?({glyph:row.example,reading:row.title,meaning:row.meaning,text:row.text}):unit.topic==='words'?({glyph:row[0],kana:row[1],reading:row[2],meaning:row[3]}):({glyph:row[0],reading:row[1],meaning:unit.topic==='hiragana'?'Hiragana':'Katakana'}));}
- if(id==='hiragana')return HIRAGANA.map(([glyph,reading])=>({glyph,reading,meaning:'Hiragana'}));
- if(id==='katakana')return KATAKANA.map(([glyph,reading])=>({glyph,reading,meaning:'Katakana'}));
+ if(unit){return unit.items.map(row=>unit.kind==='kanji'?({glyph:row.glyph,reading:row.reading,meaning:row.meaning,spoken:row.exampleReading,example:row.example,exampleReading:row.exampleReading}):unit.kind==='grammar'?({glyph:row.example,reading:row.title,meaning:row.meaning,text:row.text}):unit.topic==='words'?({glyph:row[0],kana:row[1],reading:row[2],meaning:row[3]}):({glyph:row[0],reading:row[1],meaning:unit.topic==='hiragana'?'Hiragana':'Katakana'}));}
+ if(id==='hiragana')return [...HIRAGANA,...HIRAGANA_EXTENSIONS].map(([glyph,reading])=>({glyph,reading,meaning:'Hiragana'}));
+ if(id==='katakana')return [...KATAKANA,...KATAKANA_EXTENSIONS].map(([glyph,reading])=>({glyph,reading,meaning:'Katakana'}));
  if(id==='words')return VOCAB.map(([glyph,kana,reading,meaning])=>({glyph,kana,reading,meaning}));
  if(id==='grammar')return GRAMMAR.map(g=>({glyph:g.example,reading:g.title,meaning:g.meaning,text:g.text}));
  return [];

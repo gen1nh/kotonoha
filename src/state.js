@@ -1,3 +1,5 @@
+import {HIRAGANA_EXTENSIONS,KATAKANA_EXTENSIONS} from "./content/n5Kana.js";
+import {N5_KANJI} from "./content/n5Kanji.js";
 import { HIRAGANA, KATAKANA, VOCAB, JLPT_PATHS } from "./data.js";
 import { VOCAB_BY_LEVEL } from "./curriculum.js";
 import {unitById} from "./courseUnits.js";
@@ -124,6 +126,10 @@ export function initialState() {
   };
   HIRAGANA.forEach(([ch, ro]) => add(`hira:${ch}`, "Hiragana", ch, ro));
   KATAKANA.forEach(([ch, ro]) => add(`kata:${ch}`, "Katakana", ch, ro));
+  HIRAGANA_EXTENSIONS.forEach(([ch, ro]) => add(`hira:${ch}`, "Hiragana", ch, ro));
+  KATAKANA_EXTENSIONS.forEach(([ch, ro]) => add(`kata:${ch}`, "Katakana", ch, ro));
+  N5_KANJI.forEach(k => add(`kanji:${k.glyph}`, "Kanji N5", k.glyph,
+    `${k.reading} · ${k.meaning}`, {reading:k.exampleReading,spoken:k.exampleReading}));
   VOCAB.forEach(([ch, kana, ro, meaning]) =>
     add(`vocab:${ch}`, "Vocabulário N5", ch, `${ro} · ${meaning}`, {
       reading: kana,
@@ -176,6 +182,7 @@ export function initialState() {
     errorMemory: [],
     diagnosticHistory: [],
     pedagogy: createPedagogyState(),
+    n5Practice: {seed:0,answers:{},played:[],transcripts:[],history:[]},
   };
 }
 export function normalizeState(value) {
@@ -348,6 +355,15 @@ export function normalizeState(value) {
       typeof r.date === 'string' && !Number.isNaN(Date.parse(r.date))
     ).slice(-30);
   }
+  // Formative course review; never store it in the certification assessmentHistory.
+  const practice=value.n5Practice;
+  if(practice&&typeof practice==='object'&&!Array.isArray(practice)){
+    base.n5Practice.seed=Number.isInteger(practice.seed)&&practice.seed>=0&&practice.seed<=2147483647?practice.seed:0;
+    base.n5Practice.answers=Object.fromEntries(Object.entries(practice.answers||{}).filter(([id,answer])=>
+      /^personal-[vgrl]-[\w\u3040-\u30ff\u3400-\u9fff:-]{1,90}$/.test(id)&&typeof answer==='string'&&answer.length<=300).slice(0,50));
+    for(const k of ['played','transcripts'])base.n5Practice[k]=Array.isArray(practice[k])?[...new Set(practice[k].filter(id=>typeof id==='string'&&/^personal-l-n5-listening-\d{2}$/.test(id)))].slice(0,10):[];
+    base.n5Practice.history=Array.isArray(practice.history)?practice.history.filter(entry=>entry?.kind==='kotonoha-n5-formative'&&entry.level==='N5'&&Number.isInteger(entry.total)&&entry.total===32&&Number.isInteger(entry.correct)&&entry.correct>=0&&entry.correct<=32&&typeof entry.date==='string').slice(-20):[];
+  }
   // Standalone pedagogy data is optional in v1/v2 backups; invalid future formats fail closed.
   if (value.pedagogy != null) base.pedagogy = normalizePedagogyState(value.pedagogy);
   return base;
@@ -366,7 +382,7 @@ export function cardMatchesLevel(card, level = "N5") {
   if (card.type === "Caderno Pessoal") return true;
   if (level === "N5") {
     return (
-      card.type === "Vocabulário N5" ||
+      card.type === "Vocabulário N5" || card.type === "Kanji N5" ||
       ["Hiragana", "Katakana"].includes(card.type)
     );
   }

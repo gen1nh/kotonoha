@@ -1,10 +1,11 @@
 import React from 'react';
 import {lessonsFor,isDone,courseLevel} from '../learning.js';
-import {N5_TOPICS,unitAccessible,unitPracticed,topicPassed,unitsForTopic} from '../courseUnits.js';
+import {N5_TOPICS,N5_TOPIC_LABELS,unitAccessible,unitPracticed,topicPassed,unitsForTopic} from '../courseUnits.js';
 import {isAccessibleLesson} from '../routeAccess.js';
 import Icon from './Icon.jsx';
 import {Button} from './ui/index.jsx';
-const LABELS={hiragana:'Hiragana',katakana:'Katakana',words:'Vocabulário N5',grammar:'Gramática básica'};
+const LABELS=N5_TOPIC_LABELS;
+const chapters=units=>Array.from(new Set(units.map(unit=>unit.chapter))).map(name=>({name,units:units.filter(unit=>unit.chapter===name)}));
 export default function PathTimeline({state,openGuidedLesson,openCheckpoint,go}){
  const level=courseLevel(state);
  const lessons=lessonsFor(level);
@@ -25,8 +26,11 @@ export default function PathTimeline({state,openGuidedLesson,openCheckpoint,go})
  };
  return <div className="mx-auto max-w-2xl space-y-5 pb-6">
   <header className="rounded-3xl border border-line bg-paper p-5 space-y-3"><p className="text-xs font-black text-primary-strong">SEU CAMINHO · {level}</p><h1 className="text-2xl font-black text-ink-strong">Trilha de aprendizagem</h1><p className="text-sm text-muted">Cada passo é curto. Aprenda, pratique e aprove para avançar.</p><div className="flex justify-between text-xs text-muted font-bold"><span>Microlições aprovadas</span><span>{completed}/{lessons.length}</span></div><div className="h-3 bg-raised rounded-full overflow-hidden" role="progressbar" aria-label="Microlições aprovadas" aria-valuemin={0} aria-valuemax={lessons.length} aria-valuenow={completed}><div className="h-full bg-primary" style={{width:`${100*completed/Math.max(1,lessons.length)}%`}}/></div></header>
-  {level==='N5'?N5_TOPICS.map(topic=><section key={topic} className="space-y-3" aria-label={`Unidade ${LABELS[topic]}`}><div className="flex items-center justify-between px-1"><h2 className="text-lg font-black text-ink-strong">{LABELS[topic]}</h2><span className="text-xs text-muted font-bold">{topicPassed(state,topic)?'Concluída':`${unitsForTopic(topic).filter(u=>isDone(state,'N5',u)).length}/${unitsForTopic(topic).length}`}</span></div><ol className="ml-4 border-l-2 border-line">{unitsForTopic(topic).map(renderStep)}</ol></section>):<section className="space-y-3"><p className="text-xs rounded-2xl bg-raised p-3 text-muted">Prévia introdutória do {level}. O curso completo N4–N1 ainda está em construção.</p><ol className="ml-4 border-l-2 border-line">{lessons.map(renderStep)}</ol></section>}
-  {level==='N5'&&lessons.every(l=>isDone(state,'N5',l)) && <section className="rounded-2xl border border-line bg-paper p-5 space-y-2"><h2 className="font-black text-ink-strong">Fundamentos N5 concluídos</h2><p className="text-sm text-muted">Seu próximo passo é a avaliação de passagem. Ainda precisamos de uma prova com questões revisadas e áudio offline para validar internamente o nível no Kotonoha.</p><Button variant="secondary" className="w-full" onClick={()=>go('progress')}>Ver preparação para a prova →</Button></section>}
+  {level==='N5'?N5_TOPICS.map(topic=><section key={topic} className="space-y-3" aria-label={`Unidade ${LABELS[topic]}`}><div className="flex items-center justify-between px-1"><h2 className="text-lg font-black text-ink-strong">{LABELS[topic]}</h2><span className="text-xs text-muted font-bold">{topicPassed(state,topic)?'Concluída':`${unitsForTopic(topic).filter(u=>isDone(state,'N5',u)).length}/${unitsForTopic(topic).length}`}</span></div><div className="space-y-2">{chapters(unitsForTopic(topic)).map(chapter=><details key={chapter.name} className="rounded-2xl border border-line bg-paper p-3" open={chapter.units.some(unit=>unit.id===lessons[current]?.id)}>
+   <summary className="cursor-pointer min-h-11 flex items-center justify-between gap-2 text-sm font-bold text-ink-strong">{chapter.name}<span className="text-xs text-muted">{chapter.units.filter(unit=>isDone(state,'N5',unit)).length}/{chapter.units.length}</span></summary>
+   <ol className="ml-4 mt-3 border-l-2 border-line">{chapter.units.map(unit=>renderStep(unit,lessons.indexOf(unit)))}</ol>
+  </details>)}</div></section>):<section className="space-y-3"><p className="text-xs rounded-2xl bg-raised p-3 text-muted">Prévia introdutória do {level}. O curso completo N4–N1 ainda está em construção.</p><ol className="ml-4 border-l-2 border-line">{lessons.map(renderStep)}</ol></section>}
+  {level==='N5'&&lessons.every(l=>isDone(state,'N5',l)) && <section className="rounded-2xl border border-line bg-paper p-5 space-y-2"><h2 className="font-black text-ink-strong">Fundamentos N5 concluídos</h2><p className="text-sm text-muted">Você concluiu todas as microlições da Trilha N5. Isso é a conclusão do curso pessoal, não uma certificação JLPT. A avaliação certificadora adicional continua pendente de questões e áudio revisados.</p><Button variant="secondary" className="w-full" onClick={()=>go('progress')}>Ver preparação para a prova →</Button></section>}
   <p className="rounded-xl bg-raised p-3 text-xs text-muted">As opções N5–N1 da Biblioteca são apenas filtros de consulta. Elas não alteram os desbloqueios desta Trilha.</p>
  </div>;
 }

@@ -10,10 +10,11 @@ const DAY='2026-10-13';
 const pass=(state,unit)=>{state.checkpoints[unit.id]={score:100,date:DAY};};
 test('N5 é decomposto em microlições pequenas, com todos os 46 kana cobertos uma vez',()=>{
  assert.ok(N5_UNITS.length>=20);
- assert.deepEqual([...new Set(N5_UNITS.map(u=>u.topic))],['hiragana','katakana','words','grammar']);
+ assert.deepEqual([...new Set(N5_UNITS.map(u=>u.topic))],['hiragana','katakana','words','kanji','grammar','reading','listening']);
  for(const topic of ['hiragana','katakana']){
   const units=unitsForTopic(topic);
-  assert.equal(units.reduce((sum,u)=>sum+u.items.length,0),46);
+  assert.equal(units.filter(u=>u.index<8).reduce((sum,u)=>sum+u.items.length,0),46);
+  assert.ok(units.reduce((sum,u)=>sum+u.items.length,0)>46);
   assert.ok(units.every(u=>u.items.length<=6&&u.items.length>=4));
  }
 });
@@ -54,7 +55,9 @@ test('microcheckpoint persiste em v2 e backup v1 mantém aprovação antiga',()=
  assert.equal(copy.attempts['checkpoint:hiragana:1'],2);
  const old=structuredClone(s);delete old.schemaVersion;old.checkpoints={hiragana:{score:80,date:DAY}};
  const restored=normalizeState(old);
- assert.ok(unitsForTopic('hiragana').every(u=>unitPassed(restored,u.id)));
+ assert.ok(unitsForTopic('hiragana').filter(u=>u.index<8).every(u=>unitPassed(restored,u.id)));
+ assert.ok(unitsForTopic('hiragana').filter(u=>u.index>=8).every(u=>!unitPassed(restored,u.id)));
+ assert.equal(topicPassed(restored,'hiragana'),false);
 });
 test('N4 exige prova interna; checkpoints N5 sozinhos não certificam',()=>{
  const s=initialState();s.selectedLevel='N1';assert.equal(courseLevel(s),'N5');assert.equal(hasUnlockedN4(s),false);

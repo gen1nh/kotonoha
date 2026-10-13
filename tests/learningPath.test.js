@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { lessonsFor, isDone } from '../src/learning.js';
 
 test('N5 guia hiragana antes de katakana, vocabulário e gramática', () => {
-  assert.deepEqual([...new Set(lessonsFor('N5').map(l=>l.topic))], ['hiragana','katakana','words','grammar']);
+  assert.deepEqual([...new Set(lessonsFor('N5').map(l=>l.topic))], ['hiragana','katakana','words','kanji','grammar','reading','listening']);
   assert.ok(lessonsFor('N5').length>20); // Microlições, não quatro blocos enormes.
 });
 test('conclusão de hiragana não desbloqueia katakana automaticamente', () => {

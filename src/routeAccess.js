@@ -1,6 +1,6 @@
 import {CURRICULUM} from './curriculum.js';
 import {unitById,unitAccessible,unitPracticed,topicPassed} from './courseUnits.js';
-import {hasPassedInternalN5,hasCompletedN5Foundations} from './pedagogy/readiness.js';
+import {hasPassedInternalN5,hasCompletedN5Basics} from './pedagogy/readiness.js';
 export const VIEWS=Object.freeze(['home','path','lesson','checkpoint','practice','review','progress','learn','notebook','syntax','errors','line','pitch','settings']);
 export const N5_FOUNDATIONS=Object.freeze(['hiragana','katakana','words','grammar']);
 export const ADVANCED_LABS=Object.freeze(['line','pitch']);
@@ -20,7 +20,7 @@ export function resolveView(requested,state={}){
  if(requested==='jlpt'||requested==='paper')return {view:'path',blocked:false};
  if(requested==='errors')return {view:'notebook',blocked:false};
  if(!VIEWS.includes(requested))return {view:'home',blocked:false};
- if(ADVANCED_LABS.includes(requested)&&!hasCompletedN5Foundations(state))return {view:'practice',blocked:true};
+ if(ADVANCED_LABS.includes(requested)&&!hasCompletedN5Basics(state))return {view:'practice',blocked:true};
  return {view:requested,blocked:false};
 }
 export const viewFromSearch=(search,state)=>resolveView(new URLSearchParams(search).get('view')||'home',state);

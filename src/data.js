@@ -1,3 +1,5 @@
+import {N5_EXTRA_VOCAB} from "./content/n5Words.js";
+import {N5_EXTRA_GRAMMAR} from "./content/n5Grammar.js";
 export const HIRAGANA = [
   ["あ", "a"],
   ["い", "i"],
@@ -94,7 +96,7 @@ export const KATAKANA = [
   ["ヲ", "wo"],
   ["ン", "n"],
 ];
-export const VOCAB = [
+const BASE_VOCAB = [
   ["人", "ひと", "hito", "pessoa"],
   ["日本", "にほん", "nihon", "Japão"],
   ["学生", "がくせい", "gakusei", "estudante"],
@@ -116,7 +118,13 @@ export const VOCAB = [
   ["こんにちは", "こんにちは", "konnichiwa", "olá; boa tarde"],
   ["猫", "ねこ", "neko", "gato"],
 ];
-export const GRAMMAR = [
+const seenN5Words = new Set(BASE_VOCAB.map(row=>row[0]));
+export const VOCAB = [...BASE_VOCAB, ...N5_EXTRA_VOCAB.filter(word=>{
+  if(seenN5Words.has(word[0]))return false;
+  seenN5Words.add(word[0]);return true;
+})];
+
+const BASE_GRAMMAR = [
   {
     title: "は — apresentar o tópico",
     text: "A partícula は (escrita は, pronunciada wa) marca o assunto da frase. Depois dela, você diz algo sobre esse assunto.",
@@ -148,6 +156,8 @@ export const GRAMMAR = [
     meaning: "Bebo água.",
   },
 ];
+
+export const GRAMMAR = [...BASE_GRAMMAR, ...N5_EXTRA_GRAMMAR];
 
 export const JLPT_PATHS = {
   N5: {

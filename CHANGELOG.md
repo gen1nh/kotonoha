@@ -1,3 +1,14 @@
+## 0.9.1 — Trilha N5 pessoal ampliada (candidata)
+
+- 220 unidades com exercícios de kana, vocabulário, kanji, gramática, leitura e escuta.
+- 554 vocábulos e 105 kanji em contexto; 46 tópicos gramaticais; 25 leituras e 40 escutas formativas.
+- Reforço das atividades com voz nativa do aparelho, sem arquivos ou backend.
+- Revisão final pessoal de 32 questões, resultado por competência e retomada por backup; não certificadora.
+- Agrupamento da Trilha em capítulos, evitando uma lista contínua de centenas de cartões.
+- Compatibilidade retroativa: aprovações antigas não desbloqueiam conteúdo expandido.
+- Auditoria estrutural N5 separada do gate de certificação, que continua bloqueado.
+- A publicação de 1.0 continua sujeita a revisão linguística e testes completos.
+
 # Histórico de alterações do Kotonoha
 
 ## 0.9.0 — 13/10/2026 — Refatoração de arquitetura (pré-homologação)

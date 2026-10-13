@@ -1,6 +1,6 @@
 import React from 'react';
 import Icon from './Icon.jsx';
-import {hasUnlockedN4} from '../routeAccess.js';
+import {hasCompletedN5Basics} from '../pedagogy/readiness.js';
 import {nextGuidedAction,courseLevel} from '../learning.js';
 import {Button} from './ui/index.jsx';
 import N5ListeningPractice from './N5ListeningPractice.jsx';
@@ -12,7 +12,7 @@ const TOOLS=[
  {id:'pitch',name:'Pronúncia',detail:'Explorar acento e gravar a própria voz; requer base N5.',icon:'mic',kind:'labs',advanced:true},
 ];
 export default function PracticeHub({state,go,openSpeedQuiz,openGuidedLesson,openCheckpoint}){
- const unlocked=hasUnlockedN4(state);
+ const unlocked=hasCompletedN5Basics(state);
  const next=nextGuidedAction(state),level=courseLevel(state);
  return <div className="mx-auto max-w-3xl space-y-5">
   <header className="space-y-1"><p className="text-xs font-black text-primary-strong">EXERCÍCIOS COMPLEMENTARES</p><h1 className="text-2xl font-black text-ink-strong">Praticar</h1><p className="text-sm text-muted">Aqui você reforça habilidades. A Trilha é o único percurso oficial do curso.</p></header>

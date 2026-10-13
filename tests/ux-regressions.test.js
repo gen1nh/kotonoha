@@ -33,14 +33,14 @@ test('filtro superior não altera a jornada antes de concluir N5',()=>{
 });
 test('conteúdo para lições corresponde ao cartão e persiste por backup',()=>{
  const s=initialState();
- assert.equal(guidedSamples('hiragana').length,46);
- assert.equal(guidedSamples('katakana').length,46);
+ assert.equal(guidedSamples('hiragana').length,104);
+ assert.equal(guidedSamples('katakana').length,104);
  assert.ok(guidedSamples('words').length>=15);
  assert.equal(guidedLessonProgress(s,'hiragana').studied,0);
  for(const card of Object.values(s.cards)) if(card.type==='Hiragana')card.seen=true;
- assert.equal(guidedLessonProgress(s,'hiragana').studied,46);
+ assert.equal(guidedLessonProgress(s,'hiragana').studied,104);
  assert.equal(isAccessibleCheckpoint(s,'hiragana:0'),true);
- assert.equal(guidedLessonProgress(normalizeState(s),'hiragana').studied,46);
+ assert.equal(guidedLessonProgress(normalizeState(s),'hiragana').studied,104);
 });
 test('registro de atividades da revisão não se duplica',()=>{
  const state=initialState();recordActivity(state,'review',DAY);recordActivity(state,'review',DAY);

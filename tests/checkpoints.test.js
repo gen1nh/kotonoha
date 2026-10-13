@@ -13,7 +13,8 @@ test('checkpoint requer respostas completas e 80% de acerto', () => {
 test('checkpoint aprovado persiste em backup sem aceitar pontuação inválida',()=>{
  const state=initialState();state.checkpoints={hiragana:{score:80,date:'2026-10-12'},katakana:{score:999,date:'x'}};
  const restored=normalizeState(state);
- assert.equal(checkpointPassed(restored,'hiragana'),true);
+ assert.equal(checkpointPassed(restored,'hiragana:0'),true);
+ assert.equal(checkpointPassed(restored,'hiragana'),false); // Os sons novos não herdam aprovação antiga.
  assert.equal(restored.checkpoints.katakana,undefined);
 });
 test('visualização de cartões não equivale a checkpoint aprovado',()=>{
