@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { collectActivityChanges, dailyActivityCount, dailyGoal, recordActivity } from '../src/dailyPlan.js';
+import { collectActivityChanges, dailyActivityCount, dailyGoal, recordActivity } from '../src/entities/study/index.js';
 test('activities deduplicate and respect goal', () => {
   const state = {dailyActivityGoal:3};
   recordActivity(state,'review','2026-10-12');recordActivity(state,'review','2026-10-12');

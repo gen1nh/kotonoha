@@ -1,15 +1,15 @@
 /** Structural course audit only, NOT a language review or JLPT certification. */
-import {VOCAB,GRAMMAR,HIRAGANA,KATAKANA} from '../src/data.js';
-import {HIRAGANA_EXTENSIONS,KATAKANA_EXTENSIONS} from '../src/content/n5Kana.js';
-import {N5_KANJI} from '../src/content/n5Kanji.js';
-import {N5_READING_TASKS} from '../src/content/n5Reading.js';
-import {N5_LISTENING_TASKS} from '../src/content/n5Listening.js';
-import {N5_UNITS,N5_TOPICS,cardIdsForUnit} from '../src/courseUnits.js';
-import {initialState,normalizeState} from '../src/state.js';
-import {checkpointQuestions} from '../src/checkpoints.js';
-import {buildN5PersonalReview,gradeN5PersonalReview} from '../src/pedagogy/n5Review.js';
-import {n5ReleaseReadiness} from '../src/pedagogy/readiness.js';
-import {APPROVED_EXAM_ITEMS} from '../src/pedagogy/publishedItems.js';
+import {VOCAB,GRAMMAR,HIRAGANA,KATAKANA} from '../src/entities/study/index.js';
+import {HIRAGANA_EXTENSIONS,KATAKANA_EXTENSIONS} from '../src/entities/study/index.js';
+import {N5_KANJI} from '../src/entities/study/index.js';
+import {N5_READING_TASKS} from '../src/entities/study/index.js';
+import {N5_LISTENING_TASKS} from '../src/entities/study/index.js';
+import {N5_UNITS,N5_TOPICS,cardIdsForUnit} from '../src/entities/study/index.js';
+import {initialState,normalizeState} from '../src/entities/study/index.js';
+import {checkpointQuestions} from '../src/entities/study/index.js';
+import {buildN5PersonalReview,gradeN5PersonalReview} from '../src/entities/study/index.js';
+import {n5ReleaseReadiness} from '../src/entities/study/index.js';
+import {APPROVED_EXAM_ITEMS} from '../src/entities/study/index.js';
 const state=initialState(),errors=[];
 const unique=(items,label)=>{const bad=items.filter((x,i)=>items.indexOf(x)!==i);if(bad.length)errors.push(`${label}: duplicated ${[...new Set(bad)].slice(0,5).join(', ')}`);};
 const minimum=(label,n,min)=>{if(n<min)errors.push(`${label}: ${n}/${min}`);};

@@ -1,11 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {initialState,normalizeState,selectReview,rateCard,SCHEMA_VERSION} from '../src/state.js';
-import {N5_UNITS,N5_TOPICS,unitsForTopic,cardIdsForUnit,unitAccessible,unitPassed,topicPassed,unitPracticed} from '../src/courseUnits.js';
-import {nextGuidedAction,courseLevel} from '../src/learning.js';
-import {checkpointQuestions,checkpointScore,checkpointPassed} from '../src/checkpoints.js';
-import {isAccessibleCheckpoint,hasUnlockedN4} from '../src/routeAccess.js';
-import {collectActivityChanges,dailyActivityCount,recordActivity} from '../src/dailyPlan.js';
+import {initialState,normalizeState,selectReview,rateCard,SCHEMA_VERSION} from '../src/entities/study/index.js';
+import {N5_UNITS,N5_TOPICS,unitsForTopic,cardIdsForUnit,unitAccessible,unitPassed,topicPassed,unitPracticed} from '../src/entities/study/index.js';
+import {nextGuidedAction,courseLevel} from '../src/entities/study/index.js';
+import {checkpointQuestions,checkpointScore,checkpointPassed} from '../src/entities/study/index.js';
+import {isAccessibleCheckpoint,hasUnlockedN4} from '../src/entities/study/index.js';
+import {collectActivityChanges,dailyActivityCount,recordActivity} from '../src/entities/study/index.js';
 const DAY='2026-10-13';
 const pass=(state,unit)=>{state.checkpoints[unit.id]={score:100,date:DAY};};
 test('N5 é decomposto em microlições pequenas, com todos os 46 kana cobertos uma vez',()=>{

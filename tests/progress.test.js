@@ -7,8 +7,8 @@ import {
   formatPercent,
   skillMeters,
   MAX_SECONDS_PER_DAY,
-} from "../src/progress.js";
-import { initialState, normalizeState } from "../src/state.js";
+} from "../src/entities/study/index.js";
+import { initialState, normalizeState } from "../src/entities/study/index.js";
 
 test("estado novo começa com 0 tempo e 0% de progresso", () => {
   const state = normalizeState(initialState());

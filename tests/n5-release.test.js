@@ -1,16 +1,16 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {initialState,normalizeState} from '../src/state.js';
-import {N5_UNITS} from '../src/courseUnits.js';
-import {courseLevel,nextGuidedAction} from '../src/learning.js';
-import {isAccessibleLesson,hasUnlockedN4,resolveView} from '../src/routeAccess.js';
-import {CURRICULUM} from '../src/curriculum.js';
-import { CORE_SKILLS, gradeAssessment } from '../src/pedagogy/engine.js';
-import { N5_CURRICULUM, validateN5Curriculum } from '../src/pedagogy/n5Curriculum.js';
+import {initialState,normalizeState} from '../src/entities/study/index.js';
+import {N5_UNITS} from '../src/entities/study/index.js';
+import {courseLevel,nextGuidedAction} from '../src/entities/study/index.js';
+import {isAccessibleLesson,hasUnlockedN4,resolveView} from '../src/entities/study/index.js';
+import {CURRICULUM} from '../src/entities/study/index.js';
+import { CORE_SKILLS, gradeAssessment } from '../src/entities/study/index.js';
+import { N5_CURRICULUM, validateN5Curriculum } from '../src/entities/study/index.js';
 import {
   N5_CERTIFICATION_POLICY, N5_REQUIRED_COMPETENCIES, buildN5CertificationExam, n5ReleaseReadiness,
   hasPassedInternalN5, hasCompletedN5Foundations, recordN5Result,
-} from '../src/pedagogy/readiness.js';
+} from '../src/entities/study/index.js';
 const passFoundation=s=>{for(const u of N5_UNITS)s.checkpoints[u.id]={score:80,date:'2026-10-13'};};
 const approvedItem=(skill,n)=>({
   id:`n5-${skill}-${n}`, level:'N5', skill, competencyId:N5_REQUIRED_COMPETENCIES[skill][n % N5_REQUIRED_COMPETENCIES[skill].length],

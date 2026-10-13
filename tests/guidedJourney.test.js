@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { initialState } from '../src/state.js';
-import { nextGuidedAction } from '../src/learning.js';
+import { initialState } from '../src/entities/study/index.js';
+import { nextGuidedAction } from '../src/entities/study/index.js';
 
 test('iniciante recebe uma única próxima lição', () => {
   const state = initialState();

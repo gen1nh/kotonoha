@@ -7,7 +7,7 @@ import {
   rateCard,
   markStudy,
   todayKey,
-} from "../src/state.js";
+} from "../src/entities/study/index.js";
 
 test("inicia cartões do N5 expandido e preserva progresso de backups antigos", () => {
   const state = initialState();

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { normalizeKanaAnswer,checkKanaTyping } from '../src/kanaTyping.js';
+import { normalizeKanaAnswer,checkKanaTyping } from '../src/entities/study/index.js';
 
 test('WanaKana normalizes romaji and native kana',()=>{
   assert.equal(normalizeKanaAnswer('nihongo'),'にほんご');

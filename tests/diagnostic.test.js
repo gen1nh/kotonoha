@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { diagnosticQuestions, gradeDiagnostic } from '../src/diagnostic.js';
-import { initialState, normalizeState } from '../src/state.js';
+import { diagnosticQuestions, gradeDiagnostic } from '../src/entities/study/index.js';
+import { initialState, normalizeState } from '../src/entities/study/index.js';
 test('diagnostic questions contain valid answer indices', () => {
  for (const level of ['N5','N4','N3','N2','N1']) for (const q of diagnosticQuestions(level)) {
   assert.ok(q.choices.length >= 2);

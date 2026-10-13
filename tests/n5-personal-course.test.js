@@ -1,17 +1,17 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {VOCAB,GRAMMAR,HIRAGANA,KATAKANA} from '../src/data.js';
-import {HIRAGANA_EXTENSIONS,KATAKANA_EXTENSIONS} from '../src/content/n5Kana.js';
-import {N5_READING_TASKS} from '../src/content/n5Reading.js';
-import {N5_LISTENING_TASKS} from '../src/content/n5Listening.js';
-import {N5_KANJI} from '../src/content/n5Kanji.js';
-import {kanaToRomaji} from '../src/content/n5Words.js';
-import {N5_UNITS,N5_TOPICS,LEGACY_N5_UNIT_COUNTS,unitsForTopic,unitPassed,unitAccessible,unitPracticed,topicPassed,cardIdsForUnit} from '../src/courseUnits.js';
-import {checkpointQuestions,checkpointScore} from '../src/checkpoints.js';
-import {initialState,normalizeState,cardMatchesLevel} from '../src/state.js';
-import {hasPassedInternalN5,hasCompletedN5Foundations,hasCompletedN5Basics} from '../src/pedagogy/readiness.js';
-import {hasUnlockedN4} from '../src/routeAccess.js';
-import {buildN5PersonalReview,gradeN5PersonalReview} from '../src/pedagogy/n5Review.js';
+import {VOCAB,GRAMMAR,HIRAGANA,KATAKANA} from '../src/entities/study/index.js';
+import {HIRAGANA_EXTENSIONS,KATAKANA_EXTENSIONS} from '../src/entities/study/index.js';
+import {N5_READING_TASKS} from '../src/entities/study/index.js';
+import {N5_LISTENING_TASKS} from '../src/entities/study/index.js';
+import {N5_KANJI} from '../src/entities/study/index.js';
+import {kanaToRomaji} from '../src/entities/study/index.js';
+import {N5_UNITS,N5_TOPICS,LEGACY_N5_UNIT_COUNTS,unitsForTopic,unitPassed,unitAccessible,unitPracticed,topicPassed,cardIdsForUnit} from '../src/entities/study/index.js';
+import {checkpointQuestions,checkpointScore} from '../src/entities/study/index.js';
+import {initialState,normalizeState,cardMatchesLevel} from '../src/entities/study/index.js';
+import {hasPassedInternalN5,hasCompletedN5Foundations,hasCompletedN5Basics} from '../src/entities/study/index.js';
+import {hasUnlockedN4} from '../src/entities/study/index.js';
+import {buildN5PersonalReview,gradeN5PersonalReview} from '../src/entities/study/index.js';
 
 test('N5 personal course has real coverage across seven topics without duplicating words or kanji',()=>{
  assert.deepEqual(N5_TOPICS,['hiragana','katakana','words','kanji','grammar','reading','listening']);

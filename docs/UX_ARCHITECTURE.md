@@ -2,7 +2,7 @@
 
 ## Uma fonte de verdade
 
-`src/courseUnits.js` define microlições e habilidades; `src/learning.js` calcula nível do curso, itens completos e próxima ação; `src/routeAccess.js` valida qualquer entrada, inclusive deep links e histórico; `src/checkpoints.js` define avaliação; `src/state.js` trata armazenamento, revisão e migração. As telas NÃO devem reproduzir essas regras por conta própria.
+`src/entities/study/model/courseUnits.js` define microlições e habilidades; `src/entities/study/model/learning.js` calcula nível do curso, itens completos e próxima ação; `src/entities/study/model/routeAccess.js` valida qualquer entrada, inclusive deep links e histórico; `src/entities/study/model/checkpoints.js` define avaliação; `src/entities/study/model/state.js` trata armazenamento, revisão e migração. As telas NÃO devem reproduzir essas regras por conta própria.
 
 ### Fluxo oficial
 

@@ -2,9 +2,9 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
-import {APPROVED_EXAM_ITEMS} from '../src/pedagogy/publishedItems.js';
-import {n5ReleaseReadiness} from '../src/pedagogy/readiness.js';
-import {validateN5Curriculum} from '../src/pedagogy/n5Curriculum.js';
+import {APPROVED_EXAM_ITEMS} from '../src/entities/study/index.js';
+import {n5ReleaseReadiness} from '../src/entities/study/index.js';
+import {validateN5Curriculum} from '../src/entities/study/index.js';
 
 const ROOT=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const errors=[...validateN5Curriculum()];

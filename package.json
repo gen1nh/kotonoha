@@ -11,7 +11,8 @@
     "test:e2e": "npm run build && playwright test",
     "audit:n5-release": "node scripts/audit-n5-release.mjs",
     "editorial:n5": "node scripts/export-n5-review-queue.mjs",
-    "audit:n5-course": "node scripts/audit-n5-course.mjs"
+    "audit:n5-course": "node scripts/audit-n5-course.mjs",
+    "check:architecture": "node scripts/check-architecture.mjs"
   },
   "dependencies": {
     "react": "^19.3.0",

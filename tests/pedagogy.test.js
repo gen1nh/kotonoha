@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { CORE_SKILLS, LEVEL_ORDER, validateItem, eligibleItems, assessmentBlueprint, buildAssessment, gradeAssessment, recommendPlacement, normalizePedagogyState, competencyEvidence } from '../src/pedagogy/engine.js';
+import { CORE_SKILLS, LEVEL_ORDER, validateItem, eligibleItems, assessmentBlueprint, buildAssessment, gradeAssessment, recommendPlacement, normalizePedagogyState, competencyEvidence } from '../src/entities/study/index.js';
 
 const item = (skill, n, level='N5') => ({
   id: `n5-${skill}-${n}`, level, skill, competencyId: `n5-${skill}-core`, status: 'approved',
