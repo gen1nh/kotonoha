@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Icon from "./Icon.jsx";
 import { Button } from "./ui/index.jsx";
 import { getStrokeData } from "../strokeData.js";
+import { kanjiVGPath, parseKanjiVG } from "../kanjiStrokes.js";
 
 const INK_COLORS = [
   { id: "black", label: "Nanquim", hex: "#1f2421" },
@@ -27,10 +28,32 @@ export default function Drawing({ character, random, save }) {
   const [inkColor, setInkColor] = useState(INK_COLORS[0].hex);
   const [brushSize, setBrushSize] = useState(BRUSH_SIZES[1].width);
   const [hasDrawn, setHasDrawn] = useState(false);
+  const [kanjiPaths,setKanjiPaths] = useState([]);
+  const [kanjiStatus,setKanjiStatus] = useState('idle');
+  const svgPath = kanjiVGPath(character);
+  useEffect(() => {
+    if (!svgPath) {setKanjiPaths([]);setKanjiStatus('idle');return;}
+    let cancelled=false;
+    const controller=new AbortController();
+    setKanjiPaths([]);setKanjiStatus('loading');
+    fetch(svgPath,{signal:controller.signal}).then(response=>{
+      if(!response.ok)throw new Error('KanjiVG não disponível');
+      return response.text();
+    }).then(source=>{
+      if(cancelled)return;
+      const paths=parseKanjiVG(source);
+      if(!paths.length)throw new Error('SVG sem traços');
+      setKanjiPaths(paths);setKanjiStatus('ready');
+    }).catch(()=>{if(!cancelled)setKanjiStatus('error');});
+    return ()=>{cancelled=true;controller.abort();};
+  },[svgPath]);
 
-  const strokeData = getStrokeData(character);
-  const totalStrokes = strokeData.count || strokeData.steps.length;
-  const currentStepInfo = strokeData.steps[activeStep] || strokeData.steps[0];
+  const kanaGuide=getStrokeData(character);
+  const strokeData=svgPath ? {count:kanjiPaths.length,steps:kanjiPaths.map(stroke=>({
+    n:stroke.number,hint:'Consulte o traço destacado no diagrama KanjiVG.'
+  }))} : kanaGuide;
+  const totalStrokes=svgPath ? kanjiPaths.length : (strokeData.count||strokeData.steps.length);
+  const currentStepInfo=strokeData.steps[activeStep]||strokeData.steps[0];
 
   // Redimensionamento responsivo de alta resolução
   const redrawAll = () => {
@@ -169,7 +192,7 @@ export default function Drawing({ character, random, save }) {
             Lousa de Caligrafia
           </span>
           <span className="text-xs font-black text-primary-strong uppercase tracking-wider">
-            {totalStrokes} {totalStrokes === 1 ? "traço" : "traços"}
+            {svgPath && kanjiStatus !== 'ready' ? 'Guia KanjiVG' : `${totalStrokes} ${totalStrokes === 1 ? 'traço' : 'traços'}`}
           </span>
           <span className="hidden sm:inline-block text-xs font-bold text-muted">
             · Siga a ordem numérica
@@ -232,7 +255,7 @@ export default function Drawing({ character, random, save }) {
           <button
             type="button"
             onClick={() =>
-              setActiveStep((cur) => (cur > 0 ? cur - 1 : totalStrokes - 1))
+              setActiveStep((cur) => totalStrokes ? (cur > 0 ? cur - 1 : totalStrokes - 1) : 0)
             }
             className="min-h-11 min-w-11 px-2 py-1 rounded-md border border-line bg-surface text-xs font-semibold text-ink hover:border-edge cursor-pointer"
             title="Traço anterior"
@@ -242,7 +265,7 @@ export default function Drawing({ character, random, save }) {
           <button
             type="button"
             onClick={() =>
-              setActiveStep((cur) => (cur < totalStrokes - 1 ? cur + 1 : 0))
+              setActiveStep((cur) => totalStrokes ? (cur < totalStrokes - 1 ? cur + 1 : 0) : 0)
             }
             className="min-h-11 min-w-11 px-2 py-1 rounded-md border border-line bg-surface text-xs font-semibold text-ink hover:border-edge cursor-pointer"
             title="Próximo traço"
@@ -417,7 +440,7 @@ export default function Drawing({ character, random, save }) {
               {character}
             </div>
             <p className="text-xs text-muted leading-relaxed">
-              Total de <strong>{totalStrokes} traços</strong> na caligrafia oficial japonesa.
+              {svgPath ? (kanjiStatus === "ready" ? `${totalStrokes} traços segundo a referência KanjiVG.` : "Carregando guia de traços KanjiVG.") : `Guia de ${totalStrokes} traços para kana.`}
             </p>
             <Button
               variant="secondary"
@@ -443,6 +466,14 @@ export default function Drawing({ character, random, save }) {
             <p className="text-xs text-muted leading-relaxed">
               Consulte os passos abaixo. A lousa fica livre para desenhar com dedo, caneta ou mouse.
             </p>
+            {svgPath && <div className="rounded-xl border border-line bg-paper p-3 space-y-2">
+              {kanjiStatus === 'ready' ?
+                <svg viewBox="0 0 109 109" role="img" aria-label={`Traço ${Math.min(activeStep + 1,totalStrokes)} de ${totalStrokes} do kanji ${character} destacado`} className="w-48 h-48 max-w-full mx-auto text-muted">
+                  {kanjiPaths.map((stroke,i)=><path key={stroke.number} d={stroke.d} fill="none" stroke={i===activeStep?'var(--color-primary)':'currentColor'} opacity={i===activeStep?1:0.35} strokeWidth={i===activeStep?4.5:3} strokeLinecap="round" strokeLinejoin="round"/>)}
+                </svg> :
+                <p className="text-xs text-muted" role="status">{kanjiStatus==='error'?'Guia não disponível neste momento.':'Carregando traços…'}</p>}
+              <p className="text-xs text-muted">Fonte: <a href="https://kanjivg.tagaini.net/" target="_blank" rel="noreferrer" className="underline">KanjiVG</a> (CC BY-SA 3.0). Selecione um passo abaixo para destacar seu traço.</p>
+            </div>}
 
             <div className="space-y-2 pt-1">
               {strokeData.steps.map((st, i) => {
@@ -491,7 +522,7 @@ export default function Drawing({ character, random, save }) {
             <div className="mt-3 p-3 rounded-xl bg-accent-soft/40 border border-primary/20 text-xs text-primary leading-relaxed flex items-start gap-2">
               <Icon name="sparkles" className="w-4 h-4 shrink-0 text-flame mt-0.5" />
               <span>
-                <strong>Regra clássica japonesa:</strong> Sempre escreva de cima para baixo e da esquerda para a direita. Os laços são fechados em sentido horário.
+                <strong>Orientação:</strong> consulte o guia do caractere. Não existe uma única direção para todos os traços.
               </span>
             </div>
           </div>

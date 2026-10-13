@@ -8,6 +8,7 @@ import { handleTabKeys } from "../navigation.js";
 import WebResources from "./WebResources.jsx";
 import MediaLab from "./MediaLab.jsx";
 import Drawing from "./Drawing.jsx";
+import { N5_KANJI } from "../content/n5Kanji.js";
 export function Learn({
   state,
   study,
@@ -22,17 +23,17 @@ export function Learn({
   const [tab, setTab] = useState(learnTopic);
   useEffect(() => {
     setTab(learnTopic);
-    setCharacter(learnTopic === "katakana" ? "ア" : "あ");
+    setCharacter(learnTopic === "katakana" ? "ア" : learnTopic === "kanji" ? N5_KANJI[0].glyph : "あ");
   }, [learnTopic]);
 
   const [quiz, setQuiz] = useState(false);
   const [answers, setAnswers] = useState({});
   const [character, setCharacter] = useState(
-    learnTopic === "katakana" ? "ア" : "あ",
+    learnTopic === "katakana" ? "ア" : learnTopic === "kanji" ? N5_KANJI[0].glyph : "あ",
   );
   const [search, setSearch] = useState("");
-  const array = tab === "hiragana" ? HIRAGANA : KATAKANA;
-  const type = tab === "hiragana" ? "Hiragana" : "Katakana";
+  const array = tab === "kanji" ? N5_KANJI.map(row=>[row.glyph,row.reading]) : tab === "hiragana" ? HIRAGANA : KATAKANA;
+  const type = tab === "kanji" ? "Kanji N5" : tab === "hiragana" ? "Hiragana" : "Katakana";
   const selectedLevel = state.selectedLevel || "N5";
   const vocabulary =
     selectedLevel === "N5" ? VOCAB : VOCAB_BY_LEVEL[selectedLevel] || VOCAB;
@@ -56,12 +57,13 @@ export function Learn({
     setTab(next);
     setQuiz(false);
     setAnswers({});
-    setCharacter(next === "katakana" ? "ア" : "あ");
+    setCharacter(next === "katakana" ? "ア" : next === "kanji" ? N5_KANJI[0].glyph : "あ");
   }
 
   const LEARN_TABS = [
     { id: "hiragana", label: "Hiragana", glyph: "あ", count: "46", color: "text-primary-strong" },
     { id: "katakana", label: "Katakana", glyph: "ア", count: "46", color: "text-primary-strong" },
+    { id: "kanji", label: "Kanji N5", glyph: "日", count: String(N5_KANJI.length), color: "text-primary-strong" },
     {
       id: "vocabulary",
       label: `Palavras ${selectedLevel}`,
@@ -155,12 +157,12 @@ export function Learn({
           <WebResources state={state} update={update} toast={toast} />
         ) : tab === "media_lab" ? (
           <MediaLab state={state} update={update} speak={speak} toast={toast} />
-        ) : ["hiragana", "katakana"].includes(tab) ? (
+        ) : ["hiragana", "katakana", "kanji"].includes(tab) ? (
           <div className="space-y-6">
             <Card className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
                 <h2 className="text-xl font-bold text-ink mt-1">
-                  Matriz dos 46 caracteres {type}
+                  {tab === "kanji" ? "105 kanji com guia de traços" : `Matriz dos 46 caracteres ${type}`}
                 </h2>
                 <p className="text-sm text-muted mt-0.5">
                   Toque para escutar a pronúncia e praticar o traço de escrita
@@ -169,10 +171,10 @@ export function Learn({
               </div>
               <Button
                 variant="primary"
-                onClick={() => study(type)}
+                onClick={() => tab === "kanji" ? go("path") : study(type)}
                 className="shrink-0"
               >
-                Estudar 5 novos →
+                {tab === "kanji" ? "Abrir minha Trilha →" : "Estudar 5 novos →"}
               </Button>
             </Card>
 
