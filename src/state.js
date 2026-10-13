@@ -1,7 +1,12 @@
+import {HIRAGANA_EXTENSIONS,KATAKANA_EXTENSIONS} from "./content/n5Kana.js";
+import {N5_KANJI} from "./content/n5Kanji.js";
 import { HIRAGANA, KATAKANA, VOCAB, JLPT_PATHS } from "./data.js";
 import { VOCAB_BY_LEVEL } from "./curriculum.js";
+import {unitById} from "./courseUnits.js";
+import {createPedagogyState, normalizePedagogyState} from "./pedagogy/engine.js";
 
 export const KEY = "kotonoha.v1";
+export const SCHEMA_VERSION = 2;
 export const LEVELS = [
   ["N5", "Iniciante"],
   ["N4", "Básico"],
@@ -121,6 +126,10 @@ export function initialState() {
   };
   HIRAGANA.forEach(([ch, ro]) => add(`hira:${ch}`, "Hiragana", ch, ro));
   KATAKANA.forEach(([ch, ro]) => add(`kata:${ch}`, "Katakana", ch, ro));
+  HIRAGANA_EXTENSIONS.forEach(([ch, ro]) => add(`hira:${ch}`, "Hiragana", ch, ro));
+  KATAKANA_EXTENSIONS.forEach(([ch, ro]) => add(`kata:${ch}`, "Katakana", ch, ro));
+  N5_KANJI.forEach(k => add(`kanji:${k.glyph}`, "Kanji N5", k.glyph,
+    `${k.reading} · ${k.meaning}`, {reading:k.exampleReading,spoken:k.exampleReading}));
   VOCAB.forEach(([ch, kana, ro, meaning]) =>
     add(`vocab:${ch}`, "Vocabulário N5", ch, `${ro} · ${meaning}`, {
       reading: kana,
@@ -143,22 +152,25 @@ export function initialState() {
   );
 
   return {
+    schemaVersion: SCHEMA_VERSION,
+    drafts: {},
+    attempts: {},
     cards,
     lessons: {},
+    checkpoints: {},
     paper: {},
     streak: { last: "", days: 0 },
     stats: { reviews: 0, correct: 0 },
     dailyAnswers: {},
+    dailyActivityGoal: 2,
+    activityLog: {},
     createdAt: Date.now(),
     mocks: [],
     selectedLevel: "N5",
     speedRecords: { highScore: 0, bestCombo: 0, totalGames: 0 },
     notebook: {
-      notes: structuredClone(DEFAULT_NOTES),
-      kanban: DEFAULT_KANBAN_ITEMS.map((item) => ({
-        ...item,
-        status: "want_to_learn",
-      })),
+      notes: [],
+      kanban: [],
       doubts: [],
     },
     studySession: null,
@@ -168,6 +180,9 @@ export function initialState() {
     onboardingCompleted: false,
     userProfile: null,
     errorMemory: [],
+    diagnosticHistory: [],
+    pedagogy: createPedagogyState(),
+    n5Practice: {seed:0,answers:{},played:[],transcripts:[],history:[]},
   };
 }
 export function normalizeState(value) {
@@ -180,6 +195,21 @@ export function normalizeState(value) {
   )
     throw new Error("Esse arquivo não parece ser um backup do Kotonoha.");
   const base = initialState();
+  // Migrate versionless/v1 backups without erasing completed legacy chapters.
+  if(value.schemaVersion != null && (!Number.isInteger(value.schemaVersion) || value.schemaVersion > SCHEMA_VERSION || value.schemaVersion < 1))
+    throw new Error('Versão do backup incompatível. Os dados existentes não foram modificados.');
+  if(value.drafts && typeof value.drafts === 'object' && !Array.isArray(value.drafts)) {
+    base.drafts=Object.fromEntries(Object.entries(value.drafts).filter(([key,draft])=>
+      /^(checkpoint:|lesson:)[\w:-]{1,90}$/.test(key) && draft && typeof draft==='object' && !Array.isArray(draft) &&
+      draft.answers && typeof draft.answers==='object' && !Array.isArray(draft.answers) &&
+      Object.keys(draft.answers).length<=30 && Object.values(draft.answers).every(a=>typeof a==='string'&&a.length<=1000 || Number.isInteger(a)&&a>=0&&a<=4) &&
+      (draft.result===null || draft.result===undefined || Number.isInteger(draft.result)&&draft.result>=0&&draft.result<=100)
+    ).slice(0,60).map(([key,draft])=>[key,{answers:{...draft.answers},result:draft.result??null}]));
+  }
+  if(value.attempts && typeof value.attempts==='object' && !Array.isArray(value.attempts)) {
+    base.attempts=Object.fromEntries(Object.entries(value.attempts).filter(([key,n])=>
+      /^(checkpoint:|lesson:)[\w:-]{1,90}$/.test(key)&&Number.isInteger(n)&&n>=0&&n<=10000).slice(0,60));
+  }
   for (const [id, card] of Object.entries(base.cards)) {
     const old = value.cards[id];
     if (!old) continue;
@@ -199,9 +229,27 @@ export function normalizeState(value) {
       due: old.due,
     };
   }
+  // Preserve genuine user-created flashcards; never discard personal notes on reload.
+  for (const [id, old] of Object.entries(value.cards)) {
+    if (!/^custom:[\w-]{1,80}$/.test(id) || !old || typeof old !== 'object' || Array.isArray(old)) continue;
+    if (typeof old.prompt !== 'string' || old.prompt.length > 1000 ||
+        typeof old.answer !== 'string' || old.answer.length > 5000 ||
+        typeof old.seen !== 'boolean' || !['reps','interval','ease','due'].every(k => Number.isFinite(old[k]) && old[k]>=0)) continue;
+    base.cards[id] = {
+      id, type:'Caderno Pessoal', prompt:old.prompt, answer:old.answer,
+      seen:old.seen, reps:old.reps, interval:old.interval, ease:old.ease, due:old.due,
+    };
+  }
   base.lessons = Object.fromEntries(
     Object.entries(value.lessons).filter(([, v]) => v === true),
   );
+  if (value.checkpoints && typeof value.checkpoints === "object" && !Array.isArray(value.checkpoints)) {
+    base.checkpoints = Object.fromEntries(Object.entries(value.checkpoints).filter(([topic, entry]) =>
+      (["hiragana", "katakana", "words", "grammar"].includes(topic)||Boolean(unitById(topic))) && entry &&
+      Number.isInteger(entry.score) && entry.score >= 0 && entry.score <= 100 &&
+      typeof entry.date === "string" && entry.date.length <= 32
+    ).map(([topic, entry]) => [topic, { score: entry.score, date: entry.date }]));
+  }
   base.paper = Object.fromEntries(
     Object.entries(value.paper || {}).filter(([, v]) => v === true),
   );
@@ -225,6 +273,12 @@ export function normalizeState(value) {
         answer <= 3,
     ),
   );
+  base.dailyActivityGoal = [1, 2, 3].includes(value.dailyActivityGoal) ? value.dailyActivityGoal : 2;
+  if (value.activityLog && typeof value.activityLog === 'object' && !Array.isArray(value.activityLog)) {
+    base.activityLog = Object.fromEntries(Object.entries(value.activityLog).filter(([day, ids]) =>
+      /^\d{4}-\d{2}-\d{2}$/.test(day) && Array.isArray(ids)
+    ).slice(-90).map(([day, ids]) => [day, [...new Set(ids.filter(id => typeof id === 'string' && id.length <= 100))].slice(-30)]));
+  }
   base.selectedLevel = JLPT_PATHS[value.selectedLevel]
     ? value.selectedLevel
     : "N5";
@@ -250,18 +304,17 @@ export function normalizeState(value) {
     };
   }
   if (value.notebook && typeof value.notebook === "object") {
+    const safeText = (text,max=10000)=>typeof text==='string'&&text.length<=max;
     base.notebook = {
-      notes: Array.isArray(value.notebook.notes)
-        ? value.notebook.notes
-        : DEFAULT_NOTES,
-      kanban: Array.isArray(value.notebook.kanban)
-        ? value.notebook.kanban
-        : DEFAULT_KANBAN_ITEMS,
-      doubts: Array.isArray(value.notebook.doubts) ? value.notebook.doubts : [],
+      notes: Array.isArray(value.notebook.notes) ? value.notebook.notes.filter(n=>n&&safeText(n.id,90)&&safeText(n.title,300)&&safeText(n.content,100000)).slice(0,1000):[],
+      kanban: Array.isArray(value.notebook.kanban) ? value.notebook.kanban.filter(k=>k&&safeText(k.id,90)&&safeText(k.title,300)).slice(0,1000):[],
+      doubts: Array.isArray(value.notebook.doubts) ? value.notebook.doubts.filter(d=>d&&safeText(d.id,90)&&safeText(d.question||d.text||'',10000)).slice(0,1000):[],
     };
   }
-  if (value.studySession && typeof value.studySession === "object") {
-    base.studySession = value.studySession;
+  if (isValidStudySession(value.studySession)) {
+    base.studySession = structuredClone(value.studySession);
+    base.studySession.dueCardIds = base.studySession.dueCardIds.filter(id => Boolean(base.cards[id]));
+    base.studySession.srsIndex = Math.min(base.studySession.srsIndex, base.studySession.dueCardIds.length);
   }
   if (value.jlptGoals && typeof value.jlptGoals === "object") {
     const { targetLevel, minutesPerDay } = value.jlptGoals;
@@ -284,17 +337,35 @@ export function normalizeState(value) {
     ),
   );
   if (Array.isArray(value.savedWebResources)) {
-    base.savedWebResources = value.savedWebResources;
+    base.savedWebResources=value.savedWebResources.filter(r=>r&&typeof r==='object'&&typeof r.url==='string'&&r.url.length<2048&&/^https?:\/\//.test(r.url)).slice(0,250);
   }
   if (value.onboardingCompleted !== undefined) {
     base.onboardingCompleted = Boolean(value.onboardingCompleted);
   }
   if (value.userProfile && typeof value.userProfile === "object") {
-    base.userProfile = value.userProfile;
+    base.userProfile = Object.fromEntries(Object.entries(value.userProfile).filter(([k,v])=>k.length<=80&&(typeof v==='string'&&v.length<=500||typeof v==='number'&&Number.isFinite(v)||typeof v==='boolean')));
   }
   if (Array.isArray(value.errorMemory)) {
-    base.errorMemory = value.errorMemory;
+    base.errorMemory = value.errorMemory.filter(e=>e&&typeof e==='object'&&typeof e.id==='string'&&e.id.length<=90&&typeof e.topic==='string'&&e.topic.length<=500).slice(0,1000);
   }
+  if (Array.isArray(value.diagnosticHistory)) {
+    base.diagnosticHistory = value.diagnosticHistory.filter(r =>
+      r && JLPT_PATHS[r.level] && Number.isInteger(r.correct) && Number.isInteger(r.total) &&
+      r.total >= 1 && r.total <= 100 && r.correct >= 0 && r.correct <= r.total &&
+      typeof r.date === 'string' && !Number.isNaN(Date.parse(r.date))
+    ).slice(-30);
+  }
+  // Formative course review; never store it in the certification assessmentHistory.
+  const practice=value.n5Practice;
+  if(practice&&typeof practice==='object'&&!Array.isArray(practice)){
+    base.n5Practice.seed=Number.isInteger(practice.seed)&&practice.seed>=0&&practice.seed<=2147483647?practice.seed:0;
+    base.n5Practice.answers=Object.fromEntries(Object.entries(practice.answers||{}).filter(([id,answer])=>
+      /^personal-[vgrl]-[\w\u3040-\u30ff\u3400-\u9fff:-]{1,90}$/.test(id)&&typeof answer==='string'&&answer.length<=300).slice(0,50));
+    for(const k of ['played','transcripts'])base.n5Practice[k]=Array.isArray(practice[k])?[...new Set(practice[k].filter(id=>typeof id==='string'&&/^personal-l-n5-listening-\d{2}$/.test(id)))].slice(0,10):[];
+    base.n5Practice.history=Array.isArray(practice.history)?practice.history.filter(entry=>entry?.kind==='kotonoha-n5-formative'&&entry.level==='N5'&&Number.isInteger(entry.total)&&entry.total===32&&Number.isInteger(entry.correct)&&entry.correct>=0&&entry.correct<=32&&typeof entry.date==='string').slice(-20):[];
+  }
+  // Standalone pedagogy data is optional in v1/v2 backups; invalid future formats fail closed.
+  if (value.pedagogy != null) base.pedagogy = normalizePedagogyState(value.pedagogy);
   return base;
 }
 export function markStudy(state) {
@@ -308,38 +379,29 @@ export function markStudy(state) {
   };
 }
 export function cardMatchesLevel(card, level = "N5") {
+  if (card.type === "Caderno Pessoal") return true;
   if (level === "N5") {
     return (
-      card.type === "Vocabulário N5" ||
+      card.type === "Vocabulário N5" || card.type === "Kanji N5" ||
       ["Hiragana", "Katakana"].includes(card.type)
     );
   }
   return card.type === `Vocabulário ${level}`;
 }
-export function selectReview(state, type) {
-  const currentLevel = state.selectedLevel || "N5";
-  const cards = Object.values(state.cards).filter((card) =>
-    type ? card.type === type : cardMatchesLevel(card, currentLevel),
-  );
-  const due = cards.filter(
-    (c) => c.seen && c.due <= Date.now() && (!type || c.type === type),
-  );
-  if (due.length && !type) return due.map((c) => c.id);
-
-  const group =
-    type ||
-    (currentLevel === "N5"
-      ? ["Hiragana", "Katakana", "Vocabulário N5"].find((t) =>
-          cards.some((c) => !c.seen && c.type === t),
-        )
-      : `Vocabulário ${currentLevel}`);
-
-  return [
-    ...due,
-    ...cards
-      .filter((c) => !c.seen && c.type === group)
-      .slice(0, group?.startsWith("Vocabulário") ? 4 : 5),
-  ].map((c) => c.id);
+/** Bounded batches. Custom cards are always eligible without changing course level. */
+export function selectReview(state,type,limit=10,now=Date.now()){
+  const level=state.selectedLevel||'N5';
+  const cards=Object.values(state.cards||{}).filter(c=>type?c.type===type:cardMatchesLevel(c,level));
+  const due=cards.filter(c=>c.seen&&c.due<=now).sort((a,b)=>a.due-b.due);
+  if(due.length)return due.slice(0,limit).map(c=>c.id);
+  const fresh=cards.filter(c=>!c.seen);
+  if(type)return fresh.slice(0,Math.min(limit,type.startsWith('Vocabulário')?4:5)).map(c=>c.id);
+  // Personal flashcards don't wait for an N5 category to be exhausted.
+  const personal=fresh.filter(c=>c.type==='Caderno Pessoal');
+  const curricular=fresh.filter(c=>c.type!=='Caderno Pessoal');
+  const groups=[...new Set(curricular.map(c=>c.type))];
+  const primary=curricular.filter(c=>c.type===groups[0]);
+  return [...personal.slice(0,2),...primary.slice(0,Math.min(5,limit-2))].slice(0,limit).map(c=>c.id);
 }
 export function rateCard(state, id, rating, now = Date.now()) {
   const card = state.cards[id];
@@ -373,5 +435,19 @@ export function rateCard(state, id, rating, now = Date.now()) {
     state.stats.correct++;
   }
   state.stats.reviews++;
-  markStudy(state);
+  // Streak and daily goal are credited only after completing a meaningful session.
+}
+
+// Validate persisted guided sessions before restoring untrusted JSON.
+export function isValidStudySession(session) {
+  return session !== null && typeof session === "object" && !Array.isArray(session) &&
+    Number.isInteger(session.step) && session.step >= 1 && session.step <= 3 &&
+    Number.isInteger(session.lessonIndex) && session.lessonIndex >= 0 && session.lessonIndex < 3 &&
+    Number.isInteger(session.duration) && [5, 15, 30].includes(session.duration) &&
+    Array.isArray(session.dueCardIds) && session.dueCardIds.length <= 30 &&
+    session.dueCardIds.every(id => typeof id === "string" && id.length < 100) &&
+    Number.isInteger(session.srsIndex) && session.srsIndex >= 0 && session.srsIndex <= session.dueCardIds.length &&
+    typeof session.srsRevealed === "boolean" &&
+    (session.selectedOption === null || (Number.isInteger(session.selectedOption) && session.selectedOption >= 0 && session.selectedOption <= 3)) &&
+    typeof session.answered === "boolean";
 }

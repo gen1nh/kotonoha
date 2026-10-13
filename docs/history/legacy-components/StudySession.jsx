@@ -1,5 +1,5 @@
 import { useDialogFocus } from "../useDialogFocus.js";
-import React, { useState, useRef, useSyncExternalStore } from "react";
+import React, { useState, useRef, useEffect, useSyncExternalStore } from "react";
 import Icon from "./Icon.jsx";
 import { markStudy, cardMatchesLevel, rateCard } from "../state.js";
 import {
@@ -160,31 +160,33 @@ export default function StudySession({
 }) {
   useDialogFocus(onClose);
   // A duração escolhida é apenas uma META. O tempo real vem do cronômetro.
-  const [duration] = useState(initialDuration);
+  const saved = state.studySession;
+  const [duration] = useState(saved?.duration || initialDuration);
   const liveSeconds = useSyncExternalStore(subscribeLive, getLiveSeconds);
   const startedAt = useRef(liveSeconds);
   const elapsed = Math.max(0, liveSeconds - startedAt.current);
   const [finalElapsed, setFinalElapsed] = useState(0);
-  const [step, setStep] = useState(1); // 1: Warmup SRS, 2: Guided Lesson, 3: Practical Challenge, 4: Celebration
+  const [step, setStep] = useState(saved?.step || 1); // 1: Warmup SRS, 2: Guided Lesson, 3: Practical Challenge, 4: Celebration
   const [selectedLessonIndex] = useState(() =>
-    Math.floor(Math.random() * DAILY_FOCUS_LESSONS.length),
+    saved?.lessonIndex ?? Math.floor(Math.random() * DAILY_FOCUS_LESSONS.length),
   );
   const currentLesson = DAILY_FOCUS_LESSONS[selectedLessonIndex];
 
   // Cartões de aquecimento SRS
   const [dueCards] = useState(() =>
-    Object.values(state.cards || {})
+    (saved?.dueCardIds ? saved.dueCardIds.map(id => state.cards[id]).filter(Boolean) : Object.values(state.cards || {})
       .filter((c) => c.seen && c.due <= Date.now() && cardMatchesLevel(c, "N5"))
-      .slice(0, duration === 5 ? 3 : duration === 15 ? 5 : 8),
+      .slice(0, duration === 5 ? 3 : duration === 15 ? 5 : 8)),
   );
 
-  const [srsIndex, setSrsIndex] = useState(0);
-  const [srsRevealed, setSrsRevealed] = useState(false);
+  const [srsIndex, setSrsIndex] = useState(saved?.srsIndex || 0);
+  const [srsRevealed, setSrsRevealed] = useState(saved?.srsRevealed || false);
   const currentCard = dueCards[srsIndex] || Object.values(state.cards)[0];
 
   // Estado do desafio prático
-  const [selectedOption, setSelectedOption] = useState(null);
-  const [answered, setAnswered] = useState(false);
+  const [selectedOption, setSelectedOption] = useState(saved?.selectedOption ?? null);
+  const [answered, setAnswered] = useState(saved?.answered || false);
+  useEffect(() => { if (step === 4) return; const snapshot = {step,lessonIndex:selectedLessonIndex,duration,dueCardIds:dueCards.map(c=>c.id),srsIndex,srsRevealed,selectedOption,answered}; update(s => { s.studySession = snapshot; }); }, [step,selectedLessonIndex,duration,srsIndex,srsRevealed,selectedOption,answered]);
 
   // Áudio da frase da lição
   const handleSpeak = (text) => {

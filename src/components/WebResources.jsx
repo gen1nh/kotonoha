@@ -308,7 +308,7 @@ export default function WebResources({ state, update, toast }) {
                   {res.highlights.map((h, i) => (
                     <span
                       key={i}
-                      className="text-xs font-bold text-[#777777]"
+                      className="text-xs font-bold text-muted"
                     >
                       ✓ {h}
                     </span>

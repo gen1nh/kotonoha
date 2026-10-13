@@ -7,6 +7,9 @@ import React from "react";
  */
 export default function Icon({ name, className = "w-5 h-5" }) {
   switch (name) {
+    case "lock":
+      return <svg className={`ui-icon shrink-0 ${className}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>;
+
     case "flame":
       // Fogo sólido / Ofensiva Duolingo
       return (

@@ -1,172 +1,101 @@
-import { test, expect } from "@playwright/test";
-import AxeBuilder from "@axe-core/playwright";
-import { initialState } from "../../src/state.js";
-const navigate = (page, view) =>
-  page.locator(`[data-view="${view}"]:visible`).first().click();
+import {test,expect} from '@playwright/test';
+import AxeBuilder from '@axe-core/playwright';
+import {initialState,todayKey} from '../../src/state.js';
+import {checkpointQuestions} from '../../src/checkpoints.js';
+import {N5_UNITS,cardIdsForUnit} from '../../src/courseUnits.js';
+const seeded=()=>{const state=initialState();state.onboardingCompleted=true;return state;};
+async function enter(page,state=seeded()){
+ await page.addInitScript(s=>{if(!localStorage.getItem('kotonoha.v1'))localStorage.setItem('kotonoha.v1',JSON.stringify(s));},state);
+ await page.goto('/');
+}
+const tab=(page,label)=>page.getByRole('navigation',{name:'Navegação móvel'}).getByRole('button',{name:label});
+test.use({viewport:{width:390,height:844}});
 
-test("todas as áreas acessíveis em desktop e celular, sem overflow", async ({
-  page,
-}) => {
-  const errors = [];
-  page.on("pageerror", (error) => errors.push(error.message));
-  await page.goto("/");
-  for (const [width, height] of [
-    [1440, 1000],
-    [390, 844],
-  ]) {
-    await page.setViewportSize({ width, height });
-    for (const view of [
-      "home",
-      "learn",
-      "review",
-      "jlpt",
-      "paper",
-      "settings",
-    ]) {
-      await navigate(page, view);
-      await expect(page.locator(`#${view}Title`)).toBeVisible();
-      expect(
-        await page.evaluate(
-          () => document.documentElement.scrollWidth <= innerWidth,
-        ),
-      ).toBe(true);
-      expect(
-        (
-          await new AxeBuilder({ page })
-            .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
-            .analyze()
-        ).violations,
-      ).toEqual([]);
-    }
+test('quatro destinos, uma transição por toque, retorno do navegador',async({page})=>{
+ await enter(page);await expect(page.getByRole('navigation',{name:'Navegação móvel'}).getByRole('button')).toHaveCount(4);
+ const before=await page.evaluate(()=>history.length);
+ await tab(page,'Trilha').click();await expect(page.getByRole('heading',{name:'Trilha de aprendizagem'})).toBeVisible();
+ expect(await page.evaluate(()=>history.length)).toBe(before+1);
+ await page.goBack();await expect(page.getByRole('heading',{name:'Seu próximo passo'})).toBeVisible();
+});
+
+test('microlição → cartões → checkpoint → próxima microlição, sem abrir a Biblioteca',async({page})=>{
+ const first=N5_UNITS[0],state=seeded();const questions=checkpointQuestions(state,first.id);
+ await enter(page,state);await page.getByRole('button',{name:/Continuar aprendendo/}).first().click();
+ await expect(page.getByRole('heading',{name:first.title})).toBeVisible();
+ await expect(page.getByRole('navigation',{name:'Navegação móvel'})).toHaveCount(0);
+ await page.getByRole('button',{name:/Praticar 6 cartões/}).click();
+ for(let i=0;i<cardIdsForUnit(first).length;i++){
+  await page.getByRole('button',{name:'Revelar resposta'}).click();
+  await page.getByRole('button',{name:/Bom/}).click();
+ }
+ await expect(page.getByRole('button',{name:/Fazer checkpoint/})).toBeVisible();
+ await page.getByRole('button',{name:/Fazer checkpoint/}).click();
+ for(const [index,q] of questions.entries())await page.locator('fieldset').nth(index).getByRole('radio',{name:q.answer,exact:true}).check();
+ await page.getByRole('button',{name:'Corrigir checkpoint'}).click();
+ await expect(page.getByText('Checkpoint aprovado!')).toBeVisible();
+ await page.getByRole('button',{name:/Próxima microlição/}).click();
+ await expect(page.getByRole('heading',{name:N5_UNITS[1].title})).toBeVisible();
+});
+
+test('checkpoint retoma respostas após recarga e aprovação entra na meta diária',async({page})=>{
+ const state=seeded(),first=N5_UNITS[0];for(const cid of cardIdsForUnit(first))state.cards[cid].seen=true;
+ const question=checkpointQuestions(state,first.id)[0];await enter(page,state);
+ await page.getByRole('button',{name:/Fazer checkpoint/}).first().click();
+ await page.locator('fieldset').first().getByRole('radio',{name:question.answer,exact:true}).check();
+ await page.reload();await expect(page.locator('fieldset').first().getByRole('radio',{name:question.answer,exact:true})).toBeChecked();
+ const qs=checkpointQuestions(state,first.id);
+ for(const [i,q] of qs.entries())await page.locator('fieldset').nth(i).getByRole('radio',{name:q.answer,exact:true}).check();
+ await page.getByRole('button',{name:'Corrigir checkpoint'}).click();
+ await expect(page.getByText('Checkpoint aprovado!',{exact:true})).toBeVisible();
+ // Persistence is debounced; verify the saved activity after the write completes.
+ await expect.poll(()=>page.evaluate(day=>JSON.parse(localStorage.getItem('kotonoha.v1')).activityLog[day]||[],todayKey())).toContain(`checkpoint:${first.id}`);
+});
+
+test('filtro N1 não desbloqueia laboratórios nem URLs',async({page})=>{
+ const state=seeded();state.selectedLevel='N1';await enter(page,state);
+ await page.goto('/?view=line');await expect(page.getByRole('heading',{name:'Praticar'})).toBeVisible();
+ await page.getByText('Laboratórios opcionais').click();
+ await expect(page.getByRole('button',{name:'Bloqueado'}).first()).toBeDisabled();
+});
+
+test('tema escuro, configurações e backup',async({page})=>{
+ await enter(page);await page.getByRole('button',{name:'Abrir preferências'}).click();
+ await page.getByRole('combobox',{name:'Tema visual'}).selectOption('dark');
+ await expect(page.locator('html')).toHaveAttribute('data-theme','dark');
+ const download=page.waitForEvent('download');await page.getByRole('button',{name:'Exportar backup JSON'}).click();
+ expect((await download).suggestedFilename()).toContain('kotonoha-backup');
+});
+
+test('caligrafia recebe toque no canvas sem interceptação',async({page})=>{
+ await enter(page);await tab(page,'Praticar').click();
+ await page.getByRole('button',{name:'Abrir ferramenta →'}).first().click();
+ const canvas=page.locator('canvas[data-drawing-surface]').first();await canvas.scrollIntoViewIfNeeded();
+ const r=await canvas.boundingBox();expect(r).not.toBeNull();
+ const onTop=await canvas.evaluate(c=>document.elementFromPoint(c.getBoundingClientRect().left+c.clientWidth/2,c.getBoundingClientRect().top+c.clientHeight/2)===c);
+ expect(onTop).toBe(true);
+ await page.mouse.move(r.x+20,r.y+20);await page.mouse.down();await page.mouse.move(r.x+70,r.y+70,{steps:5});await page.mouse.up();
+ await expect(page.getByRole('button',{name:/Desfazer/})).toBeEnabled();
+});
+
+test('responsividade e acessibilidade do fluxo mobile',async({page})=>{
+ const errors=[];page.on('pageerror',err=>errors.push(err.message));await enter(page);
+ for(const width of [320,375,390,430,768,1024]){
+  await page.setViewportSize({width,height:844});
+  for(const view of ['home','path','practice','progress']){
+   await page.goto(view==='home'?'/':`/?view=${view}`);
+   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
   }
-  expect(errors).toEqual([]);
+ }
+ await page.setViewportSize({width:390,height:844});await page.goto('/');
+ const a11y=await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa']).analyze();
+ expect(a11y.violations).toEqual([]);expect(errors).toEqual([]);
 });
 
-test("filtro mantém tela, persiste nível e início abre lição correspondente", async ({
-  page,
-}) => {
-  await page.goto("/");
-  await page
-    .getByRole("combobox", { name: "Filtrar por nível JLPT" })
-    .selectOption("N4");
-  await expect(page.locator("#homeTitle")).toBeVisible();
-  await page.getByRole("button", { name: "Continuar N4" }).click();
-  await expect(page.locator("#jlptTitle")).toBeVisible();
-  await expect(
-    page.getByRole("button", { name: /Está chovendo agora/ }),
-  ).toBeVisible();
-  await page.reload();
-  await expect(
-    page.getByRole("combobox", { name: "Filtrar por nível JLPT" }),
-  ).toHaveValue("N4");
-  await navigate(page, "jlpt");
-  const tab = page.getByRole("tab", { name: /N4/ });
-  await tab.focus();
-  await page.keyboard.press("ArrowRight");
-  await expect(page.getByRole("tab", { name: /N3/ })).toHaveAttribute(
-    "aria-selected",
-    "true",
-  );
-});
-
-test("Katakana, teclado e revisão persistem resposta", async ({ page }) => {
-  await page.goto("/");
-  await navigate(page, "learn");
-  await page.getByRole("tab", { name: /Hiragana/ }).focus();
-  await page.keyboard.press("ArrowRight");
-  await expect(page.getByRole("tab", { name: /Katakana/ })).toHaveAttribute(
-    "aria-selected",
-    "true",
-  );
-  await page.getByRole("button", { name: /Estudar 5 novos/ }).click();
-  await page.getByRole("button", { name: "Revelar resposta" }).click();
-  await page.getByRole("button", { name: /Bom Intervalo normal/ }).click();
-  expect(
-    await page.evaluate(
-      () => JSON.parse(localStorage.getItem("kotonoha.v1")).stats.reviews,
-    ),
-  ).toBe(1);
-});
-
-test("sessão N5 registra revisão, tem foco contido e fecha com Escape", async ({
-  page,
-}) => {
-  const state = initialState();
-  state.cards["hira:あ"].seen = true;
-  state.cards["hira:あ"].due = 0;
-  await page.addInitScript(
-    (s) => localStorage.setItem("kotonoha.v1", JSON.stringify(s)),
-    state,
-  );
-  await page.goto("/");
-  await page.getByRole("button", { name: /Estudar agora/ }).click();
-  const dialog = page.getByRole("dialog", { name: "Sessão guiada N5" });
-  await expect(dialog).toBeVisible();
-  await page.getByRole("button", { name: "Mostrar resposta" }).click();
-  await page.getByRole("button", { name: "Lembrei", exact: true }).click();
-  expect(
-    await page.evaluate(
-      () =>
-        JSON.parse(localStorage.getItem("kotonoha.v1")).cards["hira:あ"].reps,
-    ),
-  ).toBe(1);
-  await page.keyboard.press("Escape");
-  await expect(dialog).toHaveCount(0);
-  await expect(
-    page.getByRole("button", { name: /Estudar agora/ }),
-  ).toBeFocused();
-});
-
-test("notas editáveis persistem e backup é exportado", async ({ page }) => {
-  await page.goto("/");
-  await navigate(page, "paper");
-  await page.getByRole("button", { name: /Páginas & Notas/ }).click();
-  await page.getByRole("button", { name: /Nova Nota/ }).click();
-  await page
-    .getByRole("textbox", { name: "Título da nota" })
-    .fill("Meu plano de japonês");
-  await page.reload();
-  await navigate(page, "paper");
-  await page.getByRole("button", { name: /Páginas & Notas/ }).click();
-  await expect(
-    page.getByRole("heading", { name: "Meu plano de japonês" }),
-  ).toBeVisible();
-  await navigate(page, "settings");
-  const download = page.waitForEvent("download");
-  await page.getByRole("button", { name: "Exportar backup JSON" }).click();
-  expect((await download).suggestedFilename()).toContain("kotonoha-backup");
-});
-
-test("mobile tem cinco destinos, preferências por ícone e conversa na biblioteca", async ({
-  page,
-}) => {
-  await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("/");
-  await expect(
-    page
-      .getByRole("navigation", { name: "Navegação móvel" })
-      .getByRole("button"),
-  ).toHaveCount(5);
-  await page.getByRole("button", { name: "Abrir preferências" }).click();
-  await expect(page.locator("#settingsTitle")).toBeVisible();
-  await navigate(page, "learn");
-  await page.getByRole("tab", { name: "Conversar", exact: true }).click();
-  await expect(
-    page.getByRole("button", { name: "Cenários do Dia a Dia (Offline)" }),
-  ).toBeVisible();
-});
-
-test("PWA continua acessível sem rede após preparar cache", async ({
-  page,
-  context,
-}) => {
-  await page.goto("/");
-  await page.evaluate(() => navigator.serviceWorker.ready);
-  await page.reload();
-  await page.waitForFunction(() => navigator.serviceWorker.controller);
-  await context.setOffline(true);
-  await page.reload();
-  await expect(page.locator("#homeTitle")).toBeVisible();
-  await navigate(page, "learn");
-  await expect(page.getByRole("tab", { name: /Hiragana/ })).toBeVisible();
+test('PWA principal continua acessível offline com service worker',async({page,context},testInfo)=>{
+ test.skip(testInfo.project.name!=='chromium','Service workers offline: homologação automatizada em Chromium; Safari requer teste manual.');
+ await enter(page);await page.evaluate(()=>navigator.serviceWorker.ready);
+ await page.reload();await page.waitForFunction(()=>Boolean(navigator.serviceWorker.controller));
+ await context.setOffline(true);await page.reload();
+ await expect(page.getByRole('heading',{name:'Seu próximo passo'})).toBeVisible();
 });

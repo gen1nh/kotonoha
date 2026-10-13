@@ -498,7 +498,7 @@ export function Jlpt({
                               {mock.level}
                             </span>
                             <span className="text-muted">{mock.date}</span>
-                            <span className={`text-xs font-black tabular-nums ${mock.score >= 70 ? "text-[#58cc02]" : "text-[#ff9600]"}`}>
+                            <span className={`text-xs font-black tabular-nums ${mock.score >= 70 ? "text-primary-strong" : "text-flame"}`}>
                               {mock.score}%
                             </span>
                           </div>
@@ -603,7 +603,7 @@ function InteractiveLesson({ lesson, complete, update, speak, onBack }) {
       </div>
 
       <div>
-        <span className="text-xs font-black text-[#58cc02] uppercase tracking-wider">{lesson.level} · Lição Guiada</span>
+        <span className="text-xs font-black text-primary-strong uppercase tracking-wider">{lesson.level} · Lição Guiada</span>
         <h2 className="text-xl font-bold text-ink mt-1">{lesson.title}</h2>
         <p className="text-sm text-muted mt-1 leading-relaxed">
           {lesson.explanation}

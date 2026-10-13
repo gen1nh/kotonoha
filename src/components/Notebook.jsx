@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Icon from "./Icon.jsx";
+import ErrorMemory from "./ErrorMemory.jsx";
 import { chatCompletion } from "../ai.js";
 
 const NOTE_TEMPLATES = {
@@ -29,7 +30,7 @@ const NOTE_TEMPLATES = {
   },
 };
 
-export default function Notebook({ state, update, toast, speak }) {
+export default function Notebook({ state, update, toast, speak, go }) {
   const [tab, setTab] = useState("kanban"); // "kanban", "notes", "doubts"
   const [search, setSearch] = useState("");
   const [activeNoteId, setActiveNoteId] = useState(
@@ -216,6 +217,7 @@ export default function Notebook({ state, update, toast, speak }) {
 
   return (
     <div className="w-full space-y-6">
+      <div className="rounded-xl border border-line p-4 bg-paper"><p className="text-sm text-muted">Notas, planejamento, dúvidas e erros no mesmo caderno. Seus flashcards pessoais entram nas revisões.</p></div>
       {/* Barra de Seleção de Visualização */}
       <div className="flex flex-wrap items-center justify-between gap-3 p-1.5 bg-paper rounded-xl border border-line">
         <div
@@ -267,6 +269,7 @@ export default function Notebook({ state, update, toast, speak }) {
               </span>
             )}
           </button>
+          <button type="button" aria-pressed={tab==='errors'} className={`min-h-11 px-3.5 rounded-lg text-xs font-bold border ${tab==='errors'?'bg-accent-soft border-primary text-primary-strong':'border-transparent text-muted'}`} onClick={()=>setTab('errors')}><Icon name="review"/> Erros ({state.errorMemory?.length||0})</button>
         </div>
 
         {tab === "notes" && (
@@ -305,7 +308,7 @@ export default function Notebook({ state, update, toast, speak }) {
                       <span className={`h-2.5 w-2.5 rounded-full ${col.dot}`} />
                       <h3 className="font-bold">{col.title}</h3>
                     </div>
-                    <span className="text-xs font-black text-[#777777] tabular-nums">
+                    <span className="text-xs font-black text-muted tabular-nums">
                       {items.length}
                     </span>
                   </summary>
@@ -524,7 +527,7 @@ export default function Notebook({ state, update, toast, speak }) {
                   </div>
                 </header>
 
-                <div className="flex flex-wrap gap-2 text-xs font-bold text-[#777777]">
+                <div className="flex flex-wrap gap-2 text-xs font-bold text-muted">
                   {(activeNote.tags || []).map((tag, i) => (
                     <span key={i}>
                       #{tag}
@@ -602,6 +605,7 @@ export default function Notebook({ state, update, toast, speak }) {
       )}
 
       {/* ABA 3: CAIXA DE DÚVIDAS (Sensei IA) */}
+      {tab === 'errors' && <ErrorMemory state={state} update={update} toast={toast} speak={speak} go={go}/> }
       {tab === "doubts" && (
         <div className="space-y-6">
           <div className="p-4 rounded-xl border border-line bg-paper flex items-start gap-3">

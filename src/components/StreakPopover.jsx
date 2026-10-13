@@ -7,14 +7,6 @@ export default function StreakPopover({ state, onClose }) {
   useDialogFocus(onClose);
   const modalRef = useRef(null);
 
-  useEffect(() => {
-    function handleKeyDown(e) {
-      if (e.key === "Escape") onClose();
-    }
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [onClose]);
-
   const days = state.streak?.days || 0;
   const today = new Date();
 
@@ -29,14 +21,12 @@ export default function StreakPopover({ state, onClose }) {
       .toUpperCase();
     const isToday = key === todayKey();
 
-    // Verifica atividade no dia: resposta diária, prática no papel ou revisão
+    // Exibe atividade real registrada, nunca apenas abertura da página.
     const hasDaily = Object.keys(state.dailyAnswers || {}).some((k) =>
       k.startsWith(key),
     );
-    const hasStudy = Boolean((state.studyLog?.[key] || 0) >= 60);
-    const hasPaper = Boolean(state.paper?.[key]);
-    const isCompleted =
-      hasDaily || hasStudy || hasPaper || (isToday && days > 0);
+    const logged = Array.isArray(state.activityLog?.[key]) && state.activityLog[key].length > 0;
+    const isCompleted = logged || hasDaily;
 
     return {
       date: d.getDate(),
@@ -105,7 +95,7 @@ export default function StreakPopover({ state, onClose }) {
           <div className="text-xs font-semibold text-muted uppercase tracking-wider">
             {days === 1 ? "dia seguido" : "dias seguidos"}
           </div>
-          <div className="text-xs font-black text-[#ff9600] uppercase tracking-wider">
+          <div className="text-xs font-black text-flame-ink uppercase tracking-wider">
             {streakLevel.title}
           </div>
         </div>

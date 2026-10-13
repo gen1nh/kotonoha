@@ -74,6 +74,7 @@ export default function PitchAccentLab({ speak, toast }) {
   const canvasRef = useRef(null);
   const animationFrameRef = useRef(null);
   const audioCtxRef = useRef(null);
+  const liveStreamRef = useRef(null);
 
   const currentItem = PITCH_EXERCISES[selectedWordIndex];
 
@@ -81,7 +82,9 @@ export default function PitchAccentLab({ speak, toast }) {
   const startRecording = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      liveStreamRef.current=stream;
       audioCtxRef.current = new (window.AudioContext || window.webkitAudioContext)();
+      if(audioCtxRef.current.state==='suspended')await audioCtxRef.current.resume();
       const source = audioCtxRef.current.createMediaStreamSource(stream);
       const analyser = audioCtxRef.current.createAnalyser();
       analyser.fftSize = 256;
@@ -98,11 +101,11 @@ export default function PitchAccentLab({ speak, toast }) {
         const canvas = canvasRef.current;
         if (!canvas) return;
         const ctx = canvas.getContext("2d");
-        ctx.fillStyle = "#ffffff";
+        ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue("--color-surface").trim() || "#ffffff";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
         ctx.lineWidth = 3;
-        ctx.strokeStyle = "#58cc02"; // Verde Duolingo
+        ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue("--color-primary-strong").trim() || "#2e7c26";
         ctx.beginPath();
 
         const sliceWidth = (canvas.width * 1.0) / bufferLength;
@@ -119,7 +122,10 @@ export default function PitchAccentLab({ speak, toast }) {
       };
       drawWaveform();
 
-      mediaRecorderRef.current = new MediaRecorder(stream);
+      if(typeof MediaRecorder==='undefined')throw new Error('Gravação de áudio não suportada pelo navegador.');
+      const formats=['audio/mp4','audio/webm;codecs=opus','audio/webm'];
+      const mimeType=formats.find(t=>MediaRecorder.isTypeSupported?.(t));
+      mediaRecorderRef.current = mimeType?new MediaRecorder(stream,{mimeType}):new MediaRecorder(stream);
       audioChunksRef.current = [];
 
       mediaRecorderRef.current.ondataavailable = (event) => {
@@ -127,11 +133,12 @@ export default function PitchAccentLab({ speak, toast }) {
       };
 
       mediaRecorderRef.current.onstop = () => {
-        const audioBlob = new Blob(audioChunksRef.current, { type: "audio/webm" });
+        const audioBlob = new Blob(audioChunksRef.current, { type: mediaRecorderRef.current?.mimeType || audioChunksRef.current[0]?.type || "audio/mp4" });
         const url = URL.createObjectURL(audioBlob);
-        setAudioUrl(url);
+        setAudioUrl(previous=>{if(previous)URL.revokeObjectURL(previous);return url;});
         stream.getTracks().forEach((track) => track.stop());
         cancelAnimationFrame(animationFrameRef.current);
+        audioCtxRef.current?.close().catch(()=>{});audioCtxRef.current=null;
       };
 
       mediaRecorderRef.current.start();
@@ -139,7 +146,9 @@ export default function PitchAccentLab({ speak, toast }) {
       setWaveformActive(true);
       setSenseiFeedback(null);
     } catch (err) {
-      if (toast) toast("Permissão de microfone necessária para gravar a voz.");
+      liveStreamRef.current?.getTracks().forEach(track=>track.stop());
+      audioCtxRef.current?.close().catch(()=>{});audioCtxRef.current=null;
+      if (toast) toast(err?.message?.includes('suportada') ? err.message : "Não foi possível gravar. Confira a permissão do microfone no navegador.");
     }
   };
 
@@ -149,15 +158,18 @@ export default function PitchAccentLab({ speak, toast }) {
       setIsRecording(false);
       setWaveformActive(false);
 
-      // Feedback pedagógico do Sensei Hiroshi
-      setTimeout(() => {
-        setSenseiFeedback(
-          `Sensei Hiroshi: "Excelente tentativa! Notei que você pronunciou '${currentItem.word}'. Lembre-se: em ${currentItem.patternName}, mantenha a modulação suave e atente-se à queda tonal. Ouça a referência nativa abaixo e compare seu gráfico com o padrão de Tóquio."`,
-        );
-      }, 600);
+      // Sem análise acústica automática, não inventar uma avaliação da pronúncia.
+      setSenseiFeedback('Gravação concluída. Ouça sua voz e compare manualmente com o modelo. Esta ferramenta não pontua pronúncia automaticamente.');
     }
   };
 
+  useEffect(()=>()=>{
+    if(mediaRecorderRef.current?.state==='recording')mediaRecorderRef.current.stop();
+    liveStreamRef.current?.getTracks().forEach(track=>track.stop());
+    cancelAnimationFrame(animationFrameRef.current);
+    audioCtxRef.current?.close().catch(()=>{});
+  },[]);
+  useEffect(()=>()=>{if(audioUrl)URL.revokeObjectURL(audioUrl);},[audioUrl]);
   return (
     <div className="w-full space-y-6">
       {/* Topo do Laboratório de Pitch */}
@@ -208,7 +220,7 @@ export default function PitchAccentLab({ speak, toast }) {
             size="md"
             onClick={() => speak && speak(currentItem.word.split(" ")[0])}
           >
-            <Icon name="sound" /> Ouvir Nativo de Tóquio
+            <Icon name="sound" /> Ouvir voz de referência (sintética)
           </Button>
         </div>
 

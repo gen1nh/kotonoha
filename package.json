@@ -1,6 +1,6 @@
 {
   "name": "kotonoha-react",
-  "version": "1.0.0",
+  "version": "0.9.1",
   "private": true,
   "type": "module",
   "scripts": {
@@ -8,10 +8,12 @@
     "build": "vite build",
     "preview": "vite preview --host 127.0.0.1",
     "test": "node --test tests/*.test.js",
-    "test:e2e": "npm run build && playwright test"
+    "test:e2e": "npm run build && playwright test",
+    "audit:n5-release": "node scripts/audit-n5-release.mjs",
+    "editorial:n5": "node scripts/export-n5-review-queue.mjs",
+    "audit:n5-course": "node scripts/audit-n5-course.mjs"
   },
   "dependencies": {
-    "@fontsource-variable/inter": "^5.3.0",
     "react": "^19.3.0",
     "react-dom": "^19.3.0"
   },

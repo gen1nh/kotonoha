@@ -1,0 +1,284 @@
+{
+  "version": 1,
+  "level": "N5",
+  "editorialStatus": "draft",
+  "note": "Do not copy straight to the published bank. Independently verify Japanese, choices, source rights and audio.",
+  "items": [
+    {
+      "id": "n5-basic-01",
+      "level": "N5",
+      "skill": "vocabulary",
+      "competencyId": "n5-vocab-daily",
+      "status": "draft",
+      "prompt": "Qual é o significado de 水?",
+      "sentence": "水を飲みます。",
+      "choices": [
+        "Água",
+        "Fogo",
+        "Comida",
+        "Livro"
+      ],
+      "answerIndex": 0,
+      "explanation": "水 (みず) significa água.",
+      "provenance": {
+        "sourceId": "original",
+        "license": "Autoral Kotonoha (rascunho)",
+        "attribution": "Equipe Kotonoha"
+      },
+      "review": null
+    },
+    {
+      "id": "n5-basic-02",
+      "level": "N5",
+      "skill": "grammar",
+      "competencyId": "n5-grammar-basic",
+      "status": "draft",
+      "prompt": "Qual partícula marca o objeto direto?",
+      "sentence": "パン（　）食べます。",
+      "choices": [
+        "は",
+        "を",
+        "に",
+        "で"
+      ],
+      "answerIndex": 1,
+      "explanation": "を marca o objeto direto de 食べます.",
+      "provenance": {
+        "sourceId": "original",
+        "license": "Autoral Kotonoha (rascunho)",
+        "attribution": "Equipe Kotonoha"
+      },
+      "review": null
+    },
+    {
+      "id": "n5-basic-03",
+      "level": "N5",
+      "skill": "reading",
+      "competencyId": "n5-reading-messages",
+      "status": "draft",
+      "prompt": "Qual é a tradução mais adequada?",
+      "sentence": "私は学生です。",
+      "choices": [
+        "Eu sou estudante.",
+        "Eu sou professor.",
+        "Você é estudante.",
+        "Eu fui estudante."
+      ],
+      "answerIndex": 0,
+      "explanation": "私は indica o tópico eu, e 学生です significa ser estudante.",
+      "provenance": {
+        "sourceId": "original",
+        "license": "Autoral Kotonoha (rascunho)",
+        "attribution": "Equipe Kotonoha"
+      },
+      "review": null
+    },
+    {
+      "id": "n5-basic-04",
+      "level": "N5",
+      "skill": "vocabulary",
+      "competencyId": "n5-vocab-daily",
+      "status": "draft",
+      "prompt": "O que significa 今日?",
+      "sentence": "今日は月曜日です。",
+      "choices": [
+        "Ontem",
+        "Amanhã",
+        "Hoje",
+        "Semana"
+      ],
+      "answerIndex": 2,
+      "explanation": "今日 (きょう) significa hoje.",
+      "provenance": {
+        "sourceId": "original",
+        "license": "Autoral Kotonoha (rascunho)",
+        "attribution": "Equipe Kotonoha"
+      },
+      "review": null
+    },
+    {
+      "id": "n5-basic-05",
+      "level": "N5",
+      "skill": "grammar",
+      "competencyId": "n5-grammar-basic",
+      "status": "draft",
+      "prompt": "Qual forma é uma pergunta educada?",
+      "sentence": "これは本です（　）。",
+      "choices": [
+        "を",
+        "か",
+        "に",
+        "で"
+      ],
+      "answerIndex": 1,
+      "explanation": "A partícula か no final torna a frase uma pergunta.",
+      "provenance": {
+        "sourceId": "original",
+        "license": "Autoral Kotonoha (rascunho)",
+        "attribution": "Equipe Kotonoha"
+      },
+      "review": null
+    },
+    {
+      "id": "n5-basic-06",
+      "level": "N5",
+      "skill": "grammar",
+      "competencyId": "n5-grammar-basic",
+      "status": "draft",
+      "prompt": "Qual partícula indica o local onde a ação acontece?",
+      "sentence": "図書館（　）勉強します。",
+      "choices": [
+        "で",
+        "を",
+        "は",
+        "が"
+      ],
+      "answerIndex": 0,
+      "explanation": "で indica o lugar onde ocorre a ação de estudar.",
+      "provenance": {
+        "sourceId": "original",
+        "license": "Autoral Kotonoha (rascunho)",
+        "attribution": "Equipe Kotonoha"
+      },
+      "review": null
+    },
+    {
+      "id": "n5-basic-07",
+      "level": "N5",
+      "skill": "vocabulary",
+      "competencyId": "n5-vocab-daily",
+      "status": "draft",
+      "prompt": "O que significa 大きい?",
+      "sentence": "大きい犬です。",
+      "choices": [
+        "Pequeno",
+        "Grande",
+        "Rápido",
+        "Velho"
+      ],
+      "answerIndex": 1,
+      "explanation": "大きい (おおきい) significa grande.",
+      "provenance": {
+        "sourceId": "original",
+        "license": "Autoral Kotonoha (rascunho)",
+        "attribution": "Equipe Kotonoha"
+      },
+      "review": null
+    },
+    {
+      "id": "n5-basic-08",
+      "level": "N5",
+      "skill": "grammar",
+      "competencyId": "n5-grammar-basic",
+      "status": "draft",
+      "prompt": "Qual é o passado educado de 食べます?",
+      "sentence": "昨日、すしを（　）。",
+      "choices": [
+        "食べません",
+        "食べました",
+        "食べます",
+        "食べましょう"
+      ],
+      "answerIndex": 1,
+      "explanation": "食べました é a forma passada educada de 食べる.",
+      "provenance": {
+        "sourceId": "original",
+        "license": "Autoral Kotonoha (rascunho)",
+        "attribution": "Equipe Kotonoha"
+      },
+      "review": null
+    },
+    {
+      "id": "n5-basic-09",
+      "level": "N5",
+      "skill": "reading",
+      "competencyId": "n5-reading-messages",
+      "status": "draft",
+      "prompt": "Quando a pessoa vai à escola?",
+      "sentence": "毎朝、学校へ行きます。",
+      "choices": [
+        "Toda manhã",
+        "Toda noite",
+        "Aos domingos",
+        "Ontem"
+      ],
+      "answerIndex": 0,
+      "explanation": "毎朝 (まいあさ) significa toda manhã.",
+      "provenance": {
+        "sourceId": "original",
+        "license": "Autoral Kotonoha (rascunho)",
+        "attribution": "Equipe Kotonoha"
+      },
+      "review": null
+    },
+    {
+      "id": "n5-basic-10",
+      "level": "N5",
+      "skill": "grammar",
+      "competencyId": "n5-grammar-basic",
+      "status": "draft",
+      "prompt": "Qual partícula indica destino nesta frase?",
+      "sentence": "日本（　）行きます。",
+      "choices": [
+        "を",
+        "で",
+        "へ",
+        "が"
+      ],
+      "answerIndex": 2,
+      "explanation": "へ indica a direção ou destino do deslocamento.",
+      "provenance": {
+        "sourceId": "original",
+        "license": "Autoral Kotonoha (rascunho)",
+        "attribution": "Equipe Kotonoha"
+      },
+      "review": null
+    },
+    {
+      "id": "n5-basic-11",
+      "level": "N5",
+      "skill": "vocabulary",
+      "competencyId": "n5-vocab-daily",
+      "status": "draft",
+      "prompt": "O que significa 友だち?",
+      "sentence": "友だちと話します。",
+      "choices": [
+        "Professor",
+        "Família",
+        "Amigo",
+        "Criança"
+      ],
+      "answerIndex": 2,
+      "explanation": "友だち (ともだち) significa amigo.",
+      "provenance": {
+        "sourceId": "original",
+        "license": "Autoral Kotonoha (rascunho)",
+        "attribution": "Equipe Kotonoha"
+      },
+      "review": null
+    },
+    {
+      "id": "n5-basic-12",
+      "level": "N5",
+      "skill": "grammar",
+      "competencyId": "n5-grammar-basic",
+      "status": "draft",
+      "prompt": "Qual é a forma negativa educada de 飲みます?",
+      "sentence": "コーヒーを（　）。",
+      "choices": [
+        "飲みません",
+        "飲みました",
+        "飲みたい",
+        "飲みましょう"
+      ],
+      "answerIndex": 0,
+      "explanation": "飲みません é a forma negativa educada de 飲む.",
+      "provenance": {
+        "sourceId": "original",
+        "license": "Autoral Kotonoha (rascunho)",
+        "attribution": "Equipe Kotonoha"
+      },
+      "review": null
+    }
+  ]
+}

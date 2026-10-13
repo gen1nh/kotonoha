@@ -28,7 +28,7 @@ const BUTTON_VARIANTS = {
 };
 
 const BUTTON_SIZES = {
-  sm: "min-h-9 px-3.5 text-xs gap-1.5 rounded-xl",
+  sm: "min-h-11 px-3.5 text-xs gap-1.5 rounded-xl",
   md: "min-h-12 px-5 text-sm gap-2 rounded-2xl",
   lg: "min-h-14 px-7 text-base gap-2.5 rounded-2xl font-black",
 };

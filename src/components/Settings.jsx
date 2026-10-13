@@ -2,13 +2,14 @@ import React, { useState, useRef } from "react";
 import Icon from "./Icon.jsx";
 import { Card, Button } from "./ui/index.jsx";
 import { PageHeading } from "./UI.jsx";
-import { todayKey, initialState, normalizeState } from "../state.js";
-export function Settings({ state, setState, toast, onOpenOnboarding }) {
+import { todayKey, initialState, normalizeState, LEVELS } from "../state.js";
+import { dailyGoal, dailyActivityCount, GOAL_OPTIONS } from "../dailyPlan.js";
+export function Settings({ state, setState, toast, update, changeLevel, theme, setTheme, install, installPrompt, onOpenOnboarding }) {
   const [key, setKey] = useState(
-    () => sessionStorage.getItem("kotonoha.groqKey") || "",
+    () => { try{return sessionStorage.getItem("kotonoha.groqKey") || "";}catch{return "";} },
   );
   const [model, setModel] = useState(
-    () => sessionStorage.getItem("kotonoha.groqModel") || "",
+    () => {try{return sessionStorage.getItem("kotonoha.groqModel") || "";}catch{return "";}},
   );
   const [models, setModels] = useState(() => (model ? [model] : []));
   const [busy, setBusy] = useState(false);
@@ -62,10 +63,12 @@ export function Settings({ state, setState, toast, onOpenOnboarding }) {
     const file = e.target.files?.[0];
     if (!file) return;
     try {
+      if(file.size>5*1024*1024)throw new Error("Backup excede 5 MB. Verifique o arquivo antes de importar.");
       const imported = normalizeState(JSON.parse(await file.text()));
-      if (
-        window.confirm("Importar este backup e substituir o progresso atual?")
-      ) {
+      const previous = state.stats?.reviews || 0;
+      const incoming = imported.stats?.reviews || 0;
+      const summary = `Backup válido\nNível: ${imported.selectedLevel}\nRevisões no arquivo: ${incoming}\nRevisões atuais: ${previous}\n\nA importação SUBSTITUI todo o progresso deste navegador. Exporte o backup atual antes de continuar.\n\nDeseja importar?`;
+      if (window.confirm(summary)) {
         setState(imported);
         toast("Progresso importado.");
       }
@@ -80,51 +83,29 @@ export function Settings({ state, setState, toast, onOpenOnboarding }) {
     <div className="space-y-6 w-full min-w-0">
       <PageHeading
         title="Preferências & Metas"
-        description="Configure seu tempo diário, backups e integrações com IA."
+        description="Configure meta diária, aparência, backups e IA opcional."
         icon="settings"
         iconBg="bg-raised"
         iconColor="text-ink-strong"
       />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 w-full min-w-0">
-        {/* Plano de Estudo & Metas */}
-        <Card className="space-y-4 md:col-span-2 bg-paper border-2 border-b-6 border-line">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div>
-              <h3 className="text-lg font-bold text-ink">Meu Plano de Estudo Personalizado</h3>
-              <p className="text-xs text-muted leading-relaxed mt-1">
-                Objetivo, nível inicial e meta diária definidos com o Sensei Hiroshi.
-              </p>
-            </div>
-            {onOpenOnboarding && (
-              <Button
-                variant="purple"
-                size="sm"
-                onClick={onOpenOnboarding}
-                className="shrink-0"
-              >
-                Editar Plano & Metas →
-              </Button>
-            )}
+        {/* Configurações efetivas do app: uma fonte de verdade para a meta. */}
+        <Card className="space-y-4 md:col-span-2">
+          <div className="flex items-center justify-between gap-3"><div><h2 className="font-bold text-lg text-ink-strong">Seu plano</h2><p className="text-sm text-muted">A meta conta atividades concluídas. O tempo é apenas um indicador complementar.</p></div>{onOpenOnboarding&&<Button variant="secondary" size="sm" onClick={onOpenOnboarding}>Ver orientação</Button>}</div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <label className="block text-sm font-bold text-ink-strong">Meta diária de atividades
+              <select aria-label="Meta diária de atividades" className="mt-2 min-h-12 w-full rounded-xl border border-line bg-paper text-ink-strong px-3" value={dailyGoal(state)} onChange={e=>update(s=>{s.dailyActivityGoal=Number(e.target.value);})}>{GOAL_OPTIONS.map(n=><option key={n} value={n}>{n} {n===1?'atividade':'atividades'} por dia</option>)}</select>
+              <span className="block mt-1 text-xs text-muted">{dailyActivityCount(state)} atividade(s) concluída(s) hoje</span>
+            </label>
+            <label className="block text-sm font-bold text-ink-strong">Tema visual
+              <select aria-label="Tema visual" className="mt-2 min-h-12 w-full rounded-xl border border-line bg-paper text-ink-strong px-3" value={theme} onChange={e=>setTheme(e.target.value)}><option value="system">Usar tema do dispositivo</option><option value="light">Claro</option><option value="dark">Escuro</option></select>
+            </label>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
-            <div className="p-3 rounded-xl bg-raised border border-line">
-              <span className="type-caption text-muted block text-[10px]">Nível JLPT</span>
-              <strong className="type-body text-ink-strong">{state.selectedLevel || "N5"}</strong>
-            </div>
-            <div className="p-3 rounded-xl bg-raised border border-line">
-              <span className="type-caption text-muted block text-[10px]">Meta Diária</span>
-              <strong className="type-body text-ink-strong">{state.dailyGoalMinutes || 15} min / dia</strong>
-            </div>
-            <div className="p-3 rounded-xl bg-raised border border-line">
-              <span className="type-caption text-muted block text-[10px]">Ofensiva Ativa</span>
-              <strong className="type-body text-flame">{state.streak?.days || 1} dias</strong>
-            </div>
-            <div className="p-3 rounded-xl bg-raised border border-line">
-              <span className="type-caption text-muted block text-[10px]">Experiência</span>
-              <strong className="type-body text-blue">{(state.stats?.reviews || 0) * 15 + (state.streak?.days || 1) * 30} XP</strong>
-            </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-line">
+            <div className="rounded-xl bg-raised p-3"><p className="text-sm text-ink-strong font-bold">Histórico local</p><p className="text-xs text-muted mt-1">Sequência: {state.streak?.days||0} dia(s) · Revisões: {state.stats?.reviews||0} · {(state.stats?.reviews||0)*15} XP de revisão</p></div>
           </div>
+          {installPrompt&&<Button variant="secondary" onClick={install}>Instalar aplicativo neste dispositivo</Button>}
         </Card>
 
         {/* Backup dos Dados */}

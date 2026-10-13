@@ -17,6 +17,9 @@ import {
   totalStudySeconds,
 } from "../progress.js";
 import { formatDuration } from "../timer.js";
+import { levelInsights } from "../studyInsights.js";
+import DiagnosticPractice from "./DiagnosticPractice.jsx";
+import PaperPractice from "./PaperPractice.jsx";
 
 const MINUTE_OPTIONS = [5, 15, 30, 45, 60].map((m) => ({
   value: m,
@@ -38,6 +41,7 @@ export default function JlptDiagnostic({ state, update, toast }) {
     state.jlptGoals?.minutesPerDay || 15,
   );
 
+  const mastery = levelInsights(state, level);
   const hours = hoursProgress(state, level);
   const meters = skillMeters(state, level);
   const total = totalStudySeconds(state);
@@ -56,7 +60,7 @@ export default function JlptDiagnostic({ state, update, toast }) {
         minutesPerDay: dailyMinutes,
       };
     });
-    toast?.("Meta diária salva.");
+    toast?.("Referência de tempo salva. A meta de atividades não foi alterada.");
   };
 
   return (
@@ -66,7 +70,7 @@ export default function JlptDiagnostic({ state, update, toast }) {
           Quanto você já estudou
         </h2>
         <p className="mt-1 text-sm text-muted">
-          O tempo só conta enquanto você usa o app com a tela aberta e ativa
+          Esta análise de tempo é complementar à meta diária de atividades. O tempo só conta enquanto você usa o app com a tela aberta e ativa
           (cliques, toques ou digitação). Abrir a página e deixar parada não
           soma.
         </p>
@@ -104,6 +108,19 @@ export default function JlptDiagnostic({ state, update, toast }) {
         </p>
       </div>
 
+      <section aria-labelledby="mastery-title" className="rounded-xl border border-line bg-paper p-4 space-y-3">
+        <h3 id="mastery-title" className="text-lg font-bold text-ink">Retenção estimada pelos flashcards</h3>
+        <p className="text-sm text-muted">Baseada nas suas autoavaliações e intervalos de revisão; não equivale a uma nota ou certificação JLPT.</p>
+        <ProgressBar value={mastery.stabilityPercent || 0} label="Cartões com revisão estável" />
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-sm" aria-label="Situação dos cartões">
+          <div><strong className="block text-ink">{mastery.stable}</strong><span className="text-muted">Estáveis</span></div>
+          <div><strong className="block text-ink">{mastery.learning}</strong><span className="text-muted">Aprendendo</span></div>
+          <div><strong className="block text-ink">{mastery.retry}</strong><span className="text-muted">Precisam reforço</span></div>
+          <div><strong className="block text-ink">{mastery.new}</strong><span className="text-muted">Não iniciados</span></div>
+        </div>
+        <p className="text-xs text-muted">{mastery.due} revisões pendentes neste nível.</p>
+      </section>
+
       <section aria-labelledby="meters-title">
         <h3 id="meters-title" className="text-lg font-bold text-ink">
           Sua atividade em {level}
@@ -120,9 +137,9 @@ export default function JlptDiagnostic({ state, update, toast }) {
               <div className="flex items-center justify-between gap-2">
                 <strong className="text-sm text-ink">{meter.label}</strong>
                 {meter.value === null ? (
-                  <span className="text-xs font-bold text-[#777777]">Sem dados ainda</span>
+                  <span className="text-xs font-bold text-muted">Sem dados ainda</span>
                 ) : (
-                  <span className="text-xs font-black text-[#58cc02] tabular-nums">{meter.value}%</span>
+                  <span className="text-xs font-black text-primary-strong tabular-nums">{meter.value}%</span>
                 )}
               </div>
               <ProgressBar
@@ -141,24 +158,26 @@ export default function JlptDiagnostic({ state, update, toast }) {
         className="rounded-md border border-line bg-paper p-4"
       >
         <h3 id="goal-title" className="text-lg font-bold text-ink">
-          Sua meta diária
+          Referência pessoal de tempo
         </h3>
         <Segmented
           className="mt-2"
-          label="Minutos por dia"
+          label="Minutos usados na projeção"
           options={MINUTE_OPTIONS}
           value={dailyMinutes}
           onChange={setDailyMinutes}
         />
         <p className="mt-3 text-sm text-muted" aria-live="polite">
           {forecastDays === null
-            ? "Registre 10 minutos para comparar suas horas com a meta escolhida. Isso não mede prontidão para a prova."
-            : `Mantendo ${dailyMinutes} min por dia, a referência de ${bench.hoursMin} h do ${level} leva cerca de ${forecastDays.toLocaleString("pt-BR")} dias. Projeção da meta de tempo, sem previsão de aprovação.`}
+            ? "Acumule 10 minutos de estudo ativo para calcular a projeção. Isso não mede prontidão para a prova."
+            : `Mantendo ${dailyMinutes} min por dia, a referência de ${bench.hoursMin} h do ${level} leva cerca de ${forecastDays.toLocaleString("pt-BR")} dias. Referência opcional de tempo, sem previsão de aprovação.`}
         </p>
         <Button variant="primary" className="mt-3" onClick={saveGoal}>
-          <Icon name="check" /> Salvar meta
+          <Icon name="check" /> Salvar referência
         </Button>
       </section>
+      <DiagnosticPractice key={level} level={level} update={update} />
+      <PaperPractice level={level} />
     </Card>
   );
 }

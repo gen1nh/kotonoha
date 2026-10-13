@@ -4,7 +4,6 @@ import { Card, Button } from "./ui/index.jsx";
 import { PageHeading } from "./UI.jsx";
 import { HIRAGANA, KATAKANA, VOCAB, GRAMMAR } from "../data.js";
 import { CURRICULUM, VOCAB_BY_LEVEL } from "../curriculum.js";
-import { markStudy } from "../state.js";
 import { handleTabKeys } from "../navigation.js";
 import WebResources from "./WebResources.jsx";
 import MediaLab from "./MediaLab.jsx";
@@ -17,6 +16,8 @@ export function Learn({
   go,
   speak,
   learnTopic = "hiragana",
+  openGuidedLesson,
+  changeLevel,
 }) {
   const [tab, setTab] = useState(learnTopic);
   useEffect(() => {
@@ -59,8 +60,8 @@ export function Learn({
   }
 
   const LEARN_TABS = [
-    { id: "hiragana", label: "Hiragana", glyph: "あ", count: "46", color: "text-sakura" },
-    { id: "katakana", label: "Katakana", glyph: "ア", count: "46", color: "text-sakura" },
+    { id: "hiragana", label: "Hiragana", glyph: "あ", count: "46", color: "text-primary-strong" },
+    { id: "katakana", label: "Katakana", glyph: "ア", count: "46", color: "text-primary-strong" },
     {
       id: "vocabulary",
       label: `Palavras ${selectedLevel}`,
@@ -69,21 +70,45 @@ export function Learn({
       color: "text-amber-ink",
     },
     { id: "grammar", label: "Gramática", glyph: "文", color: "text-indigo-ink" },
-    { id: "web_resources", label: "Fontes Web", glyph: "網", color: "text-review" },
-    { id: "media_lab", label: "Mídia & Animes", glyph: "画", color: "text-primary" },
+
   ];
+  // Materiais opcionais só entram na barra de abas quando abertos. Assim todo
+  // painel ativo possui uma aba ARIA correspondente e navegável pelo teclado.
+  const optionalTab = tab === "web_resources"
+    ? { id: "web_resources", label: "Fontes web", glyph: "本", color: "text-blue" }
+    : tab === "media_lab"
+      ? { id: "media_lab", label: "Mídia", glyph: "音", color: "text-blue" }
+      : null;
+  const visibleTabs = optionalTab ? [...LEARN_TABS, optionalTab] : LEARN_TABS;
 
   return (
     <div className="space-y-6">
       {/* Cabeçalho da Biblioteca */}
       <PageHeading
         title="Biblioteca & Alfabetos Kana"
-        description="Matriz dos 46 caracteres, lousa de caligrafia digital e vocabulário."
+        description="Consulte caracteres, frases e significados; a Trilha controla a progressão."
         icon="learn"
         iconBg="bg-blue-soft"
         iconColor="text-blue"
       />
 
+      <div className="rounded-2xl border border-line bg-paper p-4 space-y-2" aria-label="Orientação de estudo">
+        <p className="font-bold text-ink-strong">Estude sem se perder</p>
+        <p className="text-sm text-muted">Leia os exemplos, ouça a pronúncia e pratique. Para avançar, retorne à lição guiada na Trilha. As fontes e mídias abaixo são materiais opcionais.</p>
+        <div className="flex flex-wrap gap-3 items-center">
+          <button type="button" onClick={() => go('path')} className="text-sm font-bold text-primary underline underline-offset-4">← Voltar para minha trilha</button>
+          <button type="button" onClick={() => go('practice')} className="rounded-xl border-2 border-primary px-3 py-2 text-sm font-bold text-primary-strong">Prática livre →</button>
+        </div>
+        <p className="text-xs text-muted">Esta área é de consulta. Para conquistar competências, use a Trilha.</p>
+        <label className="flex flex-wrap items-center gap-2 text-sm font-bold text-ink-strong">Nível de referência <select className="min-h-11 rounded-xl border border-line bg-paper px-3 text-ink-strong" value={selectedLevel} onChange={e=>changeLevel(e.target.value)}>{['N5','N4','N3','N2','N1'].map(level=><option key={level} value={level}>{level}</option>)}</select></label>
+      </div>
+      <details className="rounded-xl border border-line bg-paper p-3">
+        <summary className="cursor-pointer font-bold text-sm text-muted">Materiais complementares (opcional)</summary>
+        <div className="flex flex-wrap gap-2 mt-3">
+          <button type="button" className="rounded-lg border border-line px-3 py-2 text-sm text-primary" onClick={() => changeTab('web_resources')}>Fontes Web</button>
+          <button type="button" className="rounded-lg border border-line px-3 py-2 text-sm text-primary" onClick={() => changeTab('media_lab')}>Mídia & Animes</button>
+        </div>
+      </details>
       {/* Abas da Biblioteca */}
       <div
         className="flex flex-wrap gap-2 p-1.5 bg-paper rounded-2xl border-2 border-b-4 border-line"
@@ -91,7 +116,7 @@ export function Learn({
         aria-label="Conteúdos da biblioteca"
         onKeyDown={handleTabKeys}
       >
-        {LEARN_TABS.map((item) => {
+        {visibleTabs.map((item) => {
           const active = tab === item.id;
           return (
             <button
@@ -125,7 +150,7 @@ export function Learn({
         })}
       </div>
 
-      <div id="learn-panel" role="tabpanel" aria-labelledby={`tab-${tab}`}>
+      <div id="learn-panel" role="tabpanel" aria-label="Conteúdo selecionado da biblioteca">
         {tab === "web_resources" ? (
           <WebResources state={state} update={update} toast={toast} />
         ) : tab === "media_lab" ? (
@@ -172,13 +197,13 @@ export function Learn({
                       }}
                       className={`relative flex flex-col items-center justify-center p-3 rounded-2xl border-2 border-b-4 transition-all cursor-pointer active:translate-y-px ${
                         isSelected
-                          ? "border-[#58cc02] bg-[#58cc02] border-b-[#46a302] text-white font-black scale-105 z-10"
-                          : "border-[#e5e5e5] bg-white text-[#3c3c3c] hover:bg-[#f7f7f7] hover:border-[#cecece]"
+                          ? "border-primary bg-primary border-b-primary-dark text-white font-black scale-105 z-10"
+                          : "border-line bg-paper text-ink-strong hover:bg-raised hover:border-edge"
                       }`}
                     >
                       <span className="font-jp text-2xl font-black">{ch}</span>
                       <small
-                        className={`text-xs mt-1 font-bold ${isSelected ? "text-white/90" : "text-[#777777]"}`}
+                        className={`text-xs mt-1 font-bold ${isSelected ? "text-white/90" : "text-muted"}`}
                       >
                         {ro}
                       </small>
@@ -208,7 +233,7 @@ export function Learn({
                     <span className="text-xs font-bold text-muted uppercase tracking-wider">
                       Prática de Caligrafia
                     </span>
-                    <span className="text-xs font-black text-[#58cc02] uppercase tracking-wider">{type}</span>
+                    <span className="text-xs font-black text-primary-strong uppercase tracking-wider">{type}</span>
                   </div>
                   <h3 className="text-xl font-bold text-ink mt-1 flex items-center gap-2.5">
                     <span>Caractere:</span>
@@ -236,8 +261,6 @@ export function Learn({
                 save={() => {
                   update((s) => {
                     s.lessons[`draw:${character}`] = true;
-                    s.stats.reviews++;
-                    markStudy(s);
                   });
                   toast(`${character} praticado no papel digital.`);
                 }}
@@ -249,7 +272,7 @@ export function Learn({
             <Card className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-black text-[#ff9600] uppercase tracking-wider">JLPT {selectedLevel}</span>
+                  <span className="text-xs font-black text-flame-ink uppercase tracking-wider">JLPT {selectedLevel}</span>
                   <span className="text-xs text-muted">Memorização contextual</span>
                 </div>
                 <h2 className="text-xl font-bold text-ink mt-1">
@@ -295,7 +318,7 @@ export function Learn({
                       <span className="font-jp text-lg font-bold text-primary mr-1">
                         {kanji}
                       </span>
-                      <span className="text-xs font-black text-[#ff9600] uppercase tracking-wider">
+                      <span className="text-xs font-black text-flame-ink uppercase tracking-wider">
                         {selectedLevel}
                       </span>
                     </div>
@@ -325,7 +348,7 @@ export function Learn({
             <Card className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-black text-[#1cb0f6] uppercase tracking-wider">Gramática · {selectedLevel}</span>
+                  <span className="text-xs font-black text-blue-ink uppercase tracking-wider">Gramática · {selectedLevel}</span>
                 </div>
                 <h2 className="text-xl font-bold text-ink mt-1">
                   Estruturas e partículas fundamentais
@@ -338,12 +361,12 @@ export function Learn({
               <Button
                 variant="primary"
                 onClick={() =>
-                  selectedLevel === "N5" ? setQuiz(true) : go("jlpt")
+                  selectedLevel === "N5" ? setQuiz(true) : go("path")
                 }
               >
                 {selectedLevel === "N5"
                   ? "Praticar desafio"
-                  : `Abrir lições ${selectedLevel}`}{" "}
+                  : `Consultar minha Trilha`}{" "}
                 →
               </Button>
             </Card>
@@ -366,7 +389,7 @@ export function Learn({
                   <summary className="flex cursor-pointer items-center justify-between font-bold text-ink list-none">
                     <div className="flex items-center gap-2">
                       <span className="text-base">{g.title}</span>
-                      <span className="text-xs font-black text-[#1cb0f6] uppercase tracking-wider">
+                      <span className="text-xs font-black text-blue-ink uppercase tracking-wider">
                         Padrão
                       </span>
                     </div>
@@ -422,8 +445,7 @@ export function Learn({
                         if (i === 0) {
                           update((s) => {
                             s.lessons.grammar = true;
-                            markStudy(s);
-                          });
+                                  });
                           toast("Correto! は (wa) marca o tópico.");
                         } else {
                           toast(

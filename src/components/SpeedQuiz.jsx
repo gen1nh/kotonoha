@@ -347,7 +347,7 @@ export default function SpeedQuiz({ state, update, onClose }) {
 
               {combo >= 2 && (
                 <div className="text-secondary-ink font-bold text-xs flex items-center gap-1">
-                  <Icon name="flame" className="w-3.5 h-3.5 text-[#ff9600]" />
+                  <Icon name="flame" className="w-3.5 h-3.5 text-flame" />
                   <span>{combo}x</span>
                 </div>
               )}
@@ -409,7 +409,7 @@ export default function SpeedQuiz({ state, update, onClose }) {
               <h3 className="text-xl font-bold text-ink">Tempo Esgotado!</h3>
               {isNewRecord && (
                 <span className="inline-flex items-center gap-1.5 text-secondary-ink text-xs font-bold">
-                  <Icon name="trophy" className="w-4 h-4 text-[#ff9600]" />
+                  <Icon name="trophy" className="w-4 h-4 text-flame" />
                   <span>Novo Recorde Pessoal!</span>
                 </span>
               )}

@@ -1,13 +1,13 @@
 {
   "name": "Kotonoha",
   "short_name": "Kotonoha",
-  "description": "Um app gratuito para estudar japonês do N5 ao N1.",
+  "description": "Curso guiado de fundamentos N5 e práticas introdutórias JLPT N4–N1, com estudo offline.",
   "lang": "pt-BR",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#f7f5f5",
-  "theme_color": "#f7f5f5",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
   "icons": [
     {
       "src": "./icon.svg",
