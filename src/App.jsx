@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import Shell from "./Shell.jsx";
+import {speakJapanese, warmJapaneseVoices, stopSpeech} from "./speech.js";
 import { KEY, initialState, normalizeState, selectReview } from "./state.js";
 import {
   startTracker,
@@ -119,17 +120,8 @@ export default function App() {
       go(button.dataset.view);
     }
   };
-  const speak = (text) => {
-    if (!("speechSynthesis" in window)) {
-      toast("A voz do navegador não está disponível neste aparelho.");
-      return;
-    }
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = "ja-JP";
-    utterance.rate = 0.82;
-    window.speechSynthesis.speak(utterance);
-  };
+  useEffect(() => {const cleanup=warmJapaneseVoices();return () => {cleanup();stopSpeech();};}, []);
+  const speak = text => speakJapanese(text,toast);
   const install = async () => {
     if (!installPrompt) return;
     await installPrompt.prompt();
