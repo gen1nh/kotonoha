@@ -1,14 +1,14 @@
 import React, {useState,useEffect,useCallback,useRef} from 'react';
 import {useCloudSync} from './model/useCloudSync.js';
 import Shell from './Shell.jsx';
-import {KEY,initialState,normalizeState,selectReview} from '../entities/study/index.js';
-import {startTracker,setTrackingEnabled,takePendingSeconds} from '../entities/study/index.js';
-import {addStudySeconds} from '../entities/study/index.js';
-import {collectActivityChanges} from '../entities/study/index.js';
-import {VIEWS,resolveView,viewFromSearch,isAccessibleLesson,isAccessibleCheckpoint} from '../entities/study/index.js';
-import {courseLevel} from '../entities/study/index.js';
-import {cardIdsForUnit,unitById,unitsForTopic,unitPassed} from '../entities/study/index.js';
-import {speakJapanese,warmJapaneseVoices,stopSpeech} from '../entities/study/index.js';
+import {
+  KEY, initialState, normalizeState, selectReview,
+  startTracker, setTrackingEnabled, takePendingSeconds, addStudySeconds,
+  collectActivityChanges, resolveView, viewFromSearch,
+  isAccessibleLesson, isAccessibleCheckpoint, courseLevel,
+  cardIdsForUnit, unitById, unitsForTopic, unitPassed,
+  speakJapanese, warmJapaneseVoices, stopSpeech
+} from '../entities/study/index.js';
 
 /** All screen transitions go through this router; each user action writes one history entry. */
 function parseRoute(state) {

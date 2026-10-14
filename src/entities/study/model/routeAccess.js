@@ -1,5 +1,5 @@
 import {CURRICULUM} from './curriculum.js';
-import {unitById,unitAccessible,unitPracticed,topicPassed} from './courseUnits.js';
+import {unitById,unitAccessible,unitPracticed} from './courseUnits.js';
 import {hasPassedInternalN5,hasCompletedN5Basics} from './pedagogy/readiness.js';
 export const VIEWS=Object.freeze(['home','path','lesson','checkpoint','practice','review','progress','learn','notebook','syntax','errors','line','pitch','settings']);
 export const N5_FOUNDATIONS=Object.freeze(['hiragana','katakana','words','grammar']);

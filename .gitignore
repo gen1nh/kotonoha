@@ -10,3 +10,15 @@ playwright-report/
 .env*
 __pycache__/
 *.pyc
+
+# Generated visual review snapshots and temporary packaging; do not commit.
+.impeccable/font-package/
+.impeccable/package-stage/
+.impeccable/bamboo-review/
+.impeccable/cleanup-review/
+.impeccable/hierarchy-review/
+.impeccable/review/
+.impeccable/studio-review/
+
+# Local machine-specific Impeccable settings
+.impeccable/config.local.json
