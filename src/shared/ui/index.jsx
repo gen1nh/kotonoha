@@ -4,6 +4,8 @@ import Icon from "./Icon.jsx";
 /** Junta classes ignorando valores falsos. */
 export const cx = (...parts) => parts.filter(Boolean).join(" ");
 
+const BLUE_BUTTON_CLASSES = "bg-blue border-b-4 border-blue-dark text-white hover:bg-blue/90 active:border-b-2 active:translate-y-[2px] type-button";
+
 const BUTTON_VARIANTS = {
   primary:
     "bg-primary border-b-4 border-primary-dark text-white hover:bg-primary-strong active:border-b-2 active:translate-y-[2px] type-button",
@@ -18,15 +20,13 @@ const BUTTON_VARIANTS = {
   flame:
     "bg-flame border-b-4 border-flame-dark text-white hover:bg-flame/90 active:border-b-2 active:translate-y-[2px] type-button",
   // Review and blue intentionally share the same design tokenized treatment.
-  review: null,
-  blue:
-    "bg-blue border-b-4 border-blue-dark text-white hover:bg-blue/90 active:border-b-2 active:translate-y-[2px] type-button",
+  review: BLUE_BUTTON_CLASSES,
+  blue: BLUE_BUTTON_CLASSES,
   purple:
     "bg-purple border-b-4 border-purple-dark text-white hover:bg-purple/90 active:border-b-2 active:translate-y-[2px] type-button",
   gold:
     "bg-gold border-b-4 border-gold-dark text-ink-strong hover:bg-gold/90 active:border-b-2 active:translate-y-[2px] type-button",
 };
-BUTTON_VARIANTS.review = BUTTON_VARIANTS.blue;
 
 const BUTTON_SIZES = {
   sm: "min-h-11 px-3.5 text-xs gap-1.5 rounded-xl",
