@@ -73,3 +73,7 @@ Os valores implementados estão em `src/index.css` (`@theme`); não introduzir h
 3. Teste real de Safari: fala, gravação, saída de background, canvas, atualização PWA e uso offline.
 4. Backups anteriores importam sem perda de cartões, notas e checkpoints; não há sincronização em nuvem nesta versão.
 5. Qualquer alteração de progresso acompanhada de teste de regressão e documentação.
+
+## Preferências — conta e áudio
+
+Conta em painel compacto acima dos ajustes. Meta, tema e áudio ficam visíveis; importação, IA, ajuda e reinício são expansíveis. Exportar backup continua acessível diretamente. Não repetir estatísticas da tela Progresso. Efeitos sonoros discretos, ajustáveis por aparelho, nunca substituem feedback textual nem interrompem a pronúncia.

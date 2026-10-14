@@ -1,3 +1,4 @@
+import { playSound } from '../../../shared/audio/index.js';
 import React,{useState} from 'react';
 import { Button } from '../../../shared/ui/index.jsx';
 import { checkKanaTyping, normalizeKanaAnswer } from '../../../entities/study/index.js';
@@ -12,7 +13,7 @@ export default function KanaTypingPractice({samples,kind}) {
   const prompt=kind==='kanji'?item.example:item.glyph;
   const correct=checkKanaTyping(typed,target);
   const next=()=>{
-    if (index+1===items.length) { setCompleted(true); return; }
+    if (index+1===items.length) { playSound('complete'); setCompleted(true); return; }
     setIndex(n=>n+1); setTyped(''); setChecked(false);
   };
   const reset=()=>{setIndex(0);setTyped('');setChecked(false);setCompleted(false);};
@@ -24,7 +25,7 @@ export default function KanaTypingPractice({samples,kind}) {
     </div>
     {completed ? <div className="space-y-2"><p role="status" className="text-sm font-bold text-primary-strong">Você praticou {items.length} leituras.</p><Button variant="secondary" onClick={reset}>Refazer treino</Button></div> : <>
       <p lang="ja" className="text-center font-jp text-3xl sm:text-4xl font-black text-ink-strong bg-raised rounded-2xl p-4">{prompt}</p>
-      <form className="space-y-3" onSubmit={e=>{e.preventDefault();if(!checked)setChecked(true);else if(correct)next();}}>
+      <form className="space-y-3" onSubmit={e=>{e.preventDefault();if(!checked){playSound(correct?'correct':'incorrect');setChecked(true);}else if(correct)next();}}>
         <label htmlFor="kana-typing-answer" className="block text-sm font-bold text-ink-strong">{kind==='kanji'?'Digite a leitura da palavra':'Digite a leitura deste item'}</label>
         <input id="kana-typing-answer" type="text" lang="ja" autoCapitalize="off" autoComplete="off" autoCorrect="off" spellCheck={false} value={typed} onChange={e=>{setTyped(e.target.value);setChecked(false);}} placeholder="Ex.: nihongo → にほんご" className="min-h-12 w-full rounded-xl border-2 border-line bg-paper px-4 text-base text-ink-strong focus-visible:outline-2 focus-visible:outline-primary" />
         {typed&&<p className="text-xs text-muted">Conversão: <span lang="ja" className="font-jp text-base font-bold text-ink-strong">{normalizeKanaAnswer(typed)}</span></p>}

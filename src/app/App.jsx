@@ -1,4 +1,5 @@
 import React, {useState,useEffect,useCallback,useRef} from 'react';
+import {useCloudSync} from './model/useCloudSync.js';
 import Shell from './Shell.jsx';
 import {KEY,initialState,normalizeState,selectReview} from '../entities/study/index.js';
 import {startTracker,setTrackingEnabled,takePendingSeconds} from '../entities/study/index.js';
@@ -38,6 +39,7 @@ export default function App(){
   const [route,setRoute]=useState(()=>parseRoute(state));
   const [reviewContext,setReviewContext]=useState(()=>history.state?.reviewOrigin||null);
   const [saveError,setSaveError]=useState(false);
+  const cloud=useCloudSync({state,setState,blocked:storageBlocked||saveError});
   const stateSnapshot=useRef(state);
   const [learnTopic,setLearnTopic]=useState('hiragana');
   const [queue,setQueue]=useState(()=>route.view==='review'?selectReview({...state,selectedLevel:courseLevel(state)}):[]);
@@ -123,7 +125,7 @@ export default function App(){
   useEffect(()=>{const stopWatching=warmJapaneseVoices();return()=>{stopWatching();stopSpeech();};},[]);
   const speak=text=>speakJapanese(text,toast);
   const install=async()=>{if(!installPrompt)return;await installPrompt.prompt();await installPrompt.userChoice;setInstallPrompt(null);};
-  const shared={state,update,toast,go,goBack,speak,queue,setState,changeLevel,study,studyUnit,openLearn,openLesson,openGuidedLesson,openCheckpoint,route,reviewContext,learnTopic};
+  const shared={state,update,toast,go,goBack,speak,queue,setState,changeLevel,study,studyUnit,openLearn,openLesson,openGuidedLesson,openCheckpoint,route,reviewContext,learnTopic,cloud};
   return <>
     {storageBlocked&&<div role="alert" className="fixed z-[100] top-2 left-2 right-2 mx-auto max-w-xl bg-paper border-2 border-danger rounded-xl p-4 text-sm text-ink-strong"><strong>Progresso salvo não pôde ser lido.</strong><p>Os dados originais foram preservados. Baixe o arquivo bruto antes de restaurar um backup; novas alterações não serão salvas até isso ser corrigido.</p><button className="underline font-bold mt-2" onClick={()=>{let raw='';try{raw=localStorage.getItem(KEY)||'';}catch{toast('Armazenamento bloqueado pelo navegador. Libere o acesso nas configurações.');return;}const a=document.createElement('a');const u=URL.createObjectURL(new Blob([raw],{type:'application/json'}));a.href=u;a.download='kotonoha-recuperacao.json';a.click();URL.revokeObjectURL(u);}}>Baixar dados para recuperação</button><label className="block mt-3 font-bold">Restaurar backup válido<input type="file" accept="application/json,.json" className="block mt-1" onChange={async e=>{const file=e.target.files?.[0];if(!file)return;try{const next=normalizeState(JSON.parse(await file.text()));if(window.confirm('Substituir dados locais danificados? Baixe primeiro o arquivo de recuperação.')){localStorage.setItem(KEY,JSON.stringify(next));setState(next);setStorageBlocked(false);}}catch{alert('Backup inválido. Dados originais preservados.');}}}/></label></div>}
     {saveError&&<div role="alert" className="fixed top-[env(safe-area-inset-top)] left-3 right-3 z-[110] mx-auto max-w-xl rounded-2xl border-2 border-danger bg-paper p-4 text-sm text-ink-strong"><strong>Seu progresso ainda não foi salvo.</strong> Exporte agora um backup em Preferências ou libere espaço no dispositivo. <button className="underline font-bold" type="button" onClick={()=>{const blob=new Blob([JSON.stringify(stateSnapshot.current,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='kotonoha-backup-emergencia.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}}>Exportar dados atuais</button></div>}

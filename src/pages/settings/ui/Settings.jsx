@@ -1,10 +1,11 @@
 import React, { useState, useRef } from "react";
-import Icon from "../../../shared/ui/Icon.jsx";
+import { SoundSettings } from './SoundSettings.jsx';
+import { AccountSync } from './AccountSync.jsx';
 import { Card, Button } from "../../../shared/ui/index.jsx";
 import { PageHeading } from "../../../shared/ui/index.jsx";
-import { todayKey, initialState, normalizeState, LEVELS } from "../../../entities/study/index.js";
-import { dailyGoal, dailyActivityCount, GOAL_OPTIONS } from "../../../entities/study/index.js";
-export function Settings({ state, setState, toast, update, changeLevel, theme, setTheme, install, installPrompt, onOpenOnboarding }) {
+import { todayKey, initialState, normalizeState } from "../../../entities/study/index.js";
+import { dailyGoal, GOAL_OPTIONS } from "../../../entities/study/index.js";
+export function Settings({ state, setState, toast, update, changeLevel, theme, setTheme, install, installPrompt, onOpenOnboarding, cloud }) {
   const [key, setKey] = useState(
     () => { try{return sessionStorage.getItem("kotonoha.groqKey") || "";}catch{return "";} },
   );
@@ -67,7 +68,7 @@ export function Settings({ state, setState, toast, update, changeLevel, theme, s
       const imported = normalizeState(JSON.parse(await file.text()));
       const previous = state.stats?.reviews || 0;
       const incoming = imported.stats?.reviews || 0;
-      const summary = `Backup válido\nNível: ${imported.selectedLevel}\nRevisões no arquivo: ${incoming}\nRevisões atuais: ${previous}\n\nA importação SUBSTITUI todo o progresso deste navegador. Exporte o backup atual antes de continuar.\n\nDeseja importar?`;
+      const summary = `Backup válido\nNível: ${imported.selectedLevel}\nRevisões no arquivo: ${incoming}\nRevisões atuais: ${previous}\n\nA importação SUBSTITUI todo o progresso deste navegador. Exporte o backup atual antes de continuar.${cloud?.user ? '\nVocê está conectado: o progresso importado também poderá substituir a versão na nuvem.' : ''}\n\nDeseja importar?`;
       if (window.confirm(summary)) {
         setState(imported);
         toast("Progresso importado.");
@@ -81,64 +82,36 @@ export function Settings({ state, setState, toast, update, changeLevel, theme, s
 
   return (
     <div className="space-y-6 w-full min-w-0">
-      <PageHeading
-        title="Preferências & Metas"
-        description="Configure meta diária, aparência, backups e IA opcional."
-        icon="settings"
-        iconBg="bg-raised"
-        iconColor="text-ink-strong"
-      />
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 w-full min-w-0">
-        {/* Configurações efetivas do app: uma fonte de verdade para a meta. */}
-        <Card className="space-y-4 md:col-span-2">
-          <div className="flex items-center justify-between gap-3"><div><h2 className="font-bold text-lg text-ink-strong">Seu plano</h2><p className="text-sm text-muted">A meta conta atividades concluídas. O tempo é apenas um indicador complementar.</p></div>{onOpenOnboarding&&<Button variant="secondary" size="sm" onClick={onOpenOnboarding}>Ver orientação</Button>}</div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <label className="block text-sm font-bold text-ink-strong">Meta diária de atividades
-              <select aria-label="Meta diária de atividades" className="mt-2 min-h-12 w-full rounded-xl border border-line bg-paper text-ink-strong px-3" value={dailyGoal(state)} onChange={e=>update(s=>{s.dailyActivityGoal=Number(e.target.value);})}>{GOAL_OPTIONS.map(n=><option key={n} value={n}>{n} {n===1?'atividade':'atividades'} por dia</option>)}</select>
-              <span className="block mt-1 text-xs text-muted">{dailyActivityCount(state)} atividade(s) concluída(s) hoje</span>
-            </label>
-            <label className="block text-sm font-bold text-ink-strong">Tema visual
-              <select aria-label="Tema visual" className="mt-2 min-h-12 w-full rounded-xl border border-line bg-paper text-ink-strong px-3" value={theme} onChange={e=>setTheme(e.target.value)}><option value="system">Usar tema do dispositivo</option><option value="light">Claro</option><option value="dark">Escuro</option></select>
-            </label>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-line">
-            <div className="rounded-xl bg-raised p-3"><p className="text-sm text-ink-strong font-bold">Histórico local</p><p className="text-xs text-muted mt-1">Sequência: {state.streak?.days||0} dia(s) · Revisões: {state.stats?.reviews||0} · {(state.stats?.reviews||0)*15} XP de revisão</p></div>
-          </div>
-          {installPrompt&&<Button variant="secondary" onClick={install}>Instalar aplicativo neste dispositivo</Button>}
+      <PageHeading title="Preferências" description="Seu ritmo, sua conta e os ajustes do aplicativo." icon="settings" iconBg="bg-raised" iconColor="text-ink-strong" />
+      <AccountSync cloud={cloud} state={state} />
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 items-start">
+        <Card className="space-y-5">
+          <div><h2 className="text-lg font-bold text-ink-strong">Seu jeito de estudar</h2><p className="text-sm text-muted mt-1">Ajustes salvos automaticamente.</p></div>
+          <label className="block text-sm font-bold text-ink-strong">Meta diária de atividades
+            <select aria-label="Meta diária de atividades" className="mt-2 min-h-12 w-full rounded-xl border border-line bg-paper text-ink-strong px-3" value={dailyGoal(state)} onChange={e=>update(s=>{s.dailyActivityGoal=Number(e.target.value);})}>{GOAL_OPTIONS.map(n=><option key={n} value={n}>{n} {n===1?'atividade':'atividades'} por dia</option>)}</select>
+          </label>
+          <label className="block text-sm font-bold text-ink-strong">Tema visual
+            <select aria-label="Tema visual" className="mt-2 min-h-12 w-full rounded-xl border border-line bg-paper text-ink-strong px-3" value={theme} onChange={e=>setTheme(e.target.value)}><option value="system">Usar tema do dispositivo</option><option value="light">Claro</option><option value="dark">Escuro</option></select>
+          </label>
+          <SoundSettings toast={toast} />
         </Card>
-
-        {/* Backup dos Dados */}
-      <Card className="space-y-4">
-        <h3 className="text-lg font-bold text-ink">Backup e Portabilidade</h3>
-        <p className="text-xs text-muted leading-relaxed">
-          Todo o seu estudo fica salvo no seu navegador. Exporte um arquivo JSON
-          para guardar cópia ou transferir para o celular.
-        </p>
-        <div className="flex flex-wrap gap-2 pt-2">
-          <Button variant="primary" onClick={exportBackup}>
-            Exportar backup JSON
-          </Button>
-          <Button
-            variant="secondary"
-            onClick={() => importInput.current?.click()}
-          >
-            Importar backup
-          </Button>
-          <input
-            ref={importInput}
-            type="file"
-            accept="application/json"
-            hidden
-            onChange={importBackup}
-          />
-        </div>
-      </Card>
-
-      {/* Assistente IA Opcional */}
-      <Card className="space-y-4">
+        <div className="space-y-4">
+          <Card className="space-y-4">
+            <h2 className="text-lg font-bold text-ink-strong">Seus dados</h2>
+            <p className="text-sm text-muted">Guarde uma cópia independente do seu progresso.</p>
+            <Button variant="secondary" onClick={exportBackup}>Exportar backup JSON</Button>
+            <details className="border-t border-line pt-2">
+              <summary className="cursor-pointer min-h-11 flex items-center text-sm font-bold text-ink-strong">Importar um backup</summary>
+              <p className="text-sm text-muted mb-3">A importação substitui o progresso atual. Exporte uma cópia antes de continuar.</p>
+              <Button variant="secondary" onClick={()=>importInput.current?.click()}>Escolher arquivo de backup</Button>
+            </details>
+            <input ref={importInput} type="file" accept="application/json" hidden onChange={importBackup} />
+          </Card>
+          <details className="rounded-2xl border-2 border-line bg-paper p-5 sm:p-6">
+            <summary className="cursor-pointer min-h-11 text-ink-strong font-bold">Assistente de IA <span className="font-normal text-sm text-muted">· opcional</span></summary>
+            <div className="pt-4">      <div className="space-y-4">
         <h3 className="text-lg font-bold text-ink">
-          Chave Groq / OmniRoute Local
+          Conectar assistente de IA
         </h3>
         <p className="text-xs text-muted leading-relaxed">
           A prática guiada funciona sem IA. Para respostas geradas, use a Groq
@@ -207,10 +180,15 @@ export function Settings({ state, setState, toast, update, changeLevel, theme, s
             {busy ? "Buscando…" : "Validar Chave"}
           </Button>
         </div>
-      </Card>
+      </div>
 
-      {/* Zona de Perigo */}
-      <Card className="space-y-4 md:col-span-2 border-danger/30 bg-danger-soft/10">
+</div>
+          </details>
+          <details className="rounded-2xl border-2 border-line bg-paper p-5 sm:p-6">
+            <summary className="cursor-pointer min-h-11 text-ink-strong font-bold">Ajuda e gerenciamento</summary>
+            <div className="pt-4 space-y-5">
+              <div className="flex flex-wrap gap-3">{onOpenOnboarding&&<Button variant="secondary" onClick={onOpenOnboarding}>Ver orientação</Button>}{installPrompt&&<Button variant="secondary" onClick={install}>Instalar aplicativo neste dispositivo</Button>}</div>
+              <details className="border-t border-line pt-3"><summary className="cursor-pointer min-h-11 text-sm font-bold text-danger">Reiniciar progresso</summary><div className="pt-3">      <div className="space-y-4">
         <h3 className="text-lg font-bold text-danger">
           Recomeçar Progresso do Zero
         </h3>
@@ -221,6 +199,7 @@ export function Settings({ state, setState, toast, update, changeLevel, theme, s
         <div>
           <Button
             variant="danger"
+            disabled={Boolean(cloud?.user)}
             onClick={() => {
               if (
                 window.confirm(
@@ -234,8 +213,12 @@ export function Settings({ state, setState, toast, update, changeLevel, theme, s
           >
             Apagar todos os dados locais
           </Button>
+          {cloud?.user && <p className="text-sm text-muted mt-2">Saia da conta antes de reiniciar o progresso local. Isso evita enviar um reinício para seus outros aparelhos.</p>}
         </div>
-      </Card>
+      </div></div></details>
+            </div>
+          </details>
+        </div>
       </div>
     </div>
   );

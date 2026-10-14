@@ -3,6 +3,7 @@
 ## Princípios
 
 Kotonoha é um PWA React/Vite de estudo N5, com dados e progresso locais.
+Conta/sincronização opcionais: `shared/auth` configura o cliente Supabase; `app/model/useCloudSync.js` coordena o estado global e a persistência; `pages/settings/ui/AccountSync.jsx` apresenta login, status e resolução de conflitos. A migração em `supabase/migrations` restringe acesso por conta e usa comparação atômica de revisão. Não há mesclagem automática de snapshots. Ativação e limites: `docs/SUPABASE_SETUP.md`.
 Seguimos **Feature-Sliced Design v2.1** com regra *pages first*: uma tela mantém a lógica que só ela usa. Só extraímos código quando a responsabilidade é compartilhada, estável e independente.
 
 ```text
@@ -61,3 +62,7 @@ npm run test:e2e
 ```
 
 O guard de arquitetura verifica caminhos ausentes, pastas legadas e limites de dependências. Ele não substitui testes de interface nem revisão linguística.
+
+## Preferências e efeitos sonoros
+
+Preferências agrupa conta, ajustes de estudo e dados; IA e reinício usam divulgação progressiva. `shared/audio/index.js` centraliza Howler, volume e ativação por dispositivo (`kotonoha.audio.v1`). Eventos de resposta e conclusão chamam o serviço fora de atualizadores React. O quiz protege a finalização para não repetir sons nem gravar o resultado em loop. Os três WAV originais em `public/audio` entram no precache PWA; geração reproduzível em `scripts/generate-ui-sounds.py`. Pronúncia permanece independente. O WebKit automatizado no Windows não oferece AudioContext; validar reprodução audível no Safari de um iPhone real.

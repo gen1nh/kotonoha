@@ -1,3 +1,4 @@
+import { playSound } from '../../../shared/audio/index.js';
 import React,{useState} from 'react';
 import {speakJapanese} from '../../../entities/study/index.js';
 import {checkpointQuestions,checkpointScore,PASS_PERCENT,checkpointPassed} from '../../../entities/study/index.js';
@@ -19,7 +20,7 @@ export default function CheckpointPlayer({state,topic,update,go,openGuidedLesson
  const passed=checkpointPassed(state,topic);
  const next=lessonsFor('N5')[lessonsFor('N5').findIndex(l=>l.id===topic)+1];
  const answer=(id,value)=>update(s=>{s.drafts||={};s.drafts[key]={answers:{...(s.drafts[key]?.answers||{}),[id]:value},result:null};});
- const grade=()=>{const score=checkpointScore(questions,answers);if(score===null)return;update(s=>{
+ const grade=()=>{const score=checkpointScore(questions,answers);if(score===null)return;playSound(score>=PASS_PERCENT?'complete':'incorrect');update(s=>{
    s.drafts||={};s.drafts[key]={answers:{...answers},result:score};
    if(score>=PASS_PERCENT){s.checkpoints||={};const prev=s.checkpoints[topic];if(!prev||prev.score<score)s.checkpoints[topic]={score,date:new Date().toISOString(),...(unit.kind==='listening'?{modality:Object.keys(revealed).length?'reading-fallback':Object.keys(played).length===questions.length?'synthetic-listening':'unverified-audio'}:{})};}
  });};

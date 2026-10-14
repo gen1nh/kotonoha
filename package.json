@@ -15,6 +15,8 @@
     "check:architecture": "node scripts/check-architecture.mjs"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.117.3",
+    "howler": "^2.2.4",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
     "wanakana": "5.3.1"

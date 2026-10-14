@@ -1,6 +1,6 @@
 # Kotonoha — contexto do produto
 
-Aplicação pessoal de aprendizagem de japonês em português, local-first, para iPhone e desktop. Dados do usuário ficam no navegador; backup é obrigatório como opção e contas/sincronização não são requisitos implementados.
+Aplicação pessoal de aprendizagem de japonês em português, local-first, para iPhone e desktop. Dados do usuário mantêm cópia no navegador e backup exportável. Conta Google e sincronização Supabase são opcionais, mediante ativação externa descrita em `docs/SUPABASE_SETUP.md`; conflitos exigem escolha explícita entre snapshots, sem mesclagem automática.
 
 ## Direção vigente
 

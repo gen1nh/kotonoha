@@ -1,3 +1,4 @@
+import { playSound } from '../../../shared/audio/index.js';
 import React, { useState, useEffect } from "react";
 import Icon from "../../../shared/ui/Icon.jsx";
 import { Card, Button, ProgressBar, EmptyState } from "../../../shared/ui/index.jsx";
@@ -137,6 +138,7 @@ export function Review({ state, queue, update, go, speak, openGuidedCheckpoint, 
               className="flex-col h-auto py-3.5 gap-0.5 text-center"
               onClick={() => {
                 update((s) => {rateCard(s, card.id, item.rating);if(index===queue.length-1 && queue.length>=3)recordActivity(s,'review');});
+                playSound(index === queue.length - 1 ? 'complete' : item.rating === 'again' ? 'incorrect' : 'correct');
                 setIndex((i) => i + 1);
                 setRevealed(false);
               }}

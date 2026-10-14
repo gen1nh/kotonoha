@@ -289,6 +289,7 @@
 
 /* Dark theme: semantic tokens shared by all components */
 :root[data-theme="dark"] {
+  color-scheme: dark;
   --color-paper:#111714; --color-surface:#1d2621; --color-raised:#253129;
   --color-index:#253129; --color-ink:#e0e8e2; --color-ink-strong:#f4f7f5;
   --color-muted:#afc0b4; --color-line:#35443b; --color-edge:#4a5d50;

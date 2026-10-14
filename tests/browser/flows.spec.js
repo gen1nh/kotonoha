@@ -98,4 +98,8 @@ test('PWA principal continua acessível offline com service worker',async({page,
  await page.reload();await page.waitForFunction(()=>Boolean(navigator.serviceWorker.controller));
  await context.setOffline(true);await page.reload();
  await expect(page.getByRole('heading',{name:'Seu próximo passo'})).toBeVisible();
+ for(const name of ['correct','incorrect','complete']) {
+   const bytes=await page.evaluate(async name=>{const response=await fetch(`/audio/${name}.wav`);if(!response.ok)return 0;return (await response.arrayBuffer()).byteLength;},name);
+   expect(bytes).toBeGreaterThan(1000);
+ }
 });

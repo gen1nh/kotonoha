@@ -1,3 +1,4 @@
+import { playSound } from '../../../shared/audio/index.js';
 import React,{useState,useEffect} from 'react';
 import Icon from '../../../shared/ui/Icon.jsx';
 import KanaTypingPractice from './KanaTypingPractice.jsx';
@@ -31,6 +32,7 @@ export default function LessonPlayer({state,level='N5',topic,update,go,studyUnit
  const questionScore=level!=='N5'?advancedLessonScore(lesson,answers):null;
  const completeAdvanced=()=>{
   if(questionScore===null)return;
+  playSound(questionScore>=80?'complete':'incorrect');
   setResult(questionScore);
   update(s=>{
    if(questionScore>=80){s.lessons[topic]=true;delete s.drafts?.[draftKey];}
@@ -92,7 +94,7 @@ export default function LessonPlayer({state,level='N5',topic,update,go,studyUnit
    </section>
    {!quiz && ['kana','vocabulary','kanji'].includes(unit.kind) && <KanaTypingPractice key={unit.id} samples={samples} kind={unit.kind} />}
    {unit.kind==='kana'&&unit.index>=8&&<p className="rounded-2xl bg-raised p-4 text-xs text-muted">Combinações com sons sonoros e yōon (ゃ・ゅ・ょ). Lembre-se: っ/ッ indica uma pausa/consoante dupla, enquanto ー alonga uma vogal no katakana. {KANA_PRONUNCIATION_NOTES[3].detail}</p>}
-   {quiz&&!ready&&<section className="rounded-3xl border border-line p-5 bg-paper space-y-3"><h2 className="font-black">Confira a compreensão</h2><p className="text-sm">Qual é o significado do exemplo apresentado?</p><div className="space-y-2">{grammarChoices.map(c=><label key={c} className="min-h-12 flex items-center gap-3 rounded-xl border-2 border-line p-3"><input type="radio" name="grammar-practice" checked={chosen===c} onChange={()=>updateAnswer('practice',c)}/><span className="text-sm">{c}</span></label>)}</div>{chosen&&<p role="status" className="text-sm">{chosen===g.meaning?'Certo! Agora valide seu aprendizado no checkpoint.':'Revise a frase e tente novamente.'}</p>}<Button variant="primary" className="w-full" disabled={chosen!==g.meaning} onClick={()=>update(s=>{s.lessons[topic]=true;delete s.drafts?.[draftKey];})}>Concluir prática →</Button></section>}
+   {quiz&&!ready&&<section className="rounded-3xl border border-line p-5 bg-paper space-y-3"><h2 className="font-black">Confira a compreensão</h2><p className="text-sm">Qual é o significado do exemplo apresentado?</p><div className="space-y-2">{grammarChoices.map(c=><label key={c} className="min-h-12 flex items-center gap-3 rounded-xl border-2 border-line p-3"><input type="radio" name="grammar-practice" checked={chosen===c} onChange={()=>{playSound(c===g.meaning?'correct':'incorrect');updateAnswer('practice',c);}}/><span className="text-sm">{c}</span></label>)}</div>{chosen&&<p role="status" className="text-sm">{chosen===g.meaning?'Certo! Agora valide seu aprendizado no checkpoint.':'Revise a frase e tente novamente.'}</p>}<Button variant="primary" className="w-full" disabled={chosen!==g.meaning} onClick={()=>update(s=>{s.lessons[topic]=true;delete s.drafts?.[draftKey];})}>Concluir prática →</Button></section>}
    <section className="rounded-3xl border-2 border-primary bg-paper p-5 space-y-3"><p className="text-xs font-black text-primary-strong">PRÓXIMA AÇÃO</p><h2 className="text-lg font-black text-ink-strong">{passed?'Microlição validada!':ready?'Faça o checkpoint':'Pratique os cartões desta microlição'}</h2><p className="text-sm text-muted">{passed?'Você pode avançar. A revisão espaçada continuará cuidando da memorização.':ready?'Mostre o que aprendeu para desbloquear a próxima microlição.':quiz?'Responda a prática acima antes da avaliação.':'São poucos cartões. Eles não misturam conteúdo de outras etapas.'}</p>
     {passed?<Button variant="primary" className="w-full" onClick={()=>next?openGuidedLesson(next.id,'N5'):go('path')}>{next?'Próxima microlição →':'Ver Trilha →'}</Button>:ready?<Button variant="primary" className="w-full" onClick={()=>openCheckpoint(topic)}>Fazer checkpoint →</Button>:!quiz?<Button variant="primary" className="w-full" onClick={()=>studyUnit(topic)}>Praticar {progress.total} cartões →</Button>:null}
    </section>

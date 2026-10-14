@@ -28,7 +28,7 @@ export default defineConfig(({ mode }) => {
         manifest: false,
         includeAssets: ["icon.svg", "manifest.webmanifest"],
         workbox: {
-          globPatterns: ["**/*.{js,css,html,svg,png,ico,webmanifest,woff2}"],
+          globPatterns: ["**/*.{js,css,html,svg,png,ico,webmanifest,woff2,wav}"],
           cleanupOutdatedCaches: true,
         },
       }),

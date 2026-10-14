@@ -1,51 +1,8 @@
+import { playSound } from '../../shared/audio/index.js';
 import { useDialogFocus } from "../../shared/lib/index.js";
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { HIRAGANA, KATAKANA, VOCAB } from "../../entities/study/index.js";
 import Icon from "../../shared/ui/Icon.jsx";
-
-// Efeitos sonoros suaves usando Web Audio API nativo
-function playChime(combo = 1) {
-  try {
-    const AudioCtx = window.AudioContext || window.webkitAudioContext;
-    if (!AudioCtx) return;
-    const ctx = new AudioCtx();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    const baseFreq = 480;
-    const freq = baseFreq + Math.min(combo * 45, 450);
-    osc.type = "sine";
-    osc.frequency.setValueAtTime(freq, ctx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(
-      freq * 1.4,
-      ctx.currentTime + 0.12,
-    );
-    gain.gain.setValueAtTime(0.12, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.16);
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.start();
-    osc.stop(ctx.currentTime + 0.16);
-  } catch (_) {}
-}
-
-function playMiss() {
-  try {
-    const AudioCtx = window.AudioContext || window.webkitAudioContext;
-    if (!AudioCtx) return;
-    const ctx = new AudioCtx();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.type = "triangle";
-    osc.frequency.setValueAtTime(220, ctx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(140, ctx.currentTime + 0.18);
-    gain.gain.setValueAtTime(0.1, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.2);
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.start();
-    osc.stop(ctx.currentTime + 0.2);
-  } catch (_) {}
-}
 
 export default function SpeedQuiz({ state, update, onClose }) {
   useDialogFocus(onClose);
@@ -61,6 +18,7 @@ export default function SpeedQuiz({ state, update, onClose }) {
   const [feedback, setFeedback] = useState(null); // { choiceIndex, correct: boolean }
 
   const timerRef = useRef(null);
+  const resultRecorded = useRef(false);
 
   // Pool de perguntas baseado no modo
   const getPool = useCallback(() => {
@@ -144,7 +102,10 @@ export default function SpeedQuiz({ state, update, onClose }) {
 
   // Salva recorde ao terminar
   useEffect(() => {
-    if (phase === "finished") {
+    if (phase !== "finished") resultRecorded.current = false;
+    if (phase === "finished" && !resultRecorded.current) {
+      resultRecorded.current = true;
+      playSound("complete");
       const records = state.speedRecords || {
         highScore: 0,
         bestCombo: 0,
@@ -178,11 +139,11 @@ export default function SpeedQuiz({ state, update, onClose }) {
       const multiplier = Math.min(Math.floor(newCombo / 3) + 1, 4);
       setScore((s) => s + 10 * multiplier);
       setCorrectCount((c) => c + 1);
-      playChime(newCombo);
+      playSound('correct');
     } else {
       setCombo(0);
       setWrongCount((w) => w + 1);
-      playMiss();
+      playSound('incorrect');
     }
 
     setTimeout(() => {
