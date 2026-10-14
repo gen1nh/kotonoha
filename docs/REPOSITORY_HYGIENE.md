@@ -20,3 +20,11 @@ Para verificar as regras: `git ls-files .impeccable` (não deve listar as pastas
 - `audit:n5-release` é um bloqueio editorial intencional; não altere para simular aprovação.
 
 Este documento é uma política enxuta; a arquitetura permanece descrita em `docs/ARCHITECTURE.md`, e regras dos agentes permanecem em `AGENTS.md`.
+
+## Verificação automatizada
+- `npm run audit:dead-code`: examina imports estáticos, reexports e imports dinâmicos literais a partir de `src/main.jsx`, reportando candidatos sem uso. Não apaga arquivos.
+- `npm run audit:dead-code -- --strict`: opcional, falha caso existam candidatos ou imports não resolvidos. Ative como bloqueio somente depois de verificar os falsos positivos.
+- `npm run check:quality`: executa validação de arquitetura, relatório de módulos e auditoria do curso.
+- O CI também executa testes Node, compilação Vite e testes Playwright.
+
+Configurações locais como `.impeccable/config.local.json` não devem ser versionadas.

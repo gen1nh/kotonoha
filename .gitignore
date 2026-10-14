@@ -19,3 +19,6 @@ __pycache__/
 .impeccable/hierarchy-review/
 .impeccable/review/
 .impeccable/studio-review/
+
+# Local machine-specific Impeccable settings
+.impeccable/config.local.json

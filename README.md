@@ -33,15 +33,18 @@ npm run dev
 
 ```bash
 npm test
+npm run check:quality
 npm run audit:n5-course
 npm run build
 npx playwright install --with-deps chromium webkit
 npm run test:e2e
 ```
 
+`npm run audit:dead-code` lista módulos potencialmente não utilizados, sem excluí-los. `npm run check:quality` executa as verificações de arquitetura, alcance dos módulos e conteúdo N5. O script de código morto é informativo; qualquer exclusão exige inspeção de referências dinâmicas e testes.
+
 `npm run build` gera `dist/`. Para visualizar localmente: `npm run preview`.
 
-> A base de integração anterior passou nos testes de produção e de navegador via CI. Nesta expansão 0.9.1, os testes Node e a auditoria estrutural são executados localmente, mas a instalação do npm falha por indisponibilidade de rede no ambiente de preparação. O build/Playwright da **expansão 0.9.1** precisam ser novamente validados em CI antes de qualquer publicação; WebKit emulado não substitui Safari físico.
+> As validações de qualidade, build e navegador são executadas no GitHub Actions a cada push e pull request. Consulte o resultado do commit que pretende publicar; WebKit emulado não substitui testes em Safari físico.
 
 ## Publicar na Vercel
 
