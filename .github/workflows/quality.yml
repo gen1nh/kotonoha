@@ -6,6 +6,10 @@ jobs:
   checks:
     runs-on: ubuntu-latest
     timeout-minutes: 25
+    env:
+      # Public endpoint + inert key: auth/database calls in sync tests are mocked.
+      VITE_SUPABASE_URL: https://mrcqakxoraxukiwbreyy.supabase.co
+      VITE_SUPABASE_PUBLISHABLE_KEY: sb_publishable_ci_fixture
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

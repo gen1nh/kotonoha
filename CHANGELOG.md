@@ -1,3 +1,13 @@
+## 0.10.0 — Conta opcional, preferências e áudio
+
+- Login Google e sincronização opcional Supabase, com revisão atômica, escolha explícita em conflitos e cópias de recuperação locais.
+- Preferências reorganizadas: conta compacta; meta, tema e áudio visíveis; IA, importação e reinício recolhidos.
+- Sons originais de acerto, tentativa e conclusão via Howler, com volume/ativação por dispositivo e cache offline.
+- Finalização do quiz protegida contra registro repetido e correção dos controles nativos no tema escuro.
+- Preservados IDs N5, progresso e formato dos backups. O gate editorial de 1.0 continua fechado.
+- Próxima atualização planejada em `docs/NEXT_RELEASE.md`; não incluída nesta versão.
+- Safari físico e configuração OAuth de produção ainda exigem validação no endereço publicado.
+
 ## 0.9.1 — Trilha N5 pessoal ampliada (candidata)
 
 - 220 unidades com exercícios de kana, vocabulário, kanji, gramática, leitura e escuta.

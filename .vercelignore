@@ -1,0 +1,9 @@
+.env*
+.agents/
+.codex/
+.impeccable/
+test-results/
+playwright-report/
+*.zip
+*.log
+__pycache__/
