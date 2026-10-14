@@ -1,4 +1,5 @@
 import React,{useState,useEffect} from 'react';
+import {useThemePreference} from './model/useThemePreference.js';
 import {Learn} from '../pages/library/index.js';
 import {Review} from '../pages/review/index.js';
 import {Settings} from '../pages/settings/index.js';
@@ -23,15 +24,13 @@ const PRACTICE_VIEWS=['learn','review','notebook','errors','syntax','line','pitc
 const IMMERSIVE_VIEWS=['lesson','review','checkpoint'];
 
 export default function Shell({view,state,shared,message,install,installPrompt}) {
-  const [theme,setTheme]=useState(()=>{try{return localStorage.getItem('kotonoha_theme')||'system';}catch{return 'system';}});
-  useEffect(()=>{const media=window.matchMedia('(prefers-color-scheme: dark)');const apply=()=>{const dark=theme==='dark'||(theme==='system'&&media.matches);document.documentElement.dataset.theme=dark?'dark':'light';const meta=document.querySelector('meta[name="theme-color"]');if(meta)meta.setAttribute('content',dark?'#111714':'#ffffff');};apply();try{localStorage.setItem('kotonoha_theme',theme);}catch{}media.addEventListener?.('change',apply);return()=>media.removeEventListener?.('change',apply);},[theme]);
+  const [theme,setTheme]=useThemePreference();
   const [online,setOnline]=useState(()=>typeof navigator!=='undefined'?navigator.onLine:true);
   useEffect(()=>{const on=()=>setOnline(true);const off=()=>setOnline(false);window.addEventListener('online',on);window.addEventListener('offline',off);return()=>{window.removeEventListener('online',on);window.removeEventListener('offline',off);};},[]);
   const [streakOpen,setStreakOpen]=useState(false);
   const [speedQuizOpen,setSpeedQuizOpen]=useState(false);
   const [onboardingOpen,setOnboardingOpen]=useState(()=>!state.onboardingCompleted);
   const immersive=IMMERSIVE_VIEWS.includes(view);
-  const due=Object.values(state.cards||{}).filter(c=>c.seen&&c.due<=Date.now()).length;
   const xp=(state.stats?.correct||0)*15;
   const navActive=id=>view===id||(id==='practice'&&PRACTICE_VIEWS.includes(view));
   const onCloseOnboarding=()=>{setOnboardingOpen(false);shared.update(s=>{s.onboardingCompleted=true;});};
