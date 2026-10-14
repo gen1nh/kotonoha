@@ -17,8 +17,8 @@ const BUTTON_VARIANTS = {
     "bg-danger border-b-4 border-danger-dark text-white hover:bg-danger/90 active:border-b-2 active:translate-y-[2px] type-button",
   flame:
     "bg-flame border-b-4 border-flame-dark text-white hover:bg-flame/90 active:border-b-2 active:translate-y-[2px] type-button",
-  review:
-    "bg-blue border-b-4 border-blue-dark text-white hover:bg-blue/90 active:border-b-2 active:translate-y-[2px] type-button",
+  // Review and blue intentionally share the same design tokenized treatment.
+  review: null,
   blue:
     "bg-blue border-b-4 border-blue-dark text-white hover:bg-blue/90 active:border-b-2 active:translate-y-[2px] type-button",
   purple:
@@ -26,6 +26,7 @@ const BUTTON_VARIANTS = {
   gold:
     "bg-gold border-b-4 border-gold-dark text-ink-strong hover:bg-gold/90 active:border-b-2 active:translate-y-[2px] type-button",
 };
+BUTTON_VARIANTS.review = BUTTON_VARIANTS.blue;
 
 const BUTTON_SIZES = {
   sm: "min-h-11 px-3.5 text-xs gap-1.5 rounded-xl",

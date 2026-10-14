@@ -28,3 +28,10 @@ Este documento é uma política enxuta; a arquitetura permanece descrita em `doc
 - O CI também executa testes Node, compilação Vite e testes Playwright.
 
 Configurações locais como `.impeccable/config.local.json` não devem ser versionadas.
+
+## Revisão arquitetural complementar (outubro de 2026)
+- Extraído o controle de preferência visual de `Shell.jsx` para `src/app/model/useThemePreference.js`. A chave persistida, o tema e a cor do PWA foram preservados.
+- Removidos um import não utilizado e o cálculo sem consumidores de `due` no Shell.
+- Mantida a API pública da entidade de estudo por compatibilidade. Uma alteração de `export *` exige auditoria de todos os consumidores e dos testes; não é limpeza cosmética.
+- Os arquivos em `design/` e as skills em `.agents/` têm função autoral/ferramental: não removê-los apenas por volume.
+- A auditoria de alcance atual não identifica exports, propriedades e ramos mortos. Antes de qualquer exclusão futura, cruzar resultados de ferramentas estáticas e testes de comportamento.
