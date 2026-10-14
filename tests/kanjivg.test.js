@@ -3,8 +3,8 @@ import assert from 'node:assert/strict';
 import { readFileSync, existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { N5_KANJI } from '../src/content/n5Kanji.js';
-import { kanjiVGPath,parseKanjiVG } from '../src/kanjiStrokes.js';
+import { N5_KANJI } from '../src/entities/study/index.js';
+import { kanjiVGPath,parseKanjiVG } from '../src/entities/study/index.js';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 test('All N5 kanji have bundled SVG paths for offline practice',()=>{
   assert.equal(N5_KANJI.length,105);

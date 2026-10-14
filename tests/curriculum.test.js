@@ -1,12 +1,12 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { CURRICULUM, VOCAB_BY_LEVEL } from "../src/curriculum.js";
+import { CURRICULUM, VOCAB_BY_LEVEL } from "../src/entities/study/index.js";
 import {
   initialState,
   normalizeState,
   selectReview,
   rateCard,
-} from "../src/state.js";
+} from "../src/entities/study/index.js";
 
 test("N4–N1 each have three complete lessons with answerable exercises", () => {
   const ids = new Set();

@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { initialState, normalizeState } from '../src/state.js';
-import { checkpointQuestions, checkpointScore, checkpointPassed, exposureComplete } from '../src/checkpoints.js';
+import { initialState, normalizeState } from '../src/entities/study/index.js';
+import { checkpointQuestions, checkpointScore, checkpointPassed, exposureComplete } from '../src/entities/study/index.js';
 test('checkpoint requer respostas completas e 80% de acerto', () => {
  const state=initialState();
  const qs=checkpointQuestions(state,'hiragana');

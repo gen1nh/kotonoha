@@ -6,9 +6,9 @@ O objetivo da v1.0 pessoal é aprender N5 com app estático, PWA, progresso loca
 
 ## Implementação da experiência
 
-- `src/speech.js` centraliza a síntese japonesa via `speechSynthesis` e a seleção de vozes `ja`, respeitando acionamento por clique (Safari/iOS).
-- `src/components/N5ListeningPractice.jsx` oferece prática opcional N5 sem arquivos de áudio nem servidor; transcript pode ser revelada manualmente em caso de problema de acessibilidade. Nesse caso o resultado **não** é tratado como evidência auditiva.
-- `src/pedagogy/formativeListening.js` contém seis atividades autorais de demonstração **não certificadoras**. A nota não libera níveis, não alimenta provas e não representa o JLPT.
+- `src/entities/study/model/speech.js` centraliza a síntese japonesa via `speechSynthesis` e a seleção de vozes `ja`, respeitando acionamento por clique (Safari/iOS).
+- `src/pages/practice/ui/N5ListeningPractice.jsx` oferece prática opcional N5 sem arquivos de áudio nem servidor; transcript pode ser revelada manualmente em caso de problema de acessibilidade. Nesse caso o resultado **não** é tratado como evidência auditiva.
+- `src/entities/study/model/pedagogy/formativeListening.js` contém seis atividades autorais de demonstração **não certificadoras**. A nota não libera níveis, não alimenta provas e não representa o JLPT.
 - Vozes podem precisar de download ou rede. A síntese offline e a qualidade do áudio não são garantidas universalmente; validar em Safari/iOS e dispositivos Android antes da v1.0.
 
 ## Limite de certificação

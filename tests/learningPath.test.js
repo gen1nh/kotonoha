@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { lessonsFor, isDone } from '../src/learning.js';
+import { lessonsFor, isDone } from '../src/entities/study/index.js';
 
 test('N5 guia hiragana antes de katakana, vocabulário e gramática', () => {
   assert.deepEqual([...new Set(lessonsFor('N5').map(l=>l.topic))], ['hiragana','katakana','words','kanji','grammar','reading','listening']);

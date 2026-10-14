@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { initialState, rateCard } from '../src/state.js';
-import { cardMastery, levelInsights, nextStudyAction } from '../src/studyInsights.js';
+import { initialState, rateCard } from '../src/entities/study/index.js';
+import { cardMastery, levelInsights, nextStudyAction } from '../src/entities/study/index.js';
 test('cartões novos não contam como dominados', () => {
  const state = initialState(); const stats = levelInsights(state, 'N5');
  assert.equal(stats.stable, 0); assert.equal(stats.new, stats.total);

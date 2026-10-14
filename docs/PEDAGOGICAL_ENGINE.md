@@ -2,7 +2,7 @@
 
 **Status: fundação em desenvolvimento.** A estrutura de avaliações não substitui o conteúdo completo, provas oficiais ou validação editorial. O conteúdo deve ser revisado antes de ativar qualquer desbloqueio por nivelamento.
 
-- O módulo `src/pedagogy/engine.js` mantém estados draft/review/approved/retired, proveniência e metadados de licença e revisão independente.
+- O módulo `src/entities/study/model/pedagogy/engine.js` mantém estados draft/review/approved/retired, proveniência e metadados de licença e revisão independente.
 - Avaliações internas cobrem vocabulário, gramática, leitura e áudio e recusam gerar prova se faltar qualquer grupo necessário.
 - Regras quantitativas são apenas valores iniciais para desenvolvimento; não equivalem à pontuação oficial escalonada do JLPT.
 - Nível de estudo, nível de competência validado internamente e certificação oficial são conceitos distintos.

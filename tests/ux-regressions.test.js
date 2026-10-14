@@ -1,10 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { initialState,normalizeState } from '../src/state.js';
-import { collectActivityChanges,dailyActivityCount,recordActivity } from '../src/dailyPlan.js';
-import { courseLevel,nextGuidedAction } from '../src/learning.js';
-import { guidedSamples,guidedLessonProgress } from '../src/lessonModel.js';
-import { isAccessibleCheckpoint } from '../src/routeAccess.js';
+import { initialState,normalizeState } from '../src/entities/study/index.js';
+import { collectActivityChanges,dailyActivityCount,recordActivity } from '../src/entities/study/index.js';
+import { courseLevel,nextGuidedAction } from '../src/entities/study/index.js';
+import { guidedSamples,guidedLessonProgress } from '../src/entities/study/index.js';
+import { isAccessibleCheckpoint } from '../src/entities/study/index.js';
 
 const DAY='2026-10-13';
 test('checkpoint aprovado conta exatamente uma atividade diária',()=>{
@@ -61,16 +61,16 @@ test('uma atividade nova acende ofensiva real e uma repetição não duplica',as
  after.checkpoints.hiragana={score:80,date:new Date().toISOString()};
  collectActivityChanges(before,after);
  assert.equal(after.streak.days,1);
- assert.equal(after.streak.last, (await import('../src/state.js')).todayKey());
+ assert.equal(after.streak.last, (await import('../src/entities/study/index.js')).todayKey());
  const again=structuredClone(after);
  collectActivityChanges(after,again);
  assert.equal(again.streak.days,1);
 });
 
 test('progresso avançado exige aprovação sequencial e não um filtro',async ()=>{
- const { isAccessibleLesson }=await import('../src/routeAccess.js');
- const { CURRICULUM }=await import('../src/curriculum.js');
- const { advancedLessonScore }=await import('../src/lessonModel.js');
+ const { isAccessibleLesson }=await import('../src/entities/study/index.js');
+ const { CURRICULUM }=await import('../src/entities/study/index.js');
+ const { advancedLessonScore }=await import('../src/entities/study/index.js');
  const state=initialState();state.selectedLevel='N1';
  assert.equal(isAccessibleLesson(state,CURRICULUM.N4[0].id,'N4'),false);
  for(const id of ['hiragana','katakana','words','grammar'])state.checkpoints[id]={score:80,date:DAY};

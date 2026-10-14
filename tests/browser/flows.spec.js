@@ -1,8 +1,8 @@
 import {test,expect} from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
-import {initialState,todayKey} from '../../src/state.js';
-import {checkpointQuestions} from '../../src/checkpoints.js';
-import {N5_UNITS,cardIdsForUnit} from '../../src/courseUnits.js';
+import {initialState,todayKey} from '../../src/entities/study/index.js';
+import {checkpointQuestions} from '../../src/entities/study/index.js';
+import {N5_UNITS,cardIdsForUnit} from '../../src/entities/study/index.js';
 const seeded=()=>{const state=initialState();state.onboardingCompleted=true;return state;};
 async function enter(page,state=seeded()){
  await page.addInitScript(s=>{if(!localStorage.getItem('kotonoha.v1'))localStorage.setItem('kotonoha.v1',JSON.stringify(s));},state);

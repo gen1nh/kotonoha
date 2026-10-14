@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import {chooseJapaneseVoice,speakJapanese,stopSpeech} from '../src/speech.js';
-import {FORMATIVE_LISTENING_N5,gradeFormativeListening} from '../src/pedagogy/formativeListening.js';
+import {chooseJapaneseVoice,speakJapanese,stopSpeech} from '../src/entities/study/index.js';
+import {FORMATIVE_LISTENING_N5,gradeFormativeListening} from '../src/entities/study/index.js';
 
 test('select only Japanese voice, prefer local ja-JP and honour explicit voice choice',()=>{
  const voices=[{voiceURI:'en',lang:'en-US',localService:true},{voiceURI:'ja-remote',lang:'ja-JP',localService:false},{voiceURI:'ja-local',lang:'ja-JP',localService:true}];

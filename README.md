@@ -16,7 +16,7 @@ O fluxo de aprendizagem já separa conclusão de microlições e **aprovação i
 
 - O painel **Progresso → Preparação N5** exibe os fundamentos estudados e os itens editoriais ainda necessários.
 - A **revisão final pessoal N5** aparece após concluir todos os capítulos; apresenta 32 questões formativas distribuídas entre vocabulário, gramática, leitura e escuta via voz do navegador, sem conceder certificado. A **avaliação certificadora independente** só aparece quando existir um banco extenso com itens revisados e áudios devidamente autorizados; atualmente está vazia.
-- O catálogo editorial está em `src/pedagogy/n5Curriculum.js`, a fila de revisão em `data/editorial/n5-draft-questions.json` e o importador JMdict em `scripts/import_jmdict.py`.
+- O catálogo editorial está em `src/entities/study/model/pedagogy/n5Curriculum.js`, a fila de revisão em `data/editorial/n5-draft-questions.json` e o importador JMdict em `scripts/import_jmdict.py`.
 - Auditoria com falha proposital caso a 1.0 não possa ser publicada: `npm run audit:n5-release`.
 - Critérios completos e pendências em [docs/KOTONOHA_V1_0_RELEASE_GATE.md](docs/KOTONOHA_V1_0_RELEASE_GATE.md).
 
@@ -61,18 +61,18 @@ Não publique nenhuma chave de IA em variáveis `VITE_*`. A integração Groq op
 
 | Caminho | Responsabilidade |
 | --- | --- |
-| `src/courseUnits.js` | Unidades N5 e agrupamentos temáticos com IDs legados preservados |
-| `src/content/` | Dados autorais N5: palavras, kanji, gramática, leitura e escuta |
-| `src/pedagogy/n5Review.js` | Revisão pessoal formativa sem certificação |
+| `src/entities/study/model/courseUnits.js` | Unidades N5 e agrupamentos temáticos com IDs legados preservados |
+| `src/entities/study/content/` | Dados autorais N5: palavras, kanji, gramática, leitura e escuta |
+| `src/entities/study/model/pedagogy/n5Review.js` | Revisão pessoal formativa sem certificação |
 | `scripts/audit-n5-course.mjs` | Auditoria estrutural do conteúdo e da progressão |
-| `src/learning.js` | Nível conquistado, conclusão e próxima ação |
-| `src/routeAccess.js` | Regras de acesso também para URL direta |
-| `src/checkpoints.js` | Questões e critérios de avaliação |
-| `src/state.js` | Estado, SRS, normalização e backups |
-| `src/App.jsx` | Persistência e navegação |
-| `src/Shell.jsx` | Layout, quatro destinos, tarefas imersivas |
-| `src/components` | Home, Trilha, Lição, Revisão, Caderno, Prática etc. |
-| `src/index.css` | Tokens de cor/tema, Nunito e estilos responsivos |
+| `src/entities/study/model/learning.js` | Nível conquistado, conclusão e próxima ação |
+| `src/entities/study/model/routeAccess.js` | Regras de acesso também para URL direta |
+| `src/entities/study/model/checkpoints.js` | Questões e critérios de avaliação |
+| `src/entities/study/model/state.js` | Estado, SRS, normalização e backups |
+| `src/app/App.jsx` | Persistência e navegação |
+| `src/app/Shell.jsx` | Layout, quatro destinos, tarefas imersivas |
+| `src/pages/` | Home, Trilha, Lição, Revisão, Caderno, Prática etc. |
+| `src/app/index.css` | Tokens de cor/tema, Nunito e estilos responsivos |
 | `design-system/kotonoha/MASTER.md` | Especificação visual vigente |
 | `tests` | Testes de lógica e E2E |
 
@@ -85,3 +85,5 @@ Não publique nenhuma chave de IA em variáveis `VITE_*`. A integração Groq op
 - [Histórico de mudanças](CHANGELOG.md)
 
 Relatórios e componentes anteriores sem uso permanecem arquivados em `docs/history/`, não como especificação vigente.
+
+Estrutura e importações: [Arquitetura FSD](docs/ARCHITECTURE.md).

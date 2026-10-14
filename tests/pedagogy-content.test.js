@@ -1,9 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {N5_DRAFT_ITEMS} from '../src/pedagogy/n5DraftItems.js';
-import {validateItem, eligibleItems, buildAssessment, assessmentBlueprint} from '../src/pedagogy/engine.js';
-import {APPROVED_EXAM_ITEMS} from '../src/pedagogy/publishedItems.js';
-import {n5ReleaseReadiness} from '../src/pedagogy/readiness.js';
+import {N5_DRAFT_ITEMS} from '../src/entities/study/index.js';
+import {validateItem, eligibleItems, buildAssessment, assessmentBlueprint} from '../src/entities/study/index.js';
+import {APPROVED_EXAM_ITEMS} from '../src/entities/study/index.js';
+import {n5ReleaseReadiness} from '../src/entities/study/index.js';
 
 test('legacy exercises form a coherent draft review queue without level-certification leakage',()=>{
   assert.equal(N5_DRAFT_ITEMS.length,12);

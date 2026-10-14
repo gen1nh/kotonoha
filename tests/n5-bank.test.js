@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { N5_QUESTIONS } from '../src/n5Questions.js';
-import { diagnosticQuestions, gradeDiagnostic } from '../src/diagnostic.js';
+import { N5_QUESTIONS } from '../src/entities/study/index.js';
+import { diagnosticQuestions, gradeDiagnostic } from '../src/entities/study/index.js';
 test('N5 question bank contains distinct, explained items', () => {
  assert.ok(N5_QUESTIONS.length >= 12);
  assert.equal(new Set(N5_QUESTIONS.map(q => q.id)).size, N5_QUESTIONS.length);

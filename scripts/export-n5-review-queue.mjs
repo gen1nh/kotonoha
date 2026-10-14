@@ -1,8 +1,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
-import {N5_DRAFT_ITEMS} from '../src/pedagogy/n5DraftItems.js';
-import {validateItem} from '../src/pedagogy/engine.js';
+import {N5_DRAFT_ITEMS} from '../src/entities/study/index.js';
+import {validateItem} from '../src/entities/study/index.js';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const output=process.argv[2] || 'data/editorial/n5-draft-questions.json';
 const target=path.resolve(root,output);

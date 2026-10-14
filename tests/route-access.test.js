@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { initialState } from '../src/state.js';
-import { resolveView, viewFromSearch, hasUnlockedN4, isAccessibleLesson, isAccessibleCheckpoint } from '../src/routeAccess.js';
+import { initialState } from '../src/entities/study/index.js';
+import { resolveView, viewFromSearch, hasUnlockedN4, isAccessibleLesson, isAccessibleCheckpoint } from '../src/entities/study/index.js';
 
 const approvedN5 = () => {const s=initialState();for(const topic of ['hiragana','katakana','words','grammar'])s.checkpoints[topic]={score:80,date:'2026-10-13'};return s;};
 test('mudar filtro para N4 não desbloqueia laboratórios ou URLs',()=>{

@@ -44,7 +44,7 @@ npm run audit:n5-release # falha intencionalmente até existir avaliação certi
 
 ## Arquivos principais
 
-- `src/content/n5Kana.js`, `n5Words.js`, `n5WordsMore.js`, `n5Kanji.js`, `n5Grammar.js`, `n5Reading.js`, `n5Listening.js`
-- `src/courseUnits.js`, `src/checkpoints.js`, `src/lessonModel.js`, `src/state.js`
-- `src/components/LessonPlayer.jsx`, `CheckpointPlayer.jsx`, `PathTimeline.jsx`, `N5Readiness.jsx`, `N5PersonalExam.jsx`
-- `src/pedagogy/n5Review.js` e `scripts/audit-n5-course.mjs`
+- `src/entities/study/content/n5Kana.js`, `n5Words.js`, `n5WordsMore.js`, `n5Kanji.js`, `n5Grammar.js`, `n5Reading.js`, `n5Listening.js`
+- `src/entities/study/model/courseUnits.js`, `src/entities/study/model/checkpoints.js`, `src/entities/study/model/lessonModel.js`, `src/entities/study/model/state.js`
+- `src/pages/lesson/ui/LessonPlayer.jsx`, `CheckpointPlayer.jsx`, `PathTimeline.jsx`, `N5Readiness.jsx`, `N5PersonalExam.jsx`
+- `src/entities/study/model/pedagogy/n5Review.js` e `scripts/audit-n5-course.mjs`
