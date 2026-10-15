@@ -77,3 +77,16 @@ test('checkpoint de escuta mantém evidência de transcrição e modalidade no b
  corrupt.checkpoints['listening:0']={score:80,date:'2026-10-15',modality:'official-certified'};
  assert.equal(normalizeState(corrupt).checkpoints['listening:0'].modality,undefined);
 });
+
+test('respostas de gramática não seguem uma posição fixa dentro do checkpoint',()=>{
+ const state=initialState();
+ for(const id of ['grammar:0','grammar:14','grammar:21','grammar:39']){
+  for(const attempt of [0,1,2]){
+   const questions=checkpointQuestions(state,id,5,attempt);
+   assert.equal(questions.length,4);
+   const answerPositions=questions.map(q=>q.options.indexOf(q.answer));
+   assert.equal(new Set(answerPositions).size,4,`${id}, tentativa ${attempt}: ${answerPositions}`);
+   assert.equal(checkpointScore(questions,Object.fromEntries(questions.map(q=>[q.id,q.answer]))),100);
+  }
+ }
+});

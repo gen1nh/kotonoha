@@ -29,10 +29,11 @@ export function checkpointQuestions(state,topic,count=5,attempt=0){
    const g=unit.items[0];
    const i=GRAMMAR.indexOf(g);
    const other=GRAMMAR.filter(row=>row!==g);
+   let questionOrdinal=0;
    const make=(id,prompt,answer,wrong)=>({
      id,prompt,answer,
      explanation:`${g.text} Exemplo: ${g.example} — ${g.meaning}`,
-     options:rotate([answer,...wrong.slice(0,3)],(attempt+i)%4),
+     options:rotate([answer,...wrong.slice(0,3)],(attempt+i+questionOrdinal++)%4),
      // Explanations are grounded in the existing authored grammar rows.
      distractorContext:Object.fromEntries(other.filter(row=>
        row.meaning!==answer&&row.example!==answer&&row.text!==answer
@@ -43,7 +44,7 @@ export function checkpointQuestions(state,topic,count=5,attempt=0){
      make(`${topic}:translation`,`Traduza: ${g.example}`,g.meaning,other.map(x=>x.meaning)),
      make(`${topic}:example`,`Qual frase corresponde a “${g.meaning}”?`,g.example,other.map(x=>x.example)),
      make(`${topic}:rule`,`Qual explicação corresponde a “${g.title}”?`,g.text,other.map(x=>x.text)),
-     application?{...application,options:rotate(application.options,(attempt+i)%4)}:make(`${topic}:usage`,`Qual frase demonstra “${g.title}”?`,g.example,other.slice().reverse().map(x=>x.example)),
+     application?{...application,options:rotate(application.options,(attempt+i+questionOrdinal)%4)}:make(`${topic}:usage`,`Qual frase demonstra “${g.title}”?`,g.example,other.slice().reverse().map(x=>x.example)),
    ];
  }
  const cards=unit?cardIdsForUnit(unit).map(id=>state.cards?.[id]).filter(Boolean):topicCards(state,topic);
