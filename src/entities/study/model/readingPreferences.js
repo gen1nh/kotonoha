@@ -1,7 +1,7 @@
 import { useSyncExternalStore } from 'react';
 
 const KEY = 'kotonoha.reading.v1';
-export const DEFAULT_READING_PREFERENCES = Object.freeze({ showRomaji: false, speechRate: 0.85 });
+export const DEFAULT_READING_PREFERENCES = Object.freeze({ showRomaji: false, speechRate: 0.85, japaneseVoiceURI: '' });
 const normalizeRate = value => {
   const rate = Number(value);
   return Number.isFinite(rate) && rate >= 0.5 && rate <= 1.15 ? Math.round(rate * 20) / 20 : 0.85;
@@ -12,6 +12,7 @@ export function normalizeReadingPreferences(value) {
   return {
     showRomaji: value?.showRomaji === true,
     speechRate: normalizeRate(value?.speechRate),
+    japaneseVoiceURI: typeof value?.japaneseVoiceURI === 'string' ? value.japaneseVoiceURI.slice(0,256) : '',
   };
 }
 

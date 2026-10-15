@@ -341,3 +341,5 @@ export function Disclosure({
 
 export {Brand, NavItem, PageHeading, NAVIGATION} from './layout.jsx';
 export {default as Icon} from './Icon.jsx';
+
+export {default as AudioRateControl} from './AudioRateControl.jsx';

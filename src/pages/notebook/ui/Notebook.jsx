@@ -220,6 +220,7 @@ export default function Notebook({ state, update, toast, speak, go }) {
   return (
     <div className="w-full space-y-6">
       {showMenu&&<section className="space-y-3" aria-label="Áreas do Caderno">
+        <button type="button" className="min-h-11 text-sm font-bold text-primary-strong" onClick={()=>go("practice")}>← Voltar a Praticar</button>
         <h1 className="text-2xl font-black text-ink-strong">Caderno</h1>
         <p className="text-sm text-muted">Encontre suas anotações, dúvidas e registros sem misturar as ferramentas.</p>
         <div className="grid grid-cols-2 gap-3">

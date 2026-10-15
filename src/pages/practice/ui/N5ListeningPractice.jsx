@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { FORMATIVE_LISTENING_N5, gradeFormativeListening } from '../../../entities/study/index.js';
 import { japaneseVoices, speakJapanese, stopSpeech, warmJapaneseVoices } from '../../../entities/study/index.js';
-import { Button } from '../../../shared/ui/index.jsx';
+import { Button,AudioRateControl } from '../../../shared/ui/index.jsx';
 import { useReadingPreferences, setReadingPreferences, reviewedRomaji } from '../../../entities/study/index.js';
 
 /** Small, optional, no-API listening practice. Scores never unlock N4. */
@@ -15,7 +15,7 @@ export default function N5ListeningPractice() {
   const [voices, setVoices] = useState(() => japaneseVoices());
   const [voiceURI, setVoiceURI] = useState('');
   const readingPreferences = useReadingPreferences();
-  const rate = readingPreferences.speechRate;
+  const [rate,setRate]=useState(()=>readingPreferences.speechRate);
   const question = FORMATIVE_LISTENING_N5[index];
 
   useEffect(() => warmJapaneseVoices(setVoices), []);
@@ -54,9 +54,7 @@ export default function N5ListeningPractice() {
               {voices.map((voice, i) => <option key={`${voice.voiceURI}-${i}`} value={voice.voiceURI}>{voice.name} ({voice.lang})</option>)}
             </select>
           </label>
-          <label className="block space-y-1">Velocidade ({rate.toFixed(2)}×)
-            <input className="block w-full" type="range" min="0.5" max="1.15" step="0.05" value={rate} onChange={event => setReadingPreferences({speechRate:Number(event.target.value)})} />
-          </label>
+          <AudioRateControl rate={rate} onChange={setRate} defaultRate={readingPreferences.speechRate}/>
           {!voices.length && <p>Se nenhuma voz japonesa aparecer, ative uma voz japonesa nas configurações de acessibilidade/idioma do seu dispositivo. Algumas vozes requerem download.</p>}
         </div>
       </details>

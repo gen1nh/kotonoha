@@ -5,9 +5,10 @@ import { FORMATIVE_LISTENING_N5 } from '../src/entities/study/model/pedagogy/for
 
 test('reading settings validate rates, avoid accidental romaji defaults', () => {
   assert.deepEqual(normalizeReadingPreferences({}), DEFAULT_READING_PREFERENCES);
-  assert.deepEqual(normalizeReadingPreferences({showRomaji:true,speechRate:0.5}), {showRomaji:true,speechRate:0.5});
+  assert.deepEqual(normalizeReadingPreferences({showRomaji:true,speechRate:0.5}), {showRomaji:true,speechRate:0.5,japaneseVoiceURI:''});
   assert.equal(normalizeReadingPreferences({showRomaji:'true',speechRate:8}).showRomaji,false);
   assert.equal(normalizeReadingPreferences({speechRate:-1}).speechRate,0.85);
+  assert.equal(normalizeReadingPreferences({japaneseVoiceURI:'ja-voice'}).japaneseVoiceURI,'ja-voice');
 });
 
 test('romaji is only supplied by reviewed content and remains opt-in in UI', () => {

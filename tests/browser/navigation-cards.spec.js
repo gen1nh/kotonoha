@@ -56,6 +56,7 @@ test('Progresso e Preferências usam destinos claros e sem rolagem horizontal',a
   await expect(page.getByRole('button',{name:'Conta e backups'})).toBeVisible();
   await page.getByRole('button',{name:'Conta e backups'}).click();
   await expect(page.getByRole('heading',{name:'Seus dados'})).toBeVisible();
+  await page.getByRole('button',{name:/Voltar às preferências/}).click();
   await page.getByRole('button',{name:'Mais opções'}).click();
   await expect(page.getByText('Ajuda e gerenciamento')).toBeVisible();
   for(const width of [320,390,768]){
