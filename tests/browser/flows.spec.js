@@ -54,9 +54,14 @@ test('checkpoint retoma respostas após recarga e aprovação entra na meta diá
  const question=checkpointQuestions(state,first.id)[0];await enter(page,state);
  await page.getByRole('button',{name:/Fazer checkpoint/}).first().click();
  await page.locator('fieldset').first().getByRole('radio',{name:question.answer,exact:true}).check();
- await page.reload();await expect(page.locator('fieldset').first().getByRole('radio',{name:question.answer,exact:true})).toBeChecked();
+ await page.reload();
  const qs=checkpointQuestions(state,first.id);
- for(const [i,q] of qs.entries()){
+ await expect(page.getByText(`QUESTÃO 2 DE ${qs.length}`,{exact:true})).toBeVisible();
+ await page.getByRole('button',{name:'← Anterior'}).click();
+ await expect(page.locator('fieldset').first().getByRole('radio',{name:question.answer,exact:true})).toBeChecked();
+ await page.getByRole('button',{name:'Próxima questão →'}).click();
+ for(let i=1;i<qs.length;i++){
+  const q=qs[i];
   await page.locator('fieldset').first().getByRole('radio',{name:q.answer,exact:true}).check();
   if(i<qs.length-1)await page.getByRole('button',{name:'Próxima questão →'}).click();
  }
@@ -210,11 +215,28 @@ test('escuta não aprova alternativas sem áudio ou leitura e permite fallback h
  }
  await expect(page.getByRole('button',{name:'Finalizar e conferir respostas'})).toBeEnabled();
  await page.reload();
- // All answers and disclosed transcripts survive the reload; this branch starts navigation at question one.
+ // All answers and disclosed transcripts survive reload; the completed draft resumes at its last question.
+ await expect(page.getByText(`QUESTÃO ${qs.length} DE ${qs.length}`,{exact:true})).toBeVisible();
  await expect(page.locator('fieldset [lang="ja"]')).toBeVisible();
- for(let i=1;i<qs.length;i++)await page.getByRole('button',{name:'Próxima questão →'}).click();
  await expect(page.getByRole('button',{name:'Finalizar e conferir respostas'})).toBeEnabled();
  await page.getByRole('button',{name:'Finalizar e conferir respostas'}).click();
  await expect(page.getByText('Checkpoint aprovado!',{exact:true})).toBeVisible();
  await expect.poll(()=>page.evaluate(id=>JSON.parse(localStorage.getItem('kotonoha.v1')).checkpoints[id]?.modality,unit.id)).toBe('reading-fallback');
+});
+
+test('checkpoint retomado abre a primeira questão pendente sem perder respostas',async({page})=>{
+ const state=seeded(),unit=N5_UNITS[0];
+ for(const id of cardIdsForUnit(unit))state.cards[id].seen=true;
+ const questions=checkpointQuestions(state,unit.id);
+ state.drafts[`checkpoint:${unit.id}`]={
+  answers:{[questions[0].id]:questions[0].answer,[questions[1].id]:questions[1].answer},
+  result:null,
+ };
+ await enter(page,state);
+ await page.goto(`/?view=checkpoint&topic=${encodeURIComponent(unit.id)}&level=N5`);
+ await expect(page.getByText(`QUESTÃO 3 DE ${questions.length}`,{exact:true})).toBeVisible();
+ await page.reload();
+ await expect(page.getByText(`QUESTÃO 3 DE ${questions.length}`,{exact:true})).toBeVisible();
+ await page.getByRole('button',{name:'← Anterior'}).click();
+ await expect(page.locator('fieldset').getByRole('radio',{name:questions[1].answer,exact:true})).toBeChecked();
 });
