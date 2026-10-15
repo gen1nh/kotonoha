@@ -170,3 +170,25 @@ test('PWA principal continua acessível offline com service worker',async({page,
    expect(bytes).toBeGreaterThan(1000);
  }
 });
+
+test('escuta: revelar transcrição continua marcado após recarga e gera evidência de leitura',async({page})=>{
+ const state=seeded(),unit=N5_UNITS.find(u=>u.kind==='listening');
+ for(const previous of N5_UNITS.slice(0,N5_UNITS.indexOf(unit)))state.checkpoints[previous.id]={score:100,date:'2026-10-15'};
+ state.lessons[unit.id]=true;
+ const questions=checkpointQuestions(state,unit.id);
+ await enter(page,state);
+ await page.goto(`/?view=checkpoint&topic=${encodeURIComponent(unit.id)}&level=N5`);
+ await expect(page.getByRole('heading',{name:unit.title})).toBeVisible();
+ await page.getByRole('button',{name:/mostrar texto/i}).click();
+ await expect(page.locator('fieldset [lang="ja"]')).toBeVisible();
+ await expect.poll(()=>page.evaluate(key=>JSON.parse(localStorage.getItem('kotonoha.v1')).drafts[key]?.transcripts||[],`checkpoint:${unit.id}`)).toContain(questions[0].id);
+ await page.reload();
+ await expect(page.locator('fieldset [lang="ja"]')).toBeVisible();
+ for(const [i,q] of questions.entries()){
+  await page.locator('fieldset').first().getByRole('radio',{name:q.answer,exact:true}).check();
+  if(i<questions.length-1)await page.getByRole('button',{name:'Próxima questão →'}).click();
+ }
+ await page.getByRole('button',{name:'Finalizar e conferir respostas'}).click();
+ await expect(page.getByText('Checkpoint aprovado!',{exact:true})).toBeVisible();
+ await expect.poll(()=>page.evaluate(id=>JSON.parse(localStorage.getItem('kotonoha.v1')).checkpoints[id]?.modality,unit.id)).toBe('reading-fallback');
+});
