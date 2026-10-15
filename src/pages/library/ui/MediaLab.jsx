@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import Icon from "../../../shared/ui/Icon.jsx";
+import {AudioRateControl} from "../../../shared/ui/index.jsx";
+import {useReadingPreferences} from "../../../entities/study/index.js";
 
 export const MEDIA_CLIPS = [
   {
@@ -131,6 +133,8 @@ export const MEDIA_CLIPS = [
 ];
 
 export default function MediaLab({ state, update, speak, toast }) {
+  const readingPreferences=useReadingPreferences();
+  const [speechRate,setSpeechRate]=useState(()=>readingPreferences.speechRate);
   const [selectedClipId, setSelectedClipId] = useState("clip-1");
   const [showFurigana, setShowFurigana] = useState(true);
   const [showPt, setShowPt] = useState(true);
@@ -163,7 +167,7 @@ export default function MediaLab({ state, update, speak, toast }) {
 
   // Tocar pronúncia da linha
   const handlePlayLine = (text) => {
-    if (speak) speak(text);
+    if (speak) speak(text,{rate:speechRate});
   };
 
   // Gravar voz para Shadowing
@@ -236,6 +240,10 @@ export default function MediaLab({ state, update, speak, toast }) {
         </p>
       </header>
 
+      <details className="rounded-xl border border-line bg-paper p-3">
+        <summary className="min-h-11 cursor-pointer text-sm font-bold text-ink-strong">Velocidade dos diálogos desta sessão</summary>
+        <div className="pt-2"><AudioRateControl rate={speechRate} onChange={setSpeechRate} defaultRate={readingPreferences.speechRate}/></div>
+      </details>
       {/* Seletor de Cenas / Mídias */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 w-full min-w-0">
         {MEDIA_CLIPS.map((c) => (
