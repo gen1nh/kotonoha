@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
 import Icon from "../../../shared/ui/Icon.jsx";
-import { Card, Button } from "../../../shared/ui/index.jsx";
+import { Card, Button, NavigationTile } from "../../../shared/ui/index.jsx";
 import { PageHeading } from "../../../shared/ui/index.jsx";
 import { HIRAGANA, KATAKANA, VOCAB, GRAMMAR } from "../../../entities/study/index.js";
 import { CURRICULUM, VOCAB_BY_LEVEL } from "../../../entities/study/index.js";
-import { handleTabKeys } from "../../../shared/lib/index.js";
 import WebResources from "./WebResources.jsx";
 import MediaLab from "./MediaLab.jsx";
 import Drawing from "./Drawing.jsx";
@@ -21,8 +20,10 @@ export function Learn({
   changeLevel,
 }) {
   const [tab, setTab] = useState(learnTopic);
+  const [showCategories,setShowCategories]=useState(learnTopic==="hiragana");
   useEffect(() => {
     setTab(learnTopic);
+    setShowCategories(learnTopic==="hiragana");
     setCharacter(learnTopic === "katakana" ? "ア" : learnTopic === "kanji" ? N5_KANJI[0].glyph : "あ");
   }, [learnTopic]);
 
@@ -55,6 +56,7 @@ export function Learn({
 
   function changeTab(next) {
     setTab(next);
+    setShowCategories(false);
     setQuiz(false);
     setAnswers({});
     setCharacter(next === "katakana" ? "ア" : next === "kanji" ? N5_KANJI[0].glyph : "あ");
@@ -94,6 +96,23 @@ export function Learn({
         iconColor="text-blue"
       />
 
+      {showCategories&&<section className="space-y-3" aria-label="Categorias da Biblioteca">
+        <h2 className="text-base font-bold text-ink-strong">O que você quer consultar?</h2>
+        <div className="grid grid-cols-2 gap-3">
+          {LEARN_TABS.map(item=><NavigationTile key={item.id} symbol={item.glyph} title={item.label}
+            description={item.id==='hiragana'?'Alfabeto básico.':item.id==='katakana'?'Palavras estrangeiras.':item.id==='kanji'?'Caracteres e leituras.':item.id==='vocabulary'?'Palavras do seu nível.':'Estruturas e partículas.'}
+            meta={item.count?item.count+' itens':null} onClick={()=>changeTab(item.id)}/>)}
+        </div>
+        <details className="rounded-2xl border border-line bg-paper p-4">
+          <summary className="min-h-11 cursor-pointer font-bold text-sm text-ink-strong">Materiais complementares</summary>
+          <div className="grid grid-cols-2 gap-3 pt-3">
+            <NavigationTile symbol="本" title="Fontes Web" description="Materiais para consultar." onClick={()=>changeTab('web_resources')}/>
+            <NavigationTile symbol="音" title="Mídia" description="Explorar japonês na cultura." onClick={()=>changeTab('media_lab')}/>
+          </div>
+        </details>
+      </section>}
+      {!showCategories&&<>
+        <button type="button" className="min-h-11 font-bold text-sm text-primary-strong" onClick={()=>setShowCategories(true)}>← Todas as categorias</button>
       <div className="rounded-2xl border border-line bg-paper p-4 space-y-2" aria-label="Orientação de estudo">
         <p className="font-bold text-ink-strong">Estude sem se perder</p>
         <p className="text-sm text-muted">Leia os exemplos, ouça a pronúncia e pratique. Para avançar, retorne à lição guiada na Trilha. As fontes e mídias abaixo são materiais opcionais.</p>
@@ -111,48 +130,7 @@ export function Learn({
           <button type="button" className="rounded-lg border border-line px-3 py-2 text-sm text-primary" onClick={() => changeTab('media_lab')}>Mídia & Animes</button>
         </div>
       </details>
-      {/* Abas da Biblioteca */}
-      <div
-        className="flex flex-wrap gap-2 p-1.5 bg-paper rounded-2xl border-2 border-b-4 border-line"
-        role="tablist"
-        aria-label="Conteúdos da biblioteca"
-        onKeyDown={handleTabKeys}
-      >
-        {visibleTabs.map((item) => {
-          const active = tab === item.id;
-          return (
-            <button
-              key={item.id}
-              role="tab"
-              id={`tab-${item.id}`}
-              aria-controls="learn-panel"
-              tabIndex={active ? 0 : -1}
-              aria-selected={active}
-              onClick={() => changeTab(item.id)}
-              className={`flex items-center gap-2 px-3.5 py-2 rounded-xl type-caption transition-all cursor-pointer select-none active:translate-y-px ${
-                active
-                  ? "bg-accent-soft text-primary-strong border-2 border-b-4 border-primary border-b-primary-dark shadow-xs"
-                  : "text-muted hover:text-ink hover:bg-raised border-2 border-transparent"
-              }`}
-            >
-              <span
-                className={`font-jp text-base ${item.color || "text-primary"}`}
-                aria-hidden="true"
-              >
-                {item.glyph}
-              </span>
-              <span>{item.label}</span>
-              {item.count && (
-                <span className="text-[11px] px-1.5 py-0.5 rounded-full bg-raised border border-line text-muted">
-                  {item.count}
-                </span>
-              )}
-            </button>
-          );
-        })}
-      </div>
-
-      <div id="learn-panel" role="tabpanel" aria-label="Conteúdo selecionado da biblioteca">
+      <div id="learn-panel" aria-label="Conteúdo selecionado da biblioteca">
         {tab === "web_resources" ? (
           <WebResources state={state} update={update} toast={toast} />
         ) : tab === "media_lab" ? (
@@ -465,6 +443,7 @@ export function Learn({
           </div>
         )}
       </div>
+      </>}
     </div>
   );
 }

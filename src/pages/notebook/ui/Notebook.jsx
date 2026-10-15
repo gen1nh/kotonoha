@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Icon from "../../../shared/ui/Icon.jsx";
+import {NavigationTile} from "../../../shared/ui/index.jsx";
 import ErrorMemory from "./ErrorMemory.jsx";
 import { chatCompletion } from "../../../entities/study/index.js";
 
@@ -31,6 +32,7 @@ const NOTE_TEMPLATES = {
 };
 
 export default function Notebook({ state, update, toast, speak, go }) {
+  const [showMenu,setShowMenu]=useState(true);
   const [tab, setTab] = useState("kanban"); // "kanban", "notes", "doubts"
   const [search, setSearch] = useState("");
   const [activeNoteId, setActiveNoteId] = useState(
@@ -217,71 +219,24 @@ export default function Notebook({ state, update, toast, speak, go }) {
 
   return (
     <div className="w-full space-y-6">
-      <div className="rounded-xl border border-line p-4 bg-paper"><p className="text-sm text-muted">Notas, planejamento, dúvidas e erros no mesmo caderno. Seus flashcards pessoais entram nas revisões.</p></div>
-      {/* Barra de Seleção de Visualização */}
-      <div className="flex flex-wrap items-center justify-between gap-3 p-1.5 bg-paper rounded-xl border border-line">
-        <div
-          className="flex flex-wrap gap-1"
-          role="group"
-          aria-label="Visualização do caderno"
-        >
-          <button
-            className={`px-3.5 py-2 rounded-lg text-xs font-semibold flex items-center gap-2 cursor-pointer transition-colors border ${
-              tab === "kanban"
-                ? "bg-surface text-ink font-bold border-line"
-                : "text-muted hover:text-ink hover:bg-surface/50 border-transparent"
-            }`}
-            onClick={() => setTab("kanban")}
-          >
-            <Icon name="chart" />
-            <span>Quadro Kanban</span>
-            <span className="text-[10px] font-bold text-ink">
-              {kanban.length}
-            </span>
-          </button>
-          <button
-            className={`px-3.5 py-2 rounded-lg text-xs font-semibold flex items-center gap-2 cursor-pointer transition-colors border ${
-              tab === "notes"
-                ? "bg-surface text-ink font-bold border-line"
-                : "text-muted hover:text-ink hover:bg-surface/50 border-transparent"
-            }`}
-            onClick={() => setTab("notes")}
-          >
-            <Icon name="paper" />
-            <span>Páginas & Notas</span>
-            <span className="text-[10px] font-bold text-ink">
-              {notes.length}
-            </span>
-          </button>
-          <button
-            className={`px-3.5 py-2 rounded-lg text-xs font-semibold flex items-center gap-2 cursor-pointer transition-colors border ${
-              tab === "doubts"
-                ? "bg-surface text-ink font-bold border-line"
-                : "text-muted hover:text-ink hover:bg-surface/50 border-transparent"
-            }`}
-            onClick={() => setTab("doubts")}
-          >
-            <Icon name="help" />
-            <span>Caixa de Dúvidas</span>
-            {doubts.length > 0 && (
-              <span className="text-[10px] font-bold text-secondary-ink">
-                {doubts.length}
-              </span>
-            )}
-          </button>
-          <button type="button" aria-pressed={tab==='errors'} className={`min-h-11 px-3.5 rounded-lg text-xs font-bold border ${tab==='errors'?'bg-accent-soft border-primary text-primary-strong':'border-transparent text-muted'}`} onClick={()=>setTab('errors')}><Icon name="review"/> Erros ({state.errorMemory?.length||0})</button>
+      {showMenu&&<section className="space-y-3" aria-label="Áreas do Caderno">
+        <h1 className="text-2xl font-black text-ink-strong">Caderno</h1>
+        <p className="text-sm text-muted">Encontre suas anotações, dúvidas e registros sem misturar as ferramentas.</p>
+        <div className="grid grid-cols-2 gap-3">
+          {[
+            {id:'notes',title:'Minhas anotações',description:'Notas e resumos de estudo.',icon:'learn',meta:notes.length+' notas'},
+            {id:'errors',title:'Meus erros',description:'Respostas que precisam de revisão.',icon:'review',meta:(state.errorMemory?.length||0)+' registros'},
+            {id:'doubts',title:'Minhas dúvidas',description:'Perguntas guardadas nas lições.',icon:'chat',meta:doubts.length+' dúvidas'},
+            {id:'kanban',title:'Meu planejamento',description:'Organize tarefas e ideias.',icon:'review',meta:kanban.length+' itens'},
+          ].map(item=><NavigationTile key={item.id} {...item} onClick={()=>{setTab(item.id);setShowMenu(false);}}/>)}
         </div>
-
-        {tab === "notes" && (
-          <button
-            className="px-3 py-1.5 rounded-lg bg-primary text-white font-bold text-xs cursor-pointer hover:bg-primary-strong transition-colors"
-            onClick={() => handleCreateNote()}
-          >
-            + Nova Nota
-          </button>
-        )}
-      </div>
-
+      </section>}
+      {!showMenu&&<>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <button type="button" className="min-h-11 text-sm font-bold text-primary-strong" onClick={()=>setShowMenu(true)}>← Voltar ao Caderno</button>
+          {tab==='notes'&&<button type="button" className="min-h-11 rounded-xl bg-primary text-white px-4 text-sm font-bold" onClick={()=>handleCreateNote()}>+ Nova Nota</button>}
+        </div>
+      <div className="rounded-xl border border-line p-4 bg-paper"><p className="text-sm text-muted">Notas, planejamento, dúvidas e erros no mesmo caderno. Seus flashcards pessoais entram nas revisões.</p></div>
       {/* ABA 1: QUADRO KANBAN ("Meu Fluxo de Japonês") */}
       {tab === "kanban" && (
         <div className="space-y-6">
@@ -684,6 +639,7 @@ export default function Notebook({ state, update, toast, speak, go }) {
           </div>
         </div>
       )}
+      </>}
     </div>
   );
 }

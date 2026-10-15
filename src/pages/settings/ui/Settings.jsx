@@ -2,7 +2,7 @@ import React, { useState, useRef } from "react";
 import { SoundSettings } from './SoundSettings.jsx';
 import { useReadingPreferences, setReadingPreferences } from '../../../entities/study/index.js';
 import { AccountSync } from './AccountSync.jsx';
-import { Card, Button } from "../../../shared/ui/index.jsx";
+import { Card, Button, NavigationTile } from "../../../shared/ui/index.jsx";
 import { PageHeading } from "../../../shared/ui/index.jsx";
 import { todayKey, initialState, normalizeState } from "../../../entities/study/index.js";
 import { dailyGoal, GOAL_OPTIONS } from "../../../entities/study/index.js";
@@ -86,8 +86,10 @@ export function Settings({ state, setState, toast, update, changeLevel, theme, s
   return (
     <div className="space-y-6 w-full min-w-0">
       <PageHeading title="Preferências" description="Seu ritmo, sua conta e os ajustes do aplicativo." icon="settings" iconBg="bg-raised" iconColor="text-ink-strong" />
-      <nav aria-label="Seções de preferências" className="flex gap-2 overflow-x-auto pb-1">
-        {[["study","Estudo e sons"],["account","Conta e backups"],["advanced","Mais opções"]].map(([id,label])=><button type="button" key={id} aria-current={section===id?"page":undefined} onClick={()=>setSection(id)} className={`shrink-0 min-h-11 rounded-xl px-4 text-sm font-bold border-2 ${section===id?"border-primary bg-accent-soft text-primary-strong":"border-line bg-paper text-ink-strong"}`}>{label}</button>)}
+      <nav aria-label="Seções de preferências" className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        <NavigationTile title="Estudo e sons" description="Metas, leitura e áudio." icon="learn" active={section==='study'} onClick={()=>setSection('study')}/>
+        <NavigationTile title="Conta e backups" description="Login e cópias de segurança." icon="academic" active={section==='account'} onClick={()=>setSection('account')}/>
+        <NavigationTile title="Mais opções" description="Assistente e gerenciamento." icon="settings" active={section==='advanced'} onClick={()=>setSection('advanced')}/>
       </nav>
       {section==="account"&&<AccountSync cloud={cloud} state={state} />}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 items-start">

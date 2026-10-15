@@ -59,6 +59,21 @@ export function Button({
   );
 }
 
+
+/** Compact navigation card: an entire, keyboard-accessible touch target. */
+export function NavigationTile({title,description,icon,symbol,meta,onClick,disabled=false,active=false}) {
+  return <button type="button" onClick={onClick} disabled={disabled} aria-label={title} aria-pressed={active}
+    className={cx("group flex min-h-32 w-full flex-col items-start gap-2 rounded-2xl border-2 border-b-4 bg-paper p-4 text-left transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:opacity-55 disabled:cursor-not-allowed",
+      active ? "border-primary bg-accent-soft" : "border-line hover:border-primary")}>
+    <span aria-hidden="true" className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent-soft text-primary-strong">
+      {symbol ? <span className="font-jp text-xl font-bold" lang="ja">{symbol}</span> : <Icon name={icon||"learn"} />}
+    </span>
+    <strong className="text-sm font-black text-ink-strong">{title}</strong>
+    {description&&<span className="text-xs leading-relaxed text-muted">{description}</span>}
+    {meta&&<span className="mt-auto text-xs font-bold text-primary-strong">{meta}</span>}
+  </button>;
+}
+
 /** Superfície padrão de conteúdo com borda 2px nítida estilo Duolingo. */
 export function Card({ as: Tag = "section", className, children, ...rest }) {
   return (

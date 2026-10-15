@@ -63,7 +63,8 @@ test('filtro N1 não desbloqueia laboratórios nem URLs',async({page})=>{
  const state=seeded();state.selectedLevel='N1';await enter(page,state);
  await page.goto('/?view=line');await expect(page.getByRole('heading',{name:'Praticar'})).toBeVisible();
  await page.getByText('Laboratórios opcionais').click();
- await expect(page.getByRole('button',{name:'Bloqueado'}).first()).toBeDisabled();
+ await expect(page.getByRole('button',{name:'Conversação'})).toBeDisabled();
+ await expect(page.getByRole('button',{name:'Pronúncia'})).toBeDisabled();
 });
 
 test('tema escuro, configurações e backup',async({page})=>{
@@ -77,7 +78,8 @@ test('tema escuro, configurações e backup',async({page})=>{
 
 test('caligrafia recebe toque no canvas sem interceptação',async({page})=>{
  await enter(page);await tab(page,'Praticar').click();
- await page.getByRole('button',{name:'Abrir ferramenta →'}).first().click();
+ await page.getByRole('button',{name:'Biblioteca e escrita'}).click();
+ await page.getByRole('button',{name:'Hiragana'}).click();
  const canvas=page.locator('canvas[data-drawing-surface]').first();await canvas.scrollIntoViewIfNeeded();
  const r=await canvas.boundingBox();expect(r).not.toBeNull();
  const onTop=await canvas.evaluate(c=>document.elementFromPoint(c.getBoundingClientRect().left+c.clientWidth/2,c.getBoundingClientRect().top+c.clientHeight/2)===c);
