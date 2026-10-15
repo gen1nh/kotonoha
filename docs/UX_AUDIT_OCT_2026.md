@@ -6,6 +6,7 @@ Melhorar o aplicativo atual, sem redesign. Preservar as tipografias, paleta, com
 ## Melhorias implementadas nesta branch
 - **Checkpoint:** uma questão visível de cada vez, navegação anterior/próxima, progresso e correção somente ao final. As respostas continuam persistidas e recuperáveis.
 - **Gramática N5:** escolha de alternativa não exibe imediatamente correto/incorreto; há confirmação explícita antes do feedback.
+- **Digitação japonesa:** removida a conversão automática visível durante a escrita. Em caso de erro, a leitura esperada só aparece após escolher mostrá-la.
 - **Preferências:** seções Estudo e sons / Conta e backups / Mais opções; explicação do que conta na meta diária.
 - **Progresso:** seções Resumo / Preparação N5 / Simulados, reduzindo a extensão da página mobile.
 - **Áudio:** opção 0,5× no checkpoint e na escuta N5, ampliando o limite interno do TTS; mantém voz japonesa e fallback existente.
