@@ -5,7 +5,7 @@ import {checkpointQuestions,checkpointScore,PASS_PERCENT,checkpointPassed} from 
 import {unitById} from '../../../entities/study/index.js';
 import {lessonsFor} from '../../../entities/study/index.js';
 import {Button} from '../../../shared/ui/index.jsx';
-import {useReadingPreferences,setReadingPreferences} from '../../../entities/study/model/readingPreferences.js';
+import {useReadingPreferences,setReadingPreferences} from '../../../entities/study/index.js';
 /** Tentativa e respostas são persistidas, inclusive entre atualizações da PWA. */
 export default function CheckpointPlayer({state,topic,update,go,openGuidedLesson}){
  const [activeQuestion,setActiveQuestion]=useState(0);

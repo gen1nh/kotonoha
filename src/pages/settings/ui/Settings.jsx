@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
 import { SoundSettings } from './SoundSettings.jsx';
-import { useReadingPreferences, setReadingPreferences } from '../../../entities/study/model/readingPreferences.js';
+import { useReadingPreferences, setReadingPreferences } from '../../../entities/study/index.js';
 import { AccountSync } from './AccountSync.jsx';
 import { Card, Button } from "../../../shared/ui/index.jsx";
 import { PageHeading } from "../../../shared/ui/index.jsx";

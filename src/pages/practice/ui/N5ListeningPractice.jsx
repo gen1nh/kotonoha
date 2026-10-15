@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { FORMATIVE_LISTENING_N5, gradeFormativeListening } from '../../../entities/study/index.js';
 import { japaneseVoices, speakJapanese, stopSpeech, warmJapaneseVoices } from '../../../entities/study/index.js';
 import { Button } from '../../../shared/ui/index.jsx';
-import { useReadingPreferences, setReadingPreferences, reviewedRomaji } from '../../../entities/study/model/readingPreferences.js';
+import { useReadingPreferences, setReadingPreferences, reviewedRomaji } from '../../../entities/study/index.js';
 
 /** Small, optional, no-API listening practice. Scores never unlock N4. */
 export default function N5ListeningPractice() {
