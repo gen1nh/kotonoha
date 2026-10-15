@@ -2,13 +2,16 @@ import { useSyncExternalStore } from 'react';
 
 const KEY = 'kotonoha.reading.v1';
 export const DEFAULT_READING_PREFERENCES = Object.freeze({ showRomaji: false, speechRate: 0.85 });
-const rates = Object.freeze([0.5, 0.75, 0.85, 1, 1.15]);
+const normalizeRate = value => {
+  const rate = Number(value);
+  return Number.isFinite(rate) && rate >= 0.5 && rate <= 1.15 ? Math.round(rate * 20) / 20 : 0.85;
+};
 const listeners = new Set();
 
 export function normalizeReadingPreferences(value) {
   return {
     showRomaji: value?.showRomaji === true,
-    speechRate: rates.includes(Number(value?.speechRate)) ? Number(value.speechRate) : 0.85,
+    speechRate: normalizeRate(value?.speechRate),
   };
 }
 
