@@ -209,7 +209,9 @@ test('escuta não aprova alternativas sem áudio ou leitura e permite fallback h
  }
  await expect(page.getByRole('button',{name:'Finalizar e conferir respostas'})).toBeEnabled();
  await page.reload();
- // All answers and disclosed transcripts survive the reload.
+ // All answers and disclosed transcripts survive the reload; this branch starts navigation at question one.
+ await expect(page.locator('fieldset [lang="ja"]')).toBeVisible();
+ for(let i=1;i<qs.length;i++)await page.getByRole('button',{name:'Próxima questão →'}).click();
  await expect(page.getByRole('button',{name:'Finalizar e conferir respostas'})).toBeEnabled();
  await page.getByRole('button',{name:'Finalizar e conferir respostas'}).click();
  await expect(page.getByText('Checkpoint aprovado!',{exact:true})).toBeVisible();
