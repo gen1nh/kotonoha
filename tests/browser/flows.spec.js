@@ -69,8 +69,7 @@ test('trilha destaca etapa atual e digitação só aparece como treino opcional'
  await expect(page.getByText('Ler hiragana básico e reconhecer cumprimentos e frases de apresentação.',{exact:false})).toBeVisible();
  await tab(page,'Praticar').click();
  await expect(page.getByRole('heading',{name:'Digite em japonês'})).toBeHidden();
- await page.getByText('Treinos extras',{exact:true}).click();
- await page.getByText('Treino de teclado japonês',{exact:true}).click();
+ await page.getByRole('button',{name:'Digitação japonesa'}).click();
  await expect(page.getByRole('heading',{name:'Digite em japonês'})).toBeVisible();
  await expect(page.getByRole('combobox',{name:'Conteúdo para praticar'}).locator('option')).toHaveCount(1);
  await page.getByRole('textbox',{name:'Digite a leitura deste item'}).fill('a');
@@ -89,6 +88,10 @@ test('gramática separa explicação de prática e permite consultar sem perder 
  await page.getByRole('button',{name:'Consultar explicação e exemplos'}).click();
  await page.getByRole('button',{name:/Entendi · começar a prática/}).click();
  await expect(page.getByRole('radio',{name:unit.items[0].meaning,exact:true})).toBeChecked();
+ await expect(page.getByRole('button',{name:/Concluir prática/})).toBeDisabled();
+ await expect(page.getByText('Correto! Você reconheceu o significado.')).toHaveCount(0);
+ await page.getByRole('button',{name:'Conferir resposta'}).click();
+ await expect(page.getByText('Correto! Você reconheceu o significado.')).toBeVisible();
  await page.getByRole('button',{name:/Concluir prática/}).click();
  await expect(page.getByRole('button',{name:/Fazer checkpoint/})).toBeVisible();
 });
@@ -109,7 +112,7 @@ for(const kind of ['reading','listening'])test(`${kind}: um exemplo por vez ante
 test('filtro N1 não desbloqueia laboratórios nem URLs',async({page})=>{
  const state=seeded();state.selectedLevel='N1';await enter(page,state);
  await page.goto('/?view=line');await expect(page.getByRole('heading',{name:'Praticar'})).toBeVisible();
- await page.getByText('Laboratórios opcionais').click();
+ await page.getByRole('button',{name:'Laboratórios'}).click();
  await expect(page.getByRole('button',{name:'Conversação'})).toBeDisabled();
  await expect(page.getByRole('button',{name:'Pronúncia'})).toBeDisabled();
 });
@@ -127,7 +130,8 @@ test('tema escuro, configurações e backup',async({page})=>{
 
 test('caligrafia recebe toque no canvas sem interceptação',async({page})=>{
  await enter(page);await tab(page,'Praticar').click();
- await page.getByRole('button',{name:'Biblioteca e escrita'}).click();
+ await page.getByRole('button',{name:/Consultar Biblioteca e Caderno/}).click();
+ await page.getByRole('button',{name:'Biblioteca'}).click();
  await page.getByRole('button',{name:'Hiragana'}).click();
  const canvas=page.locator('canvas[data-drawing-surface]').first();await canvas.scrollIntoViewIfNeeded();
  const r=await canvas.boundingBox();expect(r).not.toBeNull();
