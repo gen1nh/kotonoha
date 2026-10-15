@@ -5,10 +5,12 @@ import {checkpointQuestions,checkpointScore,PASS_PERCENT,checkpointPassed} from 
 import {unitById} from '../../../entities/study/index.js';
 import {lessonsFor} from '../../../entities/study/index.js';
 import {Button} from '../../../shared/ui/index.jsx';
+import {useReadingPreferences,setReadingPreferences} from '../../../entities/study/index.js';
 /** Tentativa e respostas são persistidas, inclusive entre atualizações da PWA. */
 export default function CheckpointPlayer({state,topic,update,go,openGuidedLesson}){
  const [activeQuestion,setActiveQuestion]=useState(0);
- const [speechRate,setSpeechRate]=useState(0.85);
+ const readingPreferences=useReadingPreferences();
+ const speechRate=readingPreferences.speechRate;
  const [revealed,setRevealed]=useState({});
  useEffect(()=>{setActiveQuestion(0);setRevealed({});setPlayed({});},[topic]);
  const [played,setPlayed]=useState({});
@@ -42,7 +44,7 @@ export default function CheckpointPlayer({state,topic,update,go,openGuidedLesson
     {q.spokenText&&<div className="rounded-xl bg-raised p-3 space-y-2">
       <button type="button" disabled={result!==null} onClick={()=>speakJapanese(q.spokenText,setAudioNotice,{rate:speechRate,onStart:()=>setPlayed(old=>({...old,[q.id]:true}))})} className="min-h-11 rounded-xl border border-line px-4 text-sm font-bold">▶ Ouvir frase</button>
       <label className="block text-xs text-muted">Velocidade da voz
-        <select aria-label="Velocidade de reprodução" value={speechRate} onChange={e=>setSpeechRate(Number(e.target.value))} className="block mt-1 min-h-11 rounded-xl border border-line bg-paper px-3 text-ink-strong">
+        <select aria-label="Velocidade de reprodução" value={speechRate} onChange={e=>setReadingPreferences({speechRate:Number(e.target.value)})} className="block mt-1 min-h-11 rounded-xl border border-line bg-paper px-3 text-ink-strong">
           <option value={0.5}>0,5× · Bem devagar</option><option value={0.75}>0,75× · Devagar</option><option value={0.85}>0,85×</option><option value={1}>1× · Normal</option><option value={1.15}>1,15×</option>
         </select>
       </label>

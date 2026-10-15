@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { FORMATIVE_LISTENING_N5, gradeFormativeListening } from '../../../entities/study/index.js';
 import { japaneseVoices, speakJapanese, stopSpeech, warmJapaneseVoices } from '../../../entities/study/index.js';
 import { Button } from '../../../shared/ui/index.jsx';
+import { useReadingPreferences, setReadingPreferences, reviewedRomaji } from '../../../entities/study/index.js';
 
 /** Small, optional, no-API listening practice. Scores never unlock N4. */
 export default function N5ListeningPractice() {
@@ -13,7 +14,8 @@ export default function N5ListeningPractice() {
   const [notice, setNotice] = useState('');
   const [voices, setVoices] = useState(() => japaneseVoices());
   const [voiceURI, setVoiceURI] = useState('');
-  const [rate, setRate] = useState(0.85);
+  const readingPreferences = useReadingPreferences();
+  const rate = readingPreferences.speechRate;
   const question = FORMATIVE_LISTENING_N5[index];
 
   useEffect(() => warmJapaneseVoices(setVoices), []);
@@ -53,7 +55,7 @@ export default function N5ListeningPractice() {
             </select>
           </label>
           <label className="block space-y-1">Velocidade ({rate.toFixed(2)}×)
-            <input className="block w-full" type="range" min="0.5" max="1.15" step="0.05" value={rate} onChange={event => setRate(Number(event.target.value))} />
+            <input className="block w-full" type="range" min="0.5" max="1.15" step="0.05" value={rate} onChange={event => setReadingPreferences({speechRate:Number(event.target.value)})} />
           </label>
           {!voices.length && <p>Se nenhuma voz japonesa aparecer, ative uma voz japonesa nas configurações de acessibilidade/idioma do seu dispositivo. Algumas vozes requerem download.</p>}
         </div>
@@ -62,7 +64,7 @@ export default function N5ListeningPractice() {
       <button type="button" className="min-h-10 text-xs font-bold underline text-primary-strong" onClick={() => {stopSpeech(); setShowTranscript(true); setHeardAudio(false);}}>
         Não consigo ouvir · mostrar frase escrita
       </button>
-      {showTranscript && <p lang="ja" className="rounded-lg bg-paper p-3 text-lg text-ink-strong">{question.spokenText}</p>}
+      {showTranscript && <div className="rounded-lg bg-paper p-3 space-y-1"><p lang="ja" className="text-lg text-ink-strong">{question.spokenText}</p>{readingPreferences.showRomaji&&reviewedRomaji(question)&&<p className="text-xs text-muted" lang="ja-Latn">{reviewedRomaji(question)}</p>}</div>}
     </div>
     <fieldset disabled={result !== null} className="space-y-2">
       <legend className="font-bold text-ink-strong mb-2">{question.prompt}</legend>
@@ -70,7 +72,7 @@ export default function N5ListeningPractice() {
     </fieldset>
     {result === null ? <Button variant="secondary" onClick={check} disabled={answer === null} className="w-full">Verificar resposta</Button> : <div className="space-y-3" role="status">
       <strong className={result.correct ? 'text-primary-strong' : 'text-ink-strong'}>{result.correct ? 'Correto!' : `Resposta: ${question.choices[question.answerIndex]}`}</strong>
-      <p className="text-sm text-muted">{question.explanation}</p>
+      <p className="text-sm text-muted">{question.explanation}</p>{readingPreferences.showRomaji&&reviewedRomaji(question)&&<p className="text-xs text-muted" lang="ja-Latn">{reviewedRomaji(question)}</p>}
       <p className="text-xs text-muted">{result.skillEvidence === 'reading-assistance' ? 'Você consultou o texto ou o áudio não estava disponível; este resultado conta apenas como prática de leitura.' : 'Resultado de prática auditiva com voz sintética; não é uma prova certificadora.'}</p>
       <Button variant="primary" onClick={next} className="w-full">Próxima prática →</Button>
     </div>}

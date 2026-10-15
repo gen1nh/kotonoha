@@ -1,5 +1,6 @@
 import React, { useState, useRef } from "react";
 import { SoundSettings } from './SoundSettings.jsx';
+import { useReadingPreferences, setReadingPreferences } from '../../../entities/study/index.js';
 import { AccountSync } from './AccountSync.jsx';
 import { Card, Button } from "../../../shared/ui/index.jsx";
 import { PageHeading } from "../../../shared/ui/index.jsx";
@@ -14,6 +15,7 @@ export function Settings({ state, setState, toast, update, changeLevel, theme, s
   );
   const [models, setModels] = useState(() => (model ? [model] : []));
   const [busy, setBusy] = useState(false);
+  const readingPreferences = useReadingPreferences();
   const importInput = useRef(null);
   const [section,setSection]=useState("study");
 
@@ -98,6 +100,18 @@ export function Settings({ state, setState, toast, update, changeLevel, theme, s
           <label className="block text-sm font-bold text-ink-strong">Tema visual
             <select aria-label="Tema visual" className="mt-2 min-h-12 w-full rounded-xl border border-line bg-paper text-ink-strong px-3" value={theme} onChange={e=>setTheme(e.target.value)}><option value="system">Usar tema do dispositivo</option><option value="light">Claro</option><option value="dark">Escuro</option></select>
           </label>
+          <div className="border-t border-line pt-4 space-y-3">
+            <h3 className="text-base font-bold text-ink-strong">Leitura e pronúncia</h3>
+            <label className="flex items-center justify-between gap-3 min-h-11">
+              <span><span className="block font-bold text-sm text-ink-strong">Mostrar romaji</span><span className="block text-xs text-muted">Aparece após revelar o texto, nas frases que já têm leitura revisada.</span></span>
+              <input type="checkbox" role="switch" aria-label="Mostrar romaji" checked={readingPreferences.showRomaji} onChange={e=>{if(!setReadingPreferences({showRomaji:e.target.checked}))toast?.('A opção foi aplicada nesta sessão, mas não pôde ser salva.');}} className="h-6 w-6 accent-primary" />
+            </label>
+            <label className="block text-sm font-bold text-ink-strong">Velocidade padrão do japonês
+              <select aria-label="Velocidade padrão do japonês" value={readingPreferences.speechRate} onChange={e=>{if(!setReadingPreferences({speechRate:Number(e.target.value)}))toast?.('A velocidade não pôde ser salva.');}} className="mt-2 min-h-11 w-full rounded-xl border border-line bg-paper text-ink-strong px-3">
+                <option value={0.5}>0,5× · Bem devagar</option><option value={0.75}>0,75× · Devagar</option><option value={0.85}>0,85× · Padrão</option><option value={1}>1× · Normal</option><option value={1.15}>1,15× · Rápido</option>
+              </select>
+            </label>
+          </div>
           <SoundSettings toast={toast} />
         </Card>}
         <div className="space-y-4">
