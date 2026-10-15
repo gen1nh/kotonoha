@@ -253,3 +253,11 @@ test('PWA mantém tela opcional em cache depois da divisão do bundle',async({pa
  await page.getByRole('button',{name:'Biblioteca'}).click();
  await expect(page.getByRole('button',{name:'Hiragana'})).toBeVisible();
 });
+
+test('rota carregada sob demanda mantém foco no título para teclado',async({page})=>{
+ await enter(page);
+ await tab(page,'Praticar').click();
+ await page.getByRole('button',{name:/Consultar Biblioteca e Caderno/}).click();
+ await page.getByRole('button',{name:'Biblioteca'}).click();
+ await expect(page.getByRole('heading',{name:'Biblioteca & Alfabetos Kana',level:1})).toBeFocused();
+});
