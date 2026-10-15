@@ -1,12 +1,12 @@
 # Kotonoha — Japonês com jornada guiada
 
-PWA pessoal para aprender japonês com microlições, prática contextual, checkpoints, revisão espaçada (SRS), biblioteca de referência, escrita e laboratórios opcionais. **Versão 0.9.1 — candidata a curso N5 pessoal. Ainda requer revisão linguística e homologação mobile antes da 1.0.**
+PWA pessoal para aprender japonês com microlições, prática contextual, checkpoints, revisão espaçada (SRS), biblioteca de referência, escrita e laboratórios opcionais. **Versão 0.10.0 — candidata a curso N5 pessoal. Ainda requer revisão linguística e homologação mobile antes da 1.0.**
 
 ## Como funciona
 
 A **Trilha é o único currículo**. A Home retoma o próximo passo. Cada unidade inclui uma quantidade pequena de conteúdo, prática e um checkpoint para liberar a seguinte. A aba Praticar disponibiliza revisão e ferramentas extras, mas não cria uma segunda jornada. A Biblioteca apenas consulta conteúdos; escolher um nível de referência **não** desbloqueia lições.
 
-A navegação mobile contém quatro áreas: **Início, Trilha, Praticar, Progresso**. As tarefas imersivas ocultam a barra inferior. O design system usa **Nunito** em português, **M PLUS Rounded 1c** em japonês e componentes arredondados/táteis inspirados na identidade original do projeto. Tema claro/escuro disponível.
+A navegação mobile contém quatro áreas: **Início, Trilha, Praticar, Progresso**. As tarefas imersivas ocultam a barra inferior. O design system usa **Nunito** em português, **Zen Maru Gothic** em japonês (com fallback local) e componentes arredondados/táteis inspirados na identidade original do projeto. Tema claro/escuro disponível.
 
 O conteúdo N5 inclui 220 microlições de hiragana, katakana, vocabulário, kanji em contexto, gramática, leitura e escuta. As seções usam capítulos recolhíveis para navegação mobile. O material expandido é uma base autoral candidata ainda não revisada linguisticamente por especialista. N4–N1 continuam sendo **prévia autoral limitada**; ainda não são cursos completos ou provas JLPT oficiais.
 
@@ -14,7 +14,7 @@ O conteúdo N5 inclui 220 microlições de hiragana, katakana, vocabulário, kan
 
 O fluxo de aprendizagem já separa conclusão de microlições e **aprovação interna de nível**. Concluir checkpoints marca **o curso pessoal N5 como concluído**, mas **não libera o N4** sem uma avaliação independente abrangente. A revisão final pessoal possui 32 perguntas e nunca concede aprovação JLPT ou destrava níveis. A avaliação certificadora permanece separada e indisponível.
 
-- O painel **Progresso → Preparação N5** exibe os fundamentos estudados e os itens editoriais ainda necessários.
+- O painel **Progresso → Preparação N5** exibe o que já foi estudado, revisões e próximos passos. Pendências editoriais permanecem na documentação técnica, não na interface do aluno.
 - A **revisão final pessoal N5** aparece após concluir todos os capítulos; apresenta 32 questões formativas distribuídas entre vocabulário, gramática, leitura e escuta via voz do navegador, sem conceder certificado. A **avaliação certificadora independente** só aparece quando existir um banco extenso com itens revisados e áudios devidamente autorizados; atualmente está vazia.
 - O catálogo editorial está em `src/entities/study/model/pedagogy/n5Curriculum.js`, a fila de revisão em `data/editorial/n5-draft-questions.json` e o importador JMdict em `scripts/import_jmdict.py`.
 - Auditoria com falha proposital caso a 1.0 não possa ser publicada: `npm run audit:n5-release`.
@@ -56,9 +56,10 @@ Não publique nenhuma chave de IA em variáveis `VITE_*`. A integração Groq op
 
 - O progresso permanece no dispositivo, em `localStorage` com a chave legada `kotonoha.v1` para preservar dados de versões anteriores.
 - O esquema dos backups foi versionado (`schemaVersion: 2`) com migração de dados históricos, novas microlições, rascunhos de checkpoint e validação.
-- Exportação/importação JSON em Preferências; recomenda-se exportar antes de mudar de versão. A alteração do aplicativo **não sincroniza** progresso entre celular e computador.
+- Exportação/importação JSON em Preferências; recomenda-se exportar antes de mudar de versão. A sincronização opcional entre aparelhos requer conta Google e Supabase configurados. O usuário escolhe a versão em caso de conflito; não existe mesclagem automática.
+- Os backups de conflito guardam até cinco cópias de recuperação **neste navegador**, não na nuvem. Faça downloads periódicos. Preferências de voz e efeitos permanecem específicas do aparelho.
 - Depois da primeira carga e do cache do PWA, conteúdos locais podem funcionar offline; voz do sistema, IA, links externos e mídia dependem das capacidades do aparelho e da rede.
-- **Sincronização em nuvem e autenticação não fazem parte do escopo**, por decisão de produto.
+- **Conta e sincronização Supabase são opcionais**; ver `docs/SUPABASE_SETUP.md`. Não há sincronização com o app fechado, nem garantia de atualização instantânea. A qualidade do áudio de voz depende do dispositivo.
 
 ## Estrutura relevante
 

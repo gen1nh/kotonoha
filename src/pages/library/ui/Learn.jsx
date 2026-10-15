@@ -28,11 +28,18 @@ export function Learn({
   const [page,setPage,backCategory]=useSubpageNavigation('learn','menu',['menu','hiragana','katakana','kanji','vocabulary','grammar','web_resources','media_lab']);
   const showCategories=page==='menu';
   useEffect(() => {
+    if(learnTopic!=='hiragana' && ['katakana','kanji','vocabulary','grammar','web_resources','media_lab'].includes(learnTopic))setPage(learnTopic);
     setTab(learnTopic);
     setCharacter(learnTopic === "katakana" ? "ア" : learnTopic === "kanji" ? N5_KANJI[0].glyph : "あ");
   }, [learnTopic]);
 
-  const [quiz, setQuiz] = useState(false);
+  useEffect(()=>{
+    if(page!=='menu' && page!==tab) {
+      setTab(page);
+      setCharacter(page==='katakana'?'ア':page==='kanji'?N5_KANJI[0].glyph:'あ');
+    }
+  },[page]);
+    const [quiz, setQuiz] = useState(false);
   const [answers, setAnswers] = useState({});
   const [character, setCharacter] = useState(
     learnTopic === "katakana" ? "ア" : learnTopic === "kanji" ? N5_KANJI[0].glyph : "あ",
