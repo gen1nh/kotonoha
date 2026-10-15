@@ -56,7 +56,7 @@ export default function SimuladosHub({state,update,toast,changeLevel}) {
     {screen==='menu'&&<div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
       {OPTIONS.map(option=><article key={option.id} className="rounded-2xl border border-line bg-paper p-4 space-y-3">
         <div className="space-y-1"><h3 className="text-base font-bold text-ink-strong">{option.title}</h3><p className="text-sm text-muted">{option.detail}</p></div>
-        <Button variant={option.id==='diagnostic'?'primary':'secondary'} className="w-full" onClick={()=>setScreen(option.id)}>Abrir {option.title.toLowerCase()} →</Button>
+        <Button variant={option.id==='diagnostic'?'primary':'secondary'} className="w-full" onClick={()=>setScreen(option.id)} aria-label={`Abrir ${option.title}`}>Abrir →</Button>
       </article>)}
     </div>}
     {screen==='diagnostic'&&<DiagnosticPractice key={level} level={level} update={update}/>}
@@ -68,7 +68,7 @@ export default function SimuladosHub({state,update,toast,changeLevel}) {
           <input id="mock-score" type="number" min="0" max="100" step="1" value={score} onChange={e=>setScore(e.target.value)} placeholder="Ex.: 75" className="mt-2 min-h-11 w-full rounded-xl border border-line bg-paper px-3 text-ink-strong"/>
         </label>
         {error&&<p role="alert" className="text-sm text-danger">{error}</p>}
-        <Button variant="primary" submit={false} className="w-full" type="submit">Salvar resultado</Button>
+        <Button variant="primary" className="w-full" type="submit">Salvar resultado</Button>
       </form>
       <div className="border-t border-line pt-3 space-y-2">
         <h3 className="font-bold text-ink-strong">Notas registradas</h3>
