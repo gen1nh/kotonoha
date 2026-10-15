@@ -10,6 +10,9 @@ const state=initialState();
 const published=fs.existsSync('data/editorial/n5-course-review.json')
  ?JSON.parse(fs.readFileSync('data/editorial/n5-course-review.json','utf8')):null;
 const reviewed=new Map((published?.units||[]).map(unit=>[unit.id,unit]));
+const queueFile='data/editorial/n5-prerequisite-review.json';
+const existingQueue=fs.existsSync(queueFile)
+ ?JSON.parse(fs.readFileSync(queueFile,'utf8')):null;
 const noJapanese=/[^\u3040-\u30ff\u3400-\u9fff]/g;
 const candidates=N5_UNITS.map((unit,index)=>{
  const content=JSON.stringify(unit.items);
@@ -43,24 +46,40 @@ const candidates=N5_UNITS.map((unit,index)=>{
 });
 if(candidates.length!==220 || new Set(candidates.map(item=>item.id)).size!==220)throw new Error('Incomplete/duplicate N5 course review queue');
 const open=candidates.filter(x=>x.structuralFlags.length);
+// Count human records without assuming that their judgments are correct.
+const expectedIds=new Set(candidates.map(item=>item.id));
+const recordedUnits=existingQueue?.units||[];
+if(existingQueue && (!Array.isArray(recordedUnits) ||
+ new Set(recordedUnits.map(item=>item.id)).size!==recordedUnits.length ||
+ recordedUnits.some(item=>!expectedIds.has(item.id)))) {
+ throw new Error('Existing editorial queue has duplicate or unknown unit IDs');
+}
+const humanReviews=recordedUnits.filter(item=>
+ item.languageReview?.status==='reviewed' &&
+ typeof item.languageReview.reviewer==='string' &&
+ item.languageReview.reviewer.trim() &&
+ typeof item.languageReview.reviewedAt==='string' &&
+ item.languageReview.reviewedAt.trim()
+);
+const completedIds=new Set(humanReviews.map(item=>item.id));
 const report={
  type:'n5-linguistic-prerequisite-review',
  version:1,
  note:'Candidate prerequisites and structural triage only. No automatic grammatical approval.',
  totalUnits:candidates.length,
- stageSummary:N5_STAGES.map(stage=>({stage:stage.id,total:stage.units.length,reviewed:0})),
+ stageSummary:N5_STAGES.map(stage=>({stage:stage.id,total:stage.units.length,recordedReviews:stage.units.filter(unit=>completedIds.has(unit.id)).length})),
  structuralFlags:open.map(({id,structuralFlags})=>({id,structuralFlags})),
- independentLanguageReviewsCompleted:0,
+ humanReviewsRecorded:humanReviews.length,
  certificationEligible:false,
  units:candidates,
 };
 if(process.argv.includes('--write')){
- const file='data/editorial/n5-prerequisite-review.json';
- if(fs.existsSync(file))throw new Error('Review file already exists. Do not overwrite human notes.');
- fs.writeFileSync(file,JSON.stringify(report,null,2)+'\n');
- console.log('Created '+file);
+ if(existingQueue)throw new Error('Review file already exists. Do not overwrite human notes.');
+ fs.writeFileSync(queueFile,JSON.stringify(report,null,2)+'\n');
+ console.log('Created '+queueFile);
 }
 console.log(JSON.stringify({units:report.totalUnits,stages:report.stageSummary,
- structurallyFlagged:open.length,unreviewedLanguage:report.totalUnits,
+ structurallyFlagged:open.length,humanReviewsRecorded:humanReviews.length,
+ pendingHumanReviews:report.totalUnits-humanReviews.length,
  certificationEligible:false},null,2));
 if(open.length)process.exitCode=1;
