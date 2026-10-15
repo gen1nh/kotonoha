@@ -58,10 +58,23 @@ export default function App(){
     if(next.blocked){history.replaceState(null,'',routeUrl(next.view));setRoute(next);}
   },[state]);
   useEffect(()=>{
-    const heading=document.querySelector(`#view-${route.view} h1`);
-    heading?.setAttribute('tabindex','-1');
-    heading?.focus({preventScroll:true});
+    const section=document.getElementById(`view-${route.view}`);
+    let observer;
+    const focusHeading=()=>{
+      const heading=section?.querySelector('h1');
+      if(!heading)return false;
+      heading.setAttribute('tabindex','-1');
+      heading.focus({preventScroll:true});
+      observer?.disconnect();
+      return true;
+    };
+    // Lazy route screens may only render their heading after this effect runs.
+    if(!focusHeading()&&section){
+      observer=new MutationObserver(focusHeading);
+      observer.observe(section,{childList:true,subtree:true});
+    }
     window.scrollTo({top:0,behavior:'instant'});
+    return ()=>observer?.disconnect();
   },[route.view,route.topic]);
   useEffect(()=>{
     stateSnapshot.current=state;
