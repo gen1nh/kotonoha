@@ -13,7 +13,7 @@ export function checkpointQuestions(state,topic,count=5,attempt=0){
  if(topic==='grammar' && !unit){
    return GRAMMAR.slice(0,count).map((entry,i)=>{
      const wrong=GRAMMAR.filter(g=>g!==entry).map(g=>g.meaning).slice(0,3);
-     return {id:`grammar:${i}`,prompt:`Traduza: ${entry.example}`,answer:entry.meaning,options:rotate([entry.meaning,...wrong],(attempt+i)%4)};
+     return {id:`grammar:${i}`,prompt:`Traduza: ${entry.example}`,answer:entry.meaning,options:rotate([entry.meaning,...wrong],(attempt+i)%4),explanation:entry.text};
    });
  }
  if(unit?.kind==='reading'||unit?.kind==='listening'){
@@ -29,7 +29,15 @@ export function checkpointQuestions(state,topic,count=5,attempt=0){
    const g=unit.items[0];
    const i=GRAMMAR.indexOf(g);
    const other=GRAMMAR.filter(row=>row!==g);
-   const make=(id,prompt,answer,wrong)=>({id,prompt,answer,explanation:`${g.text} Exemplo: ${g.example} — ${g.meaning}`,options:rotate([answer,...wrong.slice(0,3)],(attempt+i)%4)});
+   const make=(id,prompt,answer,wrong)=>({
+     id,prompt,answer,
+     explanation:`${g.text} Exemplo: ${g.example} — ${g.meaning}`,
+     options:rotate([answer,...wrong.slice(0,3)],(attempt+i)%4),
+     // Explanations are grounded in the existing authored grammar rows.
+     distractorContext:Object.fromEntries(other.filter(row=>
+       row.meaning!==answer&&row.example!==answer&&row.text!==answer
+     ).flatMap(row=>[[row.meaning,row.title],[row.example,row.title],[row.text,row.title]])),
+   });
    const application=grammarApplication(unit);
    return [
      make(`${topic}:translation`,`Traduza: ${g.example}`,g.meaning,other.map(x=>x.meaning)),
@@ -46,11 +54,35 @@ export function checkpointQuestions(state,topic,count=5,attempt=0){
  return selected.map((card,i)=>{
    const wrong=cards.filter(x=>x.id!==card.id&&x.answer!==card.answer).map(x=>x.answer).slice(0,3);
    if(wrong.length<3)return null;
-   return {id:card.id,prompt:unit?.kind==='kanji'?`Qual leitura e sentido estão associados a ${card.prompt} neste capítulo?`:card.prompt,answer:card.answer,options:rotate([card.answer,...wrong],(i+attempt)%4)};
+   const options=rotate([card.answer,...wrong],(i+attempt)%4);
+   const distractorContext=Object.fromEntries(wrong.map(option=>{
+     const other=cards.find(x=>x.id!==card.id&&x.answer===option);
+     return [option,other?.prompt||''];
+   }).filter(([,prompt])=>prompt));
+   return {
+     id:card.id,
+     prompt:unit?.kind==='kanji'?`Qual leitura e sentido estão associados a ${card.prompt} neste capítulo?`:card.prompt,
+     answer:card.answer,options,distractorContext,
+     explanation:unit?.kind==='kana'
+       ?'Observe a forma do sinal e associe a leitura correta. Compare os sinais parecidos, sem usar somente a posição da alternativa.'
+       :unit?.kind==='kanji'
+         ?'Reconheça esta leitura dentro da palavra estudada; um mesmo kanji pode ter outras leituras em contextos diferentes.'
+         :'Associe a palavra japonesa à leitura e ao significado usados nesta lição.',
+   };
  }).filter(Boolean);
 }
 function rotate(options,shift){return [...options.slice(shift),...options.slice(0,shift)];}
 export function checkpointScore(questions,answers){
  if(!questions.length||questions.some(q=>!Object.prototype.hasOwnProperty.call(answers,q.id)))return null;
  return Math.round(100*questions.filter(q=>answers[q.id]===q.answer).length/questions.length);
+}
+
+/** Post-checkpoint feedback. Never disclose the correct answer before grading. */
+export function explainCheckpointAnswer(question,selected){
+ if(!question||!question.options?.includes(selected))return '';
+ if(selected===question.answer)return question.explanation||'Resposta correta. Confira a associação estudada na lição.';
+ const contrast=question.distractorContext?.[selected];
+ const base=question.explanation||'Retome o exemplo da lição e compare a leitura e o significado.';
+ if(!contrast)return base;
+ return `${base} Você marcou “${selected}”, associado a “${contrast}” em outro item estudado. Compare os dois antes de tentar novamente.`;
 }

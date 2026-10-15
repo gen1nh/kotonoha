@@ -41,6 +41,10 @@ test('microlição → cartões → checkpoint → próxima microlição, sem ab
  }
  await page.getByRole('button',{name:'Finalizar e conferir respostas'}).click();
  await expect(page.getByText('Checkpoint aprovado!')).toBeVisible();
+ await expect(page.getByText('QUESTÃO 1 DE '+questions.length,{exact:true})).toBeVisible();
+ await expect(page.getByText('Você acertou esta questão.',{exact:false})).toBeVisible();
+ await page.getByRole('button',{name:'Próxima resposta →'}).click();
+ await expect(page.getByText('QUESTÃO 2 DE '+questions.length,{exact:true})).toBeVisible();
  await page.getByRole('button',{name:/Próxima microlição/}).click();
  await expect(page.getByRole('heading',{name:N5_UNITS[1].title})).toBeVisible();
 });
