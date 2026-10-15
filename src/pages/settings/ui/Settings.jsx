@@ -188,8 +188,8 @@ export function Settings({ state, setState, toast, update, changeLevel, theme, s
       </div>
 
 </div>
-          </details>
-          <details className="rounded-2xl border-2 border-line bg-paper p-5 sm:p-6">
+          </details>}
+          {section==="advanced"&&<details className="rounded-2xl border-2 border-line bg-paper p-5 sm:p-6">
             <summary className="cursor-pointer min-h-11 text-ink-strong font-bold">Ajuda e gerenciamento</summary>
             <div className="pt-4 space-y-5">
               <div className="flex flex-wrap gap-3">{onOpenOnboarding&&<Button variant="secondary" onClick={onOpenOnboarding}>Ver orientação</Button>}{installPrompt&&<Button variant="secondary" onClick={install}>Instalar aplicativo neste dispositivo</Button>}</div>
