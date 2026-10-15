@@ -2,6 +2,7 @@
 export const FORMATIVE_LISTENING_N5 = Object.freeze([
   {
     id: 'n5-hearing-01',
+    romaji: 'Ashita wa getsuyōbi desu.',
     spokenText: '明日は月曜日です。',
     prompt: 'Que dia da semana será amanhã?',
     choices: ['Segunda-feira', 'Terça-feira', 'Domingo', 'Sábado'],
@@ -10,6 +11,7 @@ export const FORMATIVE_LISTENING_N5 = Object.freeze([
   },
   {
     id: 'n5-hearing-02',
+    romaji: 'Watashi wa mizu o nomimasu.',
     spokenText: 'わたしは水を飲みます。',
     prompt: 'O que a pessoa vai beber?',
     choices: ['Chá', 'Água', 'Leite', 'Café'],
@@ -18,6 +20,7 @@ export const FORMATIVE_LISTENING_N5 = Object.freeze([
   },
   {
     id: 'n5-hearing-03',
+    romaji: 'Ima, shichi-ji han desu.',
     spokenText: '今、七時半です。',
     prompt: 'Que horas são?',
     choices: ['7h', '7h30', '8h30', '6h30'],
@@ -26,6 +29,7 @@ export const FORMATIVE_LISTENING_N5 = Object.freeze([
   },
   {
     id: 'n5-hearing-04',
+    romaji: 'Tanaka-san wa sensei desu.',
     spokenText: '田中さんは先生です。',
     prompt: 'Qual é a profissão de Tanaka?',
     choices: ['Estudante', 'Motorista', 'Professor(a)', 'Médico(a)'],
@@ -34,6 +38,7 @@ export const FORMATIVE_LISTENING_N5 = Object.freeze([
   },
   {
     id: 'n5-hearing-05',
+    romaji: 'Hon wa tsukue no ue ni arimasu.',
     spokenText: '本は机の上にあります。',
     prompt: 'Onde está o livro?',
     choices: ['Embaixo da mesa', 'Em cima da mesa', 'Dentro da bolsa', 'Ao lado da porta'],
@@ -42,6 +47,7 @@ export const FORMATIVE_LISTENING_N5 = Object.freeze([
   },
   {
     id: 'n5-hearing-06',
+    romaji: 'Kinō, eiga o mimashita.',
     spokenText: 'きのう、映画を見ました。',
     prompt: 'O que a pessoa fez ontem?',
     choices: ['Leu um livro', 'Foi trabalhar', 'Viu um filme', 'Comprou comida'],
