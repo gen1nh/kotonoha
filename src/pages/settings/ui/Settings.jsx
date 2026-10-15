@@ -115,9 +115,9 @@ export function Settings({ state, setState, toast, update, changeLevel, theme, s
           {section==="advanced"&&<details className="rounded-2xl border-2 border-line bg-paper p-5 sm:p-6">
             <summary className="cursor-pointer min-h-11 text-ink-strong font-bold">Assistente de IA <span className="font-normal text-sm text-muted">· opcional</span></summary>
             <div className="pt-4">      <div className="space-y-4">
-        <h3 className="text-lg font-bold text-ink">
+        <h2 className="text-lg font-bold text-ink">
           Conectar assistente de IA
-        </h3>
+        </h2>
         <p className="text-xs text-muted leading-relaxed">
           A prática guiada funciona sem IA. Para respostas geradas, use a Groq
           ou o serviço local configurado no computador. Esses recursos dependem
@@ -194,9 +194,9 @@ export function Settings({ state, setState, toast, update, changeLevel, theme, s
             <div className="pt-4 space-y-5">
               <div className="flex flex-wrap gap-3">{onOpenOnboarding&&<Button variant="secondary" onClick={onOpenOnboarding}>Ver orientação</Button>}{installPrompt&&<Button variant="secondary" onClick={install}>Instalar aplicativo neste dispositivo</Button>}</div>
               <details className="border-t border-line pt-3"><summary className="cursor-pointer min-h-11 text-sm font-bold text-danger">Reiniciar progresso</summary><div className="pt-3">      <div className="space-y-4">
-        <h3 className="text-lg font-bold text-danger">
+        <h2 className="text-lg font-bold text-danger">
           Recomeçar Progresso do Zero
-        </h3>
+        </h2>
         <p className="text-xs text-muted">
           Apaga todo o histórico local, cartões estudados e ofensiva deste
           navegador. Essa ação não pode ser desfeita.
