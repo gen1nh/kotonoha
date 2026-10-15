@@ -39,12 +39,13 @@ test('microlição → cartões → checkpoint → próxima microlição, sem ab
   await page.locator('fieldset').first().getByRole('radio',{name:q.answer,exact:true}).check();
   if(index<questions.length-1)await page.getByRole('button',{name:'Próxima questão →'}).click();
  }
- await page.getByRole('button',{name:'Finalizar e conferir respostas'}).click();
+ await page.getByRole('button',{name:'Finalizar e ver resultado'}).click();
  await expect(page.getByText('Checkpoint aprovado!')).toBeVisible();
- await expect(page.getByText('QUESTÃO 1 DE '+questions.length,{exact:true})).toBeVisible();
- await expect(page.getByText('Você acertou esta questão.',{exact:false})).toBeVisible();
- await page.getByRole('button',{name:'Próxima resposta →'}).click();
- await expect(page.getByText('QUESTÃO 2 DE '+questions.length,{exact:true})).toBeVisible();
+ await expect(page.getByRole('heading',{name:'Checkpoint aprovado!'})).toBeVisible();
+ await expect(page.getByText(`Você acertou ${questions.length} de ${questions.length} questões`)).toBeVisible();
+ await expect(page.locator('fieldset')).toHaveCount(0);
+ await page.getByText(`Ver correção das ${questions.length} questões`).click();
+ await expect(page.getByText('Sua resposta:')).toHaveCount(questions.length);
  await page.getByRole('button',{name:/Próxima microlição/}).click();
  await expect(page.getByRole('heading',{name:N5_UNITS[1].title})).toBeVisible();
 });
@@ -65,7 +66,7 @@ test('checkpoint retoma respostas após recarga e aprovação entra na meta diá
   await page.locator('fieldset').first().getByRole('radio',{name:q.answer,exact:true}).check();
   if(i<qs.length-1)await page.getByRole('button',{name:'Próxima questão →'}).click();
  }
- await page.getByRole('button',{name:'Finalizar e conferir respostas'}).click();
+ await page.getByRole('button',{name:'Finalizar e ver resultado'}).click();
  await expect(page.getByText('Checkpoint aprovado!',{exact:true})).toBeVisible();
  // Persistence is debounced; verify the saved activity after the write completes.
  await expect.poll(()=>page.evaluate(day=>JSON.parse(localStorage.getItem('kotonoha.v1')).activityLog[day]||[],todayKey())).toContain(`checkpoint:${first.id}`);
@@ -194,7 +195,7 @@ test('escuta: revelar transcrição continua marcado após recarga e gera evidê
   if(i>0)await page.getByRole('button',{name:/mostrar texto/i}).click();
   if(i<questions.length-1)await page.getByRole('button',{name:'Próxima questão →'}).click();
  }
- await page.getByRole('button',{name:'Finalizar e conferir respostas'}).click();
+ await page.getByRole('button',{name:'Finalizar e ver resultado'}).click();
  await expect(page.getByText('Checkpoint aprovado!',{exact:true})).toBeVisible();
  await expect.poll(()=>page.evaluate(id=>JSON.parse(localStorage.getItem('kotonoha.v1')).checkpoints[id]?.modality,unit.id)).toBe('reading-fallback');
 });
@@ -209,17 +210,17 @@ test('escuta não aprova alternativas sem áudio ou leitura e permite fallback h
  for(let i=0;i<qs.length;i++){
   await page.locator('fieldset').getByRole('radio',{name:qs[i].answer,exact:true}).check();
   if(i<qs.length-1)await expect(page.getByRole('button',{name:'Próxima questão →'})).toBeDisabled();
-  else await expect(page.getByRole('button',{name:'Finalizar e conferir respostas'})).toBeDisabled();
+  else await expect(page.getByRole('button',{name:'Finalizar e ver resultado'})).toBeDisabled();
   await page.getByRole('button',{name:/mostrar texto/i}).click();
   if(i<qs.length-1)await page.getByRole('button',{name:'Próxima questão →'}).click();
  }
- await expect(page.getByRole('button',{name:'Finalizar e conferir respostas'})).toBeEnabled();
+ await expect(page.getByRole('button',{name:'Finalizar e ver resultado'})).toBeEnabled();
  await page.reload();
  // All answers and disclosed transcripts survive reload; the completed draft resumes at its last question.
  await expect(page.getByText(`QUESTÃO ${qs.length} DE ${qs.length}`,{exact:true})).toBeVisible();
  await expect(page.locator('fieldset [lang="ja"]')).toBeVisible();
- await expect(page.getByRole('button',{name:'Finalizar e conferir respostas'})).toBeEnabled();
- await page.getByRole('button',{name:'Finalizar e conferir respostas'}).click();
+ await expect(page.getByRole('button',{name:'Finalizar e ver resultado'})).toBeEnabled();
+ await page.getByRole('button',{name:'Finalizar e ver resultado'}).click();
  await expect(page.getByText('Checkpoint aprovado!',{exact:true})).toBeVisible();
  await expect.poll(()=>page.evaluate(id=>JSON.parse(localStorage.getItem('kotonoha.v1')).checkpoints[id]?.modality,unit.id)).toBe('reading-fallback');
 });
@@ -260,4 +261,31 @@ test('rota carregada sob demanda mantém foco no título para teclado',async({pa
  await page.getByRole('button',{name:/Consultar Biblioteca e Caderno/}).click();
  await page.getByRole('button',{name:'Biblioteca'}).click();
  await expect(page.getByRole('heading',{name:'Biblioteca & Alfabetos Kana',level:1})).toBeFocused();
+});
+
+
+test('resultado de checkpoint com erros mostra resumo e novo início de tentativa',async({page})=>{
+ const state=seeded(),unit=N5_UNITS[0];
+ for(const id of cardIdsForUnit(unit))state.cards[id].seen=true;
+ const questions=checkpointQuestions(state,unit.id);
+ await enter(page,state);
+ await page.goto(`/?view=checkpoint&topic=${encodeURIComponent(unit.id)}`);
+ for(const [i,q] of questions.entries()){
+  const answer=i===0?q.answer:q.options.find(value=>value!==q.answer);
+  await page.locator('fieldset').getByRole('radio',{name:answer,exact:true}).check();
+  if(i<questions.length-1)await page.getByRole('button',{name:'Próxima questão →'}).click();
+ }
+ await page.getByRole('button',{name:'Finalizar e ver resultado'}).click();
+ await expect(page.getByRole('heading',{name:'Vamos praticar mais um pouco'})).toBeVisible();
+ await expect(page.getByText(`Você acertou 1 de ${questions.length} questões`)).toBeVisible();
+ await expect(page.locator('fieldset')).toHaveCount(0);
+ await expect(page.getByRole('button',{name:'Tentar novamente'})).toBeVisible();
+ await page.reload();
+ await expect(page.getByRole('heading',{name:'Vamos praticar mais um pouco'})).toBeVisible();
+ await page.getByText(`Ver correção das ${questions.length} questões`).click();
+ await expect(page.getByText('Resposta correta:',{exact:false})).toHaveCount(questions.length-1);
+ await page.getByRole('button',{name:'Tentar novamente'}).click();
+ await expect(page.getByText(`QUESTÃO 1 DE ${questions.length}`,{exact:true})).toBeVisible();
+ await expect(page.locator('fieldset').getByRole('radio',{checked:true})).toHaveCount(0);
+ await expect.poll(()=>page.evaluate(key=>JSON.parse(localStorage.getItem('kotonoha.v1')).attempts[key],`checkpoint:${unit.id}`)).toBe(1);
 });
