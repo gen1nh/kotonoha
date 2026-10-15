@@ -72,7 +72,7 @@ export function speakJapanese(text, onError = () => {}, options = {}) {
     synthesis.cancel();
     const utterance = new window.SpeechSynthesisUtterance(phrase);
     utterance.lang = 'ja-JP';
-    utterance.rate = Number.isFinite(options.rate) ? Math.min(1.15, Math.max(0.65, options.rate)) : 0.85;
+    utterance.rate = Number.isFinite(options.rate) ? Math.min(1.15, Math.max(0.5, options.rate)) : 0.85;
     const voice = chooseJapaneseVoice(available, options.voiceURI || preferredVoiceURI);
     if (voice) utterance.voice = voice;
     activeUtterance = utterance;

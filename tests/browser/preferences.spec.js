@@ -36,6 +36,7 @@ test('preferências priorizam ajustes, preservam áudio local e mantêm acesso a
     await page.evaluate(() => window.scrollTo(0, 0));
     await page.screenshot({ path: `test-results/preferences-${test.info().project.name}-${theme}.png`, fullPage: true });
   }
+  await page.getByRole('button', { name: 'Mais opções' }).click();
   await page.getByText('Assistente de IA', { exact: false }).first().click();
   await expect(page.getByLabel('Chave de API (Groq)')).toBeVisible();
 });

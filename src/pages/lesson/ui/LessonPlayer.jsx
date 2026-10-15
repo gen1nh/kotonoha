@@ -16,7 +16,8 @@ export default function LessonPlayer({state,level='N5',topic,update,go,studyUnit
  const lesson=guidedLesson(state,topic,level);
  const [result,setResult]=useState(null);
  const [revealed,setRevealed]=useState({});
- useEffect(()=>setRevealed({}),[topic]);
+ const [practiceChecked,setPracticeChecked]=useState(false);
+ useEffect(()=>{setRevealed({});setPracticeChecked(false);},[topic]);
  if(!lesson)return <p role="alert">Lição indisponível. <button type="button" onClick={()=>go('path')}>Voltar à Trilha</button></p>;
  const draftKey=`lesson:${topic}`;
  const answers=state.drafts?.[draftKey]?.answers||{};
@@ -47,7 +48,7 @@ export default function LessonPlayer({state,level='N5',topic,update,go,studyUnit
     <p className="text-xs font-black text-primary-strong">MICROLIÇÃO · N5 · {listening?'ESCUTA':'LEITURA'}</p>
     <h1 className="text-2xl font-black text-ink-strong">{unit.title}</h1>
     <p className="text-sm text-muted">{unit.detail}</p>
-    {listening&&<p className="text-xs text-muted">Voz sintética do navegador: adequada para prática, não equivalente à prova oficial JLPT. Se a voz não funcionar, revele a transcrição e use como leitura.</p>}
+    {listening&&<details className="text-xs text-muted"><summary className="cursor-pointer min-h-10 content-center font-bold">Sobre esta escuta</summary><p className="pb-2">A voz vem do seu dispositivo e pode variar. Se não funcionar, revele a transcrição e continue como leitura. Esta prática não substitui uma prova oficial.</p></details>}
    </header>
    {unit.items.map((item,i)=><article key={item.id} className="rounded-2xl border border-line bg-paper p-4 space-y-3">
      <p className="text-xs font-black text-primary-strong">EXEMPLO {i+1} DE {unit.items.length}</p>
@@ -94,7 +95,8 @@ export default function LessonPlayer({state,level='N5',topic,update,go,studyUnit
    </section>
    {!quiz && ['kana','vocabulary','kanji'].includes(unit.kind) && <KanaTypingPractice key={unit.id} samples={samples} kind={unit.kind} />}
    {unit.kind==='kana'&&unit.index>=8&&<p className="rounded-2xl bg-raised p-4 text-xs text-muted">Combinações com sons sonoros e yōon (ゃ・ゅ・ょ). Lembre-se: っ/ッ indica uma pausa/consoante dupla, enquanto ー alonga uma vogal no katakana. {KANA_PRONUNCIATION_NOTES[3].detail}</p>}
-   {quiz&&!ready&&<section className="rounded-3xl border border-line p-5 bg-paper space-y-3"><h2 className="font-black">Confira a compreensão</h2><p className="text-sm">Qual é o significado do exemplo apresentado?</p><div className="space-y-2">{grammarChoices.map(c=><label key={c} className="min-h-12 flex items-center gap-3 rounded-xl border-2 border-line p-3"><input type="radio" name="grammar-practice" checked={chosen===c} onChange={()=>{playSound(c===g.meaning?'correct':'incorrect');updateAnswer('practice',c);}}/><span className="text-sm">{c}</span></label>)}</div>{chosen&&<p role="status" className="text-sm">{chosen===g.meaning?'Certo! Agora valide seu aprendizado no checkpoint.':'Revise a frase e tente novamente.'}</p>}<Button variant="primary" className="w-full" disabled={chosen!==g.meaning} onClick={()=>update(s=>{s.lessons[topic]=true;delete s.drafts?.[draftKey];})}>Concluir prática →</Button></section>}
+   {quiz&&!ready&&<section className="rounded-3xl border border-line p-5 bg-paper space-y-3"><h2 className="font-black">Confira a compreensão</h2><p className="text-sm">Qual é o significado do exemplo apresentado?</p><div className="space-y-2">{grammarChoices.map(c=><label key={c} className="min-h-12 flex items-center gap-3 rounded-xl border-2 border-line p-3"><input type="radio" name="grammar-practice" checked={chosen===c} onChange={()=>{setPracticeChecked(false);updateAnswer('practice',c);}}/><span className="text-sm">{c}</span></label>)}</div>{chosen&&!practiceChecked&&<Button variant="secondary" className="w-full" onClick={()=>{setPracticeChecked(true);playSound(chosen===g.meaning?'correct':'incorrect');}}>Conferir resposta</Button>}
+   {practiceChecked&&<p role="status" className="text-sm">{chosen===g.meaning?'Certo! Agora valide seu aprendizado no checkpoint.':'Revise a frase e tente novamente.'}</p>}<Button variant="primary" className="w-full" disabled={!practiceChecked||chosen!==g.meaning} onClick={()=>update(s=>{s.lessons[topic]=true;delete s.drafts?.[draftKey];})}>Concluir prática →</Button></section>}
    <section className="rounded-3xl border-2 border-primary bg-paper p-5 space-y-3"><p className="text-xs font-black text-primary-strong">PRÓXIMA AÇÃO</p><h2 className="text-lg font-black text-ink-strong">{passed?'Microlição validada!':ready?'Faça o checkpoint':'Pratique os cartões desta microlição'}</h2><p className="text-sm text-muted">{passed?'Você pode avançar. A revisão espaçada continuará cuidando da memorização.':ready?'Mostre o que aprendeu para desbloquear a próxima microlição.':quiz?'Responda a prática acima antes da avaliação.':'São poucos cartões. Eles não misturam conteúdo de outras etapas.'}</p>
     {passed?<Button variant="primary" className="w-full" onClick={()=>next?openGuidedLesson(next.id,'N5'):go('path')}>{next?'Próxima microlição →':'Ver Trilha →'}</Button>:ready?<Button variant="primary" className="w-full" onClick={()=>openCheckpoint(topic)}>Fazer checkpoint →</Button>:!quiz?<Button variant="primary" className="w-full" onClick={()=>studyUnit(topic)}>Praticar {progress.total} cartões →</Button>:null}
    </section>

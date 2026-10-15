@@ -229,7 +229,7 @@ export default function Drawing({ character, random, save }) {
       </div>
 
       {/* 2. Banner de Orientação: Onde Começar a Desenhar Primeiro */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl border-2 border-flame/40 bg-flame-soft/40 text-ink">
+      <div className="hidden sm:flex sm:items-center justify-between gap-3 p-4 rounded-2xl border-2 border-flame/40 bg-flame-soft/40 text-ink">
         <div className="flex items-center gap-2.5 min-w-0">
           <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-flame text-white text-xs font-black">
             {currentStepInfo?.n || 1}
