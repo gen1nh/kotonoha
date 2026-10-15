@@ -51,7 +51,7 @@ export default function ProgressOverview({state,go,update,toast,changeLevel}) {
     <N5Readiness state={state} go={go} update={update}/>
     <section className="rounded-2xl border border-line bg-paper p-5 space-y-2"><h2 className="font-bold text-ink-strong">Próximos níveis</h2><p className="text-sm text-muted">{hasUnlockedN4(state) ? 'N5 validado internamente. O N4 introdutório está disponível; o currículo completo N4–N1 ainda está em construção.' : 'Checkpoints concluídos não equivalem à aprovação no N5. Continue estudando e acompanhe a preparação para a prova de passagem.'}</p></section>
     </>}
-    {section==="exam"&&<SimuladosHub state={state} update={update} toast={toast} changeLevel={changeLevel}/>}
+    {section==="exam"&&<SimuladosHub state={state} update={update} toast={toast}/>}
 
   </div>;
 }

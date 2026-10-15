@@ -181,6 +181,7 @@ export function initialState() {
     userProfile: null,
     errorMemory: [],
     diagnosticHistory: [],
+    diagnosticDrafts: {},
     pedagogy: createPedagogyState(),
     n5Practice: {seed:0,answers:{},played:[],transcripts:[],history:[]},
   };
@@ -291,7 +292,7 @@ export function normalizeState(value) {
           m.score >= 0 &&
           m.score <= 100 &&
           typeof m.date === "string",
-      )
+      ).slice(0,200).map(m=>({level:m.level,score:m.score,date:m.date,source:typeof m.source==="string"?m.source.slice(0,120):""}))
     : [];
   base.createdAt = Number.isFinite(value.createdAt)
     ? value.createdAt
