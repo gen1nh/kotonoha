@@ -55,7 +55,7 @@ export default function ErrorMemory({ state, update, toast, speak, go }) {
         item.resolved = !item.resolved;
       }
     });
-    if (toast) toast("Status do erro atualizado no Diário de Bordo.");
+    if (toast) toast("Status atualizado.");
   };
 
   const handlePracticeWithSensei = async (errorItem) => {
@@ -96,7 +96,7 @@ Dê um reforço caloroso e socrático em 3 partes:
       </details>
       {/* Topo do Diário de Bordo */}
       <PageHeading
-        title="Diário de Bordo · Memória Persistente de Erros"
+        title="Meus erros"
         description="Registre dificuldades recorrentes e pratique com o tutor virtual opcional, sem perder o histórico de erros."
         icon="brain"
         iconBg="bg-danger-soft"

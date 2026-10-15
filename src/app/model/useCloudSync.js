@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { supabase } from '../../shared/auth/index.js';
 import { KEY, normalizeState } from '../../entities/study/index.js';
 import { fingerprint, syncDecision } from './syncDecision.js';
-import {saveRecoverySnapshot,RECOVERY_PREFIX} from './recoverySnapshots.js';
+import {saveRecoverySnapshot,RECOVERY_PREFIX} from '../../shared/lib/recoverySnapshots.js';
 
 const META = 'kotonoha.sync.v1';
 const messages = {

@@ -315,7 +315,7 @@ export function Learn({
                     <span className="text-sm font-semibold text-ink">
                       {kana}{" "}
                       <span className="text-xs text-muted font-normal">
-                        ({romaji})
+                        {readingPreferences.showRomaji?`(${romaji})`:null}
                       </span>
                     </span>
                     <p className="text-xs text-muted truncate">{meaning}</p>

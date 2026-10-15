@@ -288,7 +288,7 @@ export default function MediaLab({ state, update, speak, toast }) {
               }`}
               onClick={() => setShowFurigana(!showFurigana)}
             >
-              Furigana: {showFurigana ? "Ligado" : "Desligado"}
+              Leitura em kana: {showFurigana ? "Ligada" : "Desligada"}
             </button>
             <button
               className={`px-3 py-1.5 rounded-lg border text-xs font-semibold cursor-pointer transition-colors ${
@@ -320,27 +320,19 @@ export default function MediaLab({ state, update, speak, toast }) {
                 lang="ja"
               >
                 <span className="leading-relaxed">
-                  {showFurigana ? (
-                    <ruby>
-                      {line.ja}
-                      <rt className="text-xs font-normal text-primary-strong select-none">
-                        {line.furigana}
-                      </rt>
-                    </ruby>
-                  ) : (
-                    line.ja
-                  )}
+                  {line.ja}
                 </span>
                 <button
-                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-line bg-surface text-ink hover:bg-paper cursor-pointer transition-colors"
+                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-line bg-surface text-ink hover:bg-paper cursor-pointer transition-colors"
                   onClick={() => handlePlayLine(line.ja)}
-                  title="Escutar fala"
+                  title="Escutar fala" aria-label="Escutar fala"
                 >
                   <Icon name="sound" />
                 </button>
               </div>
 
-              <div className="text-xs font-semibold text-muted">{line.ro}</div>
+              {showFurigana&&<p className="text-xs font-semibold text-muted"><span className="sr-only">Leitura em kana: </span><span lang="ja">{line.furigana}</span></p>}
+              {readingPreferences.showRomaji&&<p lang="ja-Latn" className="text-xs font-semibold text-muted">{line.ro}</p>}
               {showPt && (
                 <div className="text-sm font-medium text-ink pt-1 border-t border-line/60">
                   {line.pt}

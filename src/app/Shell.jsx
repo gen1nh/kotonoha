@@ -66,7 +66,7 @@ export default function Shell({view,state,shared,message,install,installPrompt})
             {view==='progress'&&<ProgressOverview {...shared}/>}
             {view==='learn'&&<Learn {...shared}/>}
             {view==='review'&&<Review {...shared} returnToLesson={shared.reviewContext?.view==='lesson'?()=>shared.openGuidedLesson(shared.reviewContext.topic,shared.reviewContext.level):null} openGuidedCheckpoint={shared.openCheckpoint}/>}
-            {view==='notebook'&&<><h1 className="text-2xl font-black text-ink-strong mb-4">Meu caderno</h1><Notebook {...shared}/></>}
+            {view==='notebook'&&<Notebook {...shared}/>}
             {view==='syntax'&&<SyntaxLab {...shared}/>}
             {view==='line'&&<LineSimulator {...shared}/>}
             {view==='pitch'&&<PitchAccentLab {...shared}/>}

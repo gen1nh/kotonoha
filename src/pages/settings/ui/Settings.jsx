@@ -88,7 +88,7 @@ export function Settings({ state, setState, toast, update, changeLevel, go, them
 
   return (
     <div className="space-y-6 w-full min-w-0">
-      <PageHeading title="Preferências" description="Seu ritmo, sua conta e os ajustes do aplicativo." icon="settings" iconBg="bg-raised" iconColor="text-ink-strong" />
+      {section==='menu'&&<PageHeading title="Preferências" description="Seu ritmo, sua conta e os ajustes do aplicativo." icon="settings" iconBg="bg-raised" iconColor="text-ink-strong" />}
       {section==='menu'&&<button type="button" className="min-h-11 text-sm font-bold text-primary-strong" onClick={()=>go("home")}>← Voltar ao início</button>}
       {section==='menu'?<nav aria-label="Seções de preferências" className="grid grid-cols-2 gap-3">
         <NavigationTile title="Estudo" description="Sua meta diária." icon="learn" onClick={()=>setSection('study')}/>
@@ -118,7 +118,7 @@ export function Settings({ state, setState, toast, update, changeLevel, go, them
           <div className="border-t border-line pt-4 space-y-3">
             <h3 className="text-base font-bold text-ink-strong">Pronúncia japonesa</h3>
             <label className="flex items-center justify-between gap-3 min-h-11">
-              <span><span className="block font-bold text-sm text-ink-strong">Mostrar romaji</span><span className="block text-xs text-muted">Aparece após revelar o texto, nas frases que já têm leitura revisada.</span></span>
+              <span><span className="block font-bold text-sm text-ink-strong">Mostrar romaji</span><span className="block text-xs text-muted">Aparece somente onde há leitura revisada. Em questões avaliativas, apenas depois de responder.</span></span>
               <input type="checkbox" role="switch" aria-label="Mostrar romaji" checked={readingPreferences.showRomaji} onChange={e=>{if(!setReadingPreferences({showRomaji:e.target.checked}))toast?.('A opção foi aplicada nesta sessão, mas não pôde ser salva.');}} className="h-6 w-6 accent-primary" />
             </label>
             <label className="block text-sm font-bold text-ink-strong">Velocidade padrão do japonês
@@ -134,7 +134,7 @@ export function Settings({ state, setState, toast, update, changeLevel, go, them
                 {voices.map(voice=><option key={voice.voiceURI} value={voice.voiceURI}>{voice.name} ({voice.lang})</option>)}
               </select>
             </label>
-            <p className="text-xs text-muted">Estas opções são o padrão do aplicativo. Cada exercício com áudio pode escolher uma velocidade diferente sem mudar o padrão.</p>
+            <p className="text-xs text-muted">Estas opções ficam salvas neste aparelho. Cada atividade com áudio pode usar outra velocidade sem alterar o padrão.</p>
           </div>
           <SoundSettings toast={toast} />
         </Card>}

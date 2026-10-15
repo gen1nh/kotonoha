@@ -175,7 +175,7 @@ export default function PitchAccentLab({ speak, toast }) {
       {/* Topo do Laboratório de Pitch */}
       <PageHeading
         title="Laboratório de Pitch Accent & Fonética de Tóquio"
-        description="O japonês é uma língua de entonação tonal (alto/baixo). Calibre seu sotaque e soe como um nativo."
+        description="O japonês é uma língua de entonação tonal (alto/baixo). Grave sua fala, ouça e compare com o exemplo. Esta ferramenta não avalia automaticamente sua pronúncia."
         icon="mic"
         iconBg="bg-flame-soft"
         iconColor="text-flame"

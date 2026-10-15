@@ -1,6 +1,5 @@
 import React from 'react';
 import {n5ReleaseReadiness} from '../../../entities/study/index.js';
-import {N5_CURRICULUM} from '../../../entities/study/index.js';
 import {APPROVED_EXAM_ITEMS} from '../../../entities/study/index.js';
 import N5Exam from './N5Exam.jsx';
 import N5PersonalExam from './N5PersonalExam.jsx';
@@ -22,10 +21,8 @@ export default function N5Readiness({state,go,update}){
     {readiness.foundationsComplete&&<p className="rounded-xl bg-accent-soft p-4 text-sm text-primary-strong" role="status"><strong className="block">Trilha N5 concluída!</strong> Você estudou e aprovou os checkpoints de todas as áreas do curso. Agora pode fazer a revisão final formativa. Isso não equivale à aprovação no exame JLPT.</p>}
     {readiness.foundationsComplete&&<N5PersonalExam state={state} update={update}/>}
     <div className="border-t border-line pt-3 space-y-2">
-      <h3 className="font-bold text-ink-strong">Certificação interna adicional (indisponível)</h3>
-      {readiness.certified ? <p className="text-sm text-primary-strong font-bold">N5 validado internamente. Você pode continuar no N4 introdutório.</p> : <p role="status" className="text-sm text-muted">A avaliação certificadora ainda não foi liberada: faltam questões revisadas e gravações adequadas para avaliar escuta. A voz do navegador pode ser usada para praticar, mas não certifica o N5.</p>}
-      <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">{Object.entries(readiness.bySkill).map(([id,row])=><li key={id} className="rounded-lg bg-raised p-3"><strong className="block text-ink-strong">{row.label}</strong><span className="text-muted">Questões independentes aprovadas: {row.approved}/{row.required} itens mínimos. Competências sem itens: {readiness.missingCompetencies[id]?.length ?? 0}</span></li>)}</ul>
-      <p className="text-xs text-muted">O currículo editorial N5 contempla {N5_CURRICULUM.length} grupos de competências. Os mínimos exibidos são internos e provisórios, não uma fórmula oficial do JLPT.</p>
+      <h3 className="font-bold text-ink-strong">Próximas etapas</h3>
+      {readiness.certified ? <p className="text-sm text-primary-strong font-bold">N5 validado internamente. Você pode continuar no N4 introdutório.</p> : <p role="status" className="text-sm text-muted">Você pode seguir praticando e revisando o que aprendeu. A prova final de validação ainda não está disponível.</p>}
     </div>
     {readiness.examAvailable && readiness.foundationsComplete && !readiness.certified && <N5Exam state={state} update={update} />}
     {!readiness.certified&&<Button variant="secondary" className="w-full" onClick={()=>go('path')}>{completed===N5_UNITS.length?'Revisar minha trilha':'Continuar N5'} →</Button>}
