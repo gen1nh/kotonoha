@@ -6,6 +6,57 @@ import {unitById} from '../../../entities/study/index.js';
 import {lessonsFor} from '../../../entities/study/index.js';
 import {Button,AudioRateControl} from '../../../shared/ui/index.jsx';
 import {useReadingPreferences} from '../../../entities/study/index.js';
+/** The graded attempt is a separate step, not a question-navigation mode. */
+function CheckpointResult({unit,questions,answers,score,passed,next,onNext,onRetry,onReviewLesson,onPath}){
+ const correct=questions.filter(q=>answers[q.id]===q.answer).length;
+ const mistakes=questions.length-correct;
+ const approved=score>=PASS_PERCENT;
+ return <div className="mx-auto max-w-2xl space-y-4 pb-8">
+  <section role="status" aria-label="Resultado do checkpoint" className="rounded-3xl border border-line bg-paper p-5 sm:p-7 space-y-5">
+   <div className="space-y-2 text-center">
+    <p className="text-xs font-black uppercase tracking-wide text-primary-strong">Resultado · N5</p>
+    <h1 id="checkpoint-result-heading" tabIndex={-1} className="text-2xl font-black text-ink-strong">{approved?'Checkpoint aprovado!':'Vamos praticar mais um pouco'}</h1>
+    <p className="text-sm text-muted">{unit.title}</p>
+   </div>
+   <div className="rounded-2xl bg-raised p-5 text-center space-y-1" aria-label={`Resultado: ${score}%`}>
+    <p className="text-4xl font-black text-ink-strong">{score}%</p>
+    <p className="text-sm font-semibold text-ink-strong">Você acertou {correct} de {questions.length} questões</p>
+    <p className="text-xs text-muted">{mistakes===0?'Todas as respostas corretas!':`${mistakes} ${mistakes===1?'questão precisa':'questões precisam'} de revisão.`}</p>
+   </div>
+   <p className="text-sm text-muted text-center">{approved
+     ? 'Meta atingida! Você pode continuar para a próxima etapa.'
+     : `A meta é ${PASS_PERCENT}% de acertos. Confira a correção e tente novamente quando estiver pronto.`}
+     {passed&&!approved?' Esta etapa já foi aprovada anteriormente; uma nova tentativa não apaga sua aprovação.':''}
+   </p>
+   {unit.kind==='listening'&&<p className="text-xs text-muted text-center">Voz sintetizada e transcrição são recursos formativos, não uma avaliação auditiva oficial.</p>}
+   <div className="space-y-2">
+    {approved
+     ? <Button variant="primary" className="w-full" onClick={onNext}>{next?'Próxima microlição →':'Voltar à Trilha →'}</Button>
+     : <Button variant="primary" className="w-full" onClick={onRetry}>Tentar novamente</Button>}
+    {!approved&&<Button variant="secondary" className="w-full" onClick={onReviewLesson}>Rever explicação desta lição</Button>}
+   </div>
+  </section>
+  <details className="rounded-2xl border border-line bg-paper p-4 sm:p-5 space-y-3">
+   <summary className="min-h-11 flex items-center font-bold text-ink-strong cursor-pointer">Ver correção das {questions.length} questões</summary>
+   <ol className="space-y-3 pt-3">
+    {questions.map((q,i)=>{
+      const correctAnswer=answers[q.id]===q.answer;
+      return <li key={q.id} className="rounded-xl border border-line p-4 space-y-2">
+       <p className="text-xs font-bold text-muted">Questão {i+1} · {correctAnswer?'Correta':'Precisa revisar'}</p>
+       <p className="text-sm font-semibold text-ink-strong">{q.prompt}</p>
+       {q.text&&<p lang="ja" className="font-jp text-base">{q.text}</p>}
+       {q.spokenText&&<p lang="ja" className="font-jp text-base">{q.spokenText}</p>}
+       <p className="text-sm text-muted">Sua resposta: {answers[q.id]??'Não respondida'}</p>
+       {!correctAnswer&&<p className="text-sm font-semibold text-ink-strong">Resposta correta: {q.answer}</p>}
+       <p className="text-sm text-muted">{explainCheckpointAnswer(q,answers[q.id])}</p>
+      </li>;
+    })}
+   </ol>
+  </details>
+  <button type="button" onClick={onPath} className="min-h-11 text-primary-strong font-bold">← Voltar à Trilha</button>
+ </div>;
+}
+
 /** Continue at the first unanswered question after a reload.
  * Already graded attempts restart at question one for answer review. */
 export function resumeCheckpointQuestion(state,topic){
@@ -24,11 +75,13 @@ export default function CheckpointPlayer({state,topic,update,go,openGuidedLesson
  const [speechRate,setSpeechRate]=useState(()=>readingPreferences.speechRate);
  useEffect(()=>{setActiveQuestion(resumeCheckpointQuestion(state,topic));},[topic]);
  const [audioNotice,setAudioNotice]=useState('');
+
  const unit=unitById(topic);
  const key=`checkpoint:${topic}`;
  const attempt=state.attempts?.[key]||0;
  const answers=state.drafts?.[key]?.answers||{};
  const result=state.drafts?.[key]?.result??null;
+ useEffect(()=>{if(result!==null)document.getElementById('checkpoint-result-heading')?.focus({preventScroll:true});},[result,topic]);
  const transcripts=state.drafts?.[key]?.transcripts||[];
  const revealed=Object.fromEntries(transcripts.map(id=>[id,true]));
  const audioPlayed=state.drafts?.[key]?.audioPlayed||[];
@@ -47,6 +100,7 @@ export default function CheckpointPlayer({state,topic,update,go,openGuidedLesson
  });};
  const retry=()=>{setAudioNotice('');update(s=>{s.attempts||={};s.attempts[key]=(s.attempts[key]||0)+1;delete s.drafts?.[key];});};
  if(!unit)return <p role="alert">Checkpoint indisponível. <button onClick={()=>go('path')}>Voltar à Trilha</button></p>;
+ if(result!==null)return <CheckpointResult unit={unit} questions={questions} answers={answers} score={result} passed={passed} next={next} onNext={()=>next?openGuidedLesson(next.id,'N5'):go('path')} onRetry={retry} onReviewLesson={()=>openGuidedLesson(topic,'N5')} onPath={()=>go('path')}/>;
  return <div className="mx-auto max-w-2xl space-y-4 pb-8">
   <header className="rounded-3xl border border-line bg-paper p-5 space-y-2"><p className="font-black text-xs text-primary-strong">CHECKPOINT · N5</p><h1 className="text-2xl font-black text-ink-strong">{unit.title}</h1><p className="text-sm text-muted">Avaliação da microlição. Mínimo de {PASS_PERCENT}% para avançar. Seu rascunho é salvo automaticamente neste aparelho.</p></header>
   {questions.length>=4&&<div className="rounded-2xl border border-line bg-paper p-4 space-y-3" aria-label="Progresso do checkpoint">
@@ -73,8 +127,7 @@ export default function CheckpointPlayer({state,topic,update,go,openGuidedLesson
     {activeQuestion<questions.length-1&&<Button variant="primary" className="flex-1" disabled={result===null&&(answers[questions[activeQuestion]?.id]===undefined||(unit?.kind==='listening'&&!played[questions[activeQuestion]?.id]&&!revealed[questions[activeQuestion]?.id]))} onClick={()=>setActiveQuestion(n=>Math.min(questions.length-1,n+1))}>{result!==null?'Próxima resposta →':'Próxima questão →'}</Button>}
   </nav>}
   {audioNotice&&<p role="alert" className="text-sm text-muted">{audioNotice}</p>}
-  {result!==null?<section role="status" className="rounded-3xl border-2 border-primary bg-paper p-5 space-y-3"><h2 className="text-xl font-black">{result>=PASS_PERCENT?'Checkpoint aprovado!':'Ainda não. Você pode tentar novamente.'}</h2><p className="text-sm">Resultado: {result}%. Revise as respostas usando Anterior e Próxima resposta; cada questão traz a explicação depois da correção. {result>=PASS_PERCENT?'Próxima microlição desbloqueada.':'Uma nova tentativa altera a seleção de questões.'} {unit.kind==='listening'?'A voz sintetizada e a leitura alternativa não substituem uma avaliação auditiva oficial.':''}</p>{result>=PASS_PERCENT?<Button variant="primary" className="w-full" onClick={()=>next?openGuidedLesson(next.id,'N5'):go('path')}>{next?'Próxima microlição →':'Voltar à Trilha →'}</Button>:<Button variant="primary" className="w-full" onClick={retry}>Tentar novamente</Button>}</section>:<Button variant="primary" size="lg" className="w-full" disabled={!ready||questions.length<4||activeQuestion!==questions.length-1} onClick={grade}>Finalizar e conferir respostas</Button>}
-  {result!==null&&result<PASS_PERCENT&&<Button variant="secondary" className="w-full" onClick={()=>openGuidedLesson(topic,'N5')}>Rever explicação desta lição</Button>}
+  <Button variant="primary" size="lg" className="w-full" disabled={!ready||questions.length<4||activeQuestion!==questions.length-1} onClick={grade}>Finalizar e ver resultado</Button>
   {passed&&result===null&&<p className="text-xs text-muted">Você já foi aprovado nesta etapa. Refazer não apaga sua aprovação.</p>}
   <button type="button" onClick={()=>go('path')} className="min-h-11 text-primary-strong font-bold">← Voltar à Trilha</button>
  </div>;
