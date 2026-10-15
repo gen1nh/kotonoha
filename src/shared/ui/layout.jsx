@@ -2,10 +2,9 @@ import React from "react";
 import Icon from "./Icon.jsx";
 
 export const NAVIGATION = [
-  { id: "home", label: "Início", mobile: "Início", icon: "home" },
+  { id: "home", label: "Hoje", mobile: "Hoje", icon: "home" },
   { id: "path", label: "Trilha", mobile: "Trilha", icon: "learn" },
-  { id: "practice", label: "Praticar", mobile: "Praticar", icon: "bolt" },
-  { id: "progress", label: "Progresso", mobile: "Progresso", icon: "trophy" },
+  { id: "progress", label: "Meu espaço", mobile: "Meu espaço", icon: "trophy" },
 ];
 
 export function Brand({ compact = false, onClick }) {
