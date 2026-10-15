@@ -18,8 +18,6 @@ import {
 } from "../../../entities/study/index.js";
 import { formatDuration } from "../../../entities/study/index.js";
 import { levelInsights } from "../../../entities/study/index.js";
-import DiagnosticPractice from "./DiagnosticPractice.jsx";
-import PaperPractice from "./PaperPractice.jsx";
 
 const MINUTE_OPTIONS = [5, 15, 30, 45, 60].map((m) => ({
   value: m,
@@ -176,8 +174,6 @@ export default function JlptDiagnostic({ state, update, toast }) {
           <Icon name="check" /> Salvar referência
         </Button>
       </section>
-      <DiagnosticPractice key={level} level={level} update={update} />
-      <PaperPractice level={level} />
     </Card>
   );
 }
