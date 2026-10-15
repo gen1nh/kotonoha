@@ -7,7 +7,6 @@ import {N5_STAGES,N5_UNITS,initialState,checkpointQuestions} from '../src/entiti
 
 const stageById=new Map(N5_STAGES.flatMap(stage=>stage.units.map(unit=>[unit.id,stage])));
 const state=initialState();
-const unitIndex=new Map(N5_UNITS.map((unit,i)=>[unit.id,i]));
 const published=fs.existsSync('data/editorial/n5-course-review.json')
  ?JSON.parse(fs.readFileSync('data/editorial/n5-course-review.json','utf8')):null;
 const reviewed=new Map((published?.units||[]).map(unit=>[unit.id,unit]));
