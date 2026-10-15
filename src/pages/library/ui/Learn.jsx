@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Icon from "../../../shared/ui/Icon.jsx";
-import { Card, Button, NavigationTile } from "../../../shared/ui/index.jsx";
-import {speakJapanese,useReadingPreferences,AudioRateControl} from "../../../entities/study/index.js";
+import { Card, Button, NavigationTile, AudioRateControl } from "../../../shared/ui/index.jsx";
+import {speakJapanese,useReadingPreferences} from "../../../entities/study/index.js";
 import { PageHeading } from "../../../shared/ui/index.jsx";
 import { HIRAGANA, KATAKANA, VOCAB, GRAMMAR } from "../../../entities/study/index.js";
 import { CURRICULUM, VOCAB_BY_LEVEL } from "../../../entities/study/index.js";
@@ -120,7 +120,7 @@ export function Learn({
         <button type="button" className="min-h-11 font-bold text-sm text-primary-strong" onClick={()=>setShowCategories(true)}>← Todas as categorias</button>
         <details className="rounded-xl border border-line bg-paper p-3">
           <summary className="min-h-11 cursor-pointer text-sm font-bold text-ink-strong">Ajustar áudio desta consulta</summary>
-          <div className="pt-2"><AudioRateControl rate={speechRate} onChange={setSpeechRate}/></div>
+          <div className="pt-2"><AudioRateControl rate={speechRate} onChange={setSpeechRate} defaultRate={readingPreferences.speechRate}/></div>
         </details>
       <div className="rounded-2xl border border-line bg-paper p-4 space-y-2" aria-label="Orientação de estudo">
         <p className="font-bold text-ink-strong">Estude sem se perder</p>

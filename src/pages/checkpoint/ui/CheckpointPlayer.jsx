@@ -4,8 +4,8 @@ import {speakJapanese} from '../../../entities/study/index.js';
 import {checkpointQuestions,checkpointScore,PASS_PERCENT,checkpointPassed} from '../../../entities/study/index.js';
 import {unitById} from '../../../entities/study/index.js';
 import {lessonsFor} from '../../../entities/study/index.js';
-import {Button} from '../../../shared/ui/index.jsx';
-import {useReadingPreferences,AudioRateControl} from '../../../entities/study/index.js';
+import {Button,AudioRateControl} from '../../../shared/ui/index.jsx';
+import {useReadingPreferences} from '../../../entities/study/index.js';
 /** Tentativa e respostas são persistidas, inclusive entre atualizações da PWA. */
 export default function CheckpointPlayer({state,topic,update,go,openGuidedLesson}){
  const [activeQuestion,setActiveQuestion]=useState(0);
@@ -43,7 +43,7 @@ export default function CheckpointPlayer({state,topic,update,go,openGuidedLesson
     {q.text&&<p lang="ja" className="font-jp text-lg rounded-xl bg-raised p-3">{q.text}</p>}
     {q.spokenText&&<div className="rounded-xl bg-raised p-3 space-y-2">
       <button type="button" disabled={result!==null} onClick={()=>speakJapanese(q.spokenText,setAudioNotice,{rate:speechRate,onStart:()=>setPlayed(old=>({...old,[q.id]:true}))})} className="min-h-11 rounded-xl border border-line px-4 text-sm font-bold">▶ Ouvir frase</button>
-      <AudioRateControl rate={speechRate} onChange={setSpeechRate}/>
+      <AudioRateControl rate={speechRate} onChange={setSpeechRate} defaultRate={readingPreferences.speechRate}/>
       <button type="button" disabled={result!==null} onClick={()=>setRevealed(old=>({...old,[q.id]:true}))} className="block min-h-10 text-xs underline text-primary-strong font-bold">Não consegui ouvir · mostrar texto</button>
       {(revealed[q.id]||result!==null)&&<p lang="ja" className="font-jp text-lg">{q.spokenText}</p>}
       <p className="text-xs text-muted">Se consultar o texto, o resultado será registrado como prática de leitura, não como evidência auditiva.</p>

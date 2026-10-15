@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { FORMATIVE_LISTENING_N5, gradeFormativeListening } from '../../../entities/study/index.js';
 import { japaneseVoices, speakJapanese, stopSpeech, warmJapaneseVoices } from '../../../entities/study/index.js';
-import { Button } from '../../../shared/ui/index.jsx';
-import { AudioRateControl } from '../../../entities/study/index.js';
+import { Button,AudioRateControl } from '../../../shared/ui/index.jsx';
 import { useReadingPreferences, setReadingPreferences, reviewedRomaji } from '../../../entities/study/index.js';
 
 /** Small, optional, no-API listening practice. Scores never unlock N4. */
@@ -55,7 +54,7 @@ export default function N5ListeningPractice() {
               {voices.map((voice, i) => <option key={`${voice.voiceURI}-${i}`} value={voice.voiceURI}>{voice.name} ({voice.lang})</option>)}
             </select>
           </label>
-          <AudioRateControl rate={rate} onChange={setRate}/>
+          <AudioRateControl rate={rate} onChange={setRate} defaultRate={readingPreferences.speechRate}/>
           {!voices.length && <p>Se nenhuma voz japonesa aparecer, ative uma voz japonesa nas configurações de acessibilidade/idioma do seu dispositivo. Algumas vozes requerem download.</p>}
         </div>
       </details>

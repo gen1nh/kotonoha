@@ -35,4 +35,3 @@ export * from './model/pedagogy/publishedItems.js';
 export * from './model/pedagogy/readiness.js';
 export * from './model/readingPreferences.js';
 
-export {default as AudioRateControl} from './ui/AudioRateControl.jsx';

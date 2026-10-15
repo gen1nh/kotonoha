@@ -1,5 +1,4 @@
 import React from 'react';
-import {useReadingPreferences} from '../model/readingPreferences.js';
 
 const SPEEDS = [
   [0.5, '0,5× · Bem devagar'],[0.75, '0,75× · Devagar'],
@@ -7,8 +6,7 @@ const SPEEDS = [
 ];
 
 /** Per-activity speed; never overwrites the user's global default. */
-export default function AudioRateControl({rate,onChange,label='Velocidade deste áudio'}) {
-  const preferences = useReadingPreferences();
+export default function AudioRateControl({rate,onChange,defaultRate=0.85,label='Velocidade deste áudio'}) {
   return <div className="space-y-2">
     <label className="block text-xs font-bold text-ink-strong">{label}
       <select value={rate} onChange={event=>onChange(Number(event.target.value))}
@@ -16,7 +14,7 @@ export default function AudioRateControl({rate,onChange,label='Velocidade deste 
         {SPEEDS.map(([value,name])=><option key={value} value={value}>{name}</option>)}
       </select>
     </label>
-    {rate!==preferences.speechRate&&<button type="button" className="min-h-10 text-xs font-bold text-primary-strong underline" onClick={()=>onChange(preferences.speechRate)}>Usar velocidade padrão ({preferences.speechRate}×)</button>}
+    {rate!==defaultRate&&<button type="button" className="min-h-10 text-xs font-bold text-primary-strong underline" onClick={()=>onChange(defaultRate)}>Usar velocidade padrão ({defaultRate}×)</button>}
     <p className="text-xs text-muted">Ajuste apenas desta atividade. O padrão geral fica em Preferências.</p>
   </div>;
 }

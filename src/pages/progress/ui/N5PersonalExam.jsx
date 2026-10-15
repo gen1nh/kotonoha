@@ -1,7 +1,7 @@
 import React,{useMemo,useState} from 'react';
 import {buildN5PersonalReview,gradeN5PersonalReview} from '../../../entities/study/index.js';
-import {speakJapanese,stopSpeech,useReadingPreferences,AudioRateControl} from '../../../entities/study/index.js';
-import {Button} from '../../../shared/ui/index.jsx';
+import {speakJapanese,stopSpeech,useReadingPreferences} from '../../../entities/study/index.js';
+import {Button,AudioRateControl} from '../../../shared/ui/index.jsx';
 const LABELS={vocabulary:'Vocabulário',grammar:'Gramática',reading:'Leitura',listening:'Escuta'};
 /** A non-certifying self-check after completing every N5 unit. */
 export default function N5PersonalExam({state,update}){
@@ -57,7 +57,7 @@ export default function N5PersonalExam({state,update}){
   <div className="space-y-3"><p className="font-bold text-ink-strong">{question.prompt}</p>
   {question.context&&<p className="text-sm text-muted">Situação: {question.context}</p>}
   {question.text&&<p lang="ja" className="font-jp text-xl rounded-xl bg-raised p-4">{question.text}</p>}
-  {question.spokenText&&<div className="rounded-xl bg-raised p-3 space-y-2"><Button variant="secondary" onClick={play}>▶ Ouvir japonês</Button><AudioRateControl rate={speechRate} onChange={setSpeechRate}/><button className="block text-xs text-primary-strong underline min-h-10 font-bold" type="button" onClick={reveal}>Não consigo ouvir · mostrar transcrição</button>{p.transcripts?.includes(question.id)&&<p lang="ja" className="font-jp text-lg">{question.spokenText}</p>}{notice&&<p role="alert" className="text-xs text-muted">{notice}</p>}</div>}
+  {question.spokenText&&<div className="rounded-xl bg-raised p-3 space-y-2"><Button variant="secondary" onClick={play}>▶ Ouvir japonês</Button><AudioRateControl rate={speechRate} onChange={setSpeechRate} defaultRate={readingPreferences.speechRate}/><button className="block text-xs text-primary-strong underline min-h-10 font-bold" type="button" onClick={reveal}>Não consigo ouvir · mostrar transcrição</button>{p.transcripts?.includes(question.id)&&<p lang="ja" className="font-jp text-lg">{question.spokenText}</p>}{notice&&<p role="alert" className="text-xs text-muted">{notice}</p>}</div>}
   <fieldset className="space-y-2"><legend className="sr-only">Selecione uma opção</legend>{question.options.map((choice,i)=><label key={i} className="min-h-11 flex items-center gap-3 border border-line rounded-xl p-3 text-sm"><input type="radio" name={`personal-${question.id}`} checked={p.answers?.[question.id]===choice} onChange={()=>answer(choice)}/><span>{choice}</span></label>)}</fieldset></div>
   <div className="flex gap-2"><Button variant="secondary" disabled={step===0} onClick={()=>setStep(i=>i-1)}>Anterior</Button><Button variant="secondary" disabled={step===questions.length-1} onClick={()=>setStep(i=>i+1)}>Próxima</Button></div>
   <Button variant="primary" className="w-full" disabled={answered!==questions.length} onClick={finish}>Corrigir revisão ({answered}/{questions.length})</Button>
