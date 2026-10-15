@@ -1,10 +1,10 @@
-@import url("https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;700;800;900&family=Nunito:wght@400;600;700;800;900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&family=Nunito:wght@400;600;700;800;900&display=swap");
 @import "tailwindcss";
-/* Online Nunito/M PLUS when available; rounded system fallback while offline. */
+/* Online Nunito/Zen Maru Gothic when available; Japanese system fallback while offline. */
 
 /*
   Kotonoha — Design System Gamificado (Padrão Duolingo)
-  - Tipografia: Nunito, M PLUS Rounded 1c e fallbacks locais
+  - Tipografia: Nunito, Zen Maru Gothic e fallbacks locais
   - Botões táteis 3D com borda inferior de 4px e clique mecânico afundando
   - Cores Oficiais Duolingo:
     • Verde de marca com contraste WCAG para ações primárias
@@ -79,7 +79,7 @@
   --color-success-soft: #d7ffb8;
 
   --font-sans: Nunito, "Arial Rounded MT Bold", ui-rounded, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-jp: "M PLUS Rounded 1c", "Hiragino Maru Gothic ProN", Meiryo, sans-serif;
+  --font-jp: "Zen Maru Gothic", "Hiragino Maru Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
 }
 
 @layer base {
@@ -110,8 +110,10 @@
     font-family: var(--font-sans);
   }
 
-  [lang="ja"] {
+  .font-jp, [lang="ja"]:not([lang="ja-Latn"]) {
     font-family: var(--font-jp) !important;
+    font-kerning: normal;
+    font-feature-settings: "palt" 1;
   }
 }
 

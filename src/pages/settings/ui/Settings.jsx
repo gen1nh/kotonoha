@@ -1,6 +1,6 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { SoundSettings } from './SoundSettings.jsx';
-import { useReadingPreferences, setReadingPreferences } from '../../../entities/study/index.js';
+import { useReadingPreferences, setReadingPreferences, japaneseVoices, warmJapaneseVoices } from '../../../entities/study/index.js';
 import { AccountSync } from './AccountSync.jsx';
 import { Card, Button, NavigationTile } from "../../../shared/ui/index.jsx";
 import { PageHeading } from "../../../shared/ui/index.jsx";
@@ -17,7 +17,9 @@ export function Settings({ state, setState, toast, update, changeLevel, theme, s
   const [busy, setBusy] = useState(false);
   const readingPreferences = useReadingPreferences();
   const importInput = useRef(null);
-  const [section,setSection]=useState("study");
+  const [section,setSection]=useState("menu");
+  const [voices,setVoices]=useState(()=>japaneseVoices());
+  useEffect(()=>warmJapaneseVoices(setVoices),[]);
 
   async function loadModels() {
     if (!key.trim()) {
@@ -86,11 +88,16 @@ export function Settings({ state, setState, toast, update, changeLevel, theme, s
   return (
     <div className="space-y-6 w-full min-w-0">
       <PageHeading title="Preferências" description="Seu ritmo, sua conta e os ajustes do aplicativo." icon="settings" iconBg="bg-raised" iconColor="text-ink-strong" />
-      <nav aria-label="Seções de preferências" className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-        <NavigationTile title="Estudo e sons" description="Metas, leitura e áudio." icon="learn" active={section==='study'} onClick={()=>setSection('study')}/>
-        <NavigationTile title="Conta e backups" description="Login e cópias de segurança." icon="academic" active={section==='account'} onClick={()=>setSection('account')}/>
-        <NavigationTile title="Mais opções" description="Assistente e gerenciamento." icon="settings" active={section==='advanced'} onClick={()=>setSection('advanced')}/>
-      </nav>
+      {section==='menu'?<nav aria-label="Seções de preferências" className="grid grid-cols-2 gap-3">
+        <NavigationTile title="Estudo" description="Sua meta diária." icon="learn" onClick={()=>setSection('study')}/>
+        <NavigationTile title="Áudio e leitura" description="Pronúncia, voz, velocidade e romaji." icon="sound" onClick={()=>setSection('audio')}/>
+        <NavigationTile title="Aparência" description="Tema claro ou escuro." icon="settings" onClick={()=>setSection('appearance')}/>
+        <NavigationTile title="Conta e backups" description="Login e cópias de segurança." icon="academic" onClick={()=>setSection('account')}/>
+        <NavigationTile title="Mais opções" description="Assistente e gerenciamento." icon="puzzle" onClick={()=>setSection('advanced')}/>
+      </nav>:<div className="space-y-2">
+        <button type="button" className="min-h-11 text-sm font-bold text-primary-strong" onClick={()=>setSection('menu')}>← Voltar às preferências</button>
+        <h2 className="text-xl font-black text-ink-strong">{({study:'Estudo',audio:'Áudio e leitura',appearance:'Aparência',account:'Conta e backups',advanced:'Mais opções'})[section]}</h2>
+      </div>}
       {section==="account"&&<AccountSync cloud={cloud} state={state} />}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 items-start">
         {section==="study"&&<Card className="space-y-5">
@@ -99,11 +106,15 @@ export function Settings({ state, setState, toast, update, changeLevel, theme, s
             <select aria-label="Meta diária de atividades" className="mt-2 min-h-12 w-full rounded-xl border border-line bg-paper text-ink-strong px-3" value={dailyGoal(state)} onChange={e=>update(s=>{s.dailyActivityGoal=Number(e.target.value);})}>{GOAL_OPTIONS.map(n=><option key={n} value={n}>{n} {n===1?'atividade':'atividades'} por dia</option>)}</select>
           </label>
           <p className="text-xs text-muted">Uma atividade é uma microlição concluída, o desafio do dia, um checkpoint aprovado ou uma sessão de revisão. Repetir a mesma etapa não aumenta sua meta.</p>
+        </Card>}
+        {section==='appearance'&&<Card className="space-y-4">
           <label className="block text-sm font-bold text-ink-strong">Tema visual
             <select aria-label="Tema visual" className="mt-2 min-h-12 w-full rounded-xl border border-line bg-paper text-ink-strong px-3" value={theme} onChange={e=>setTheme(e.target.value)}><option value="system">Usar tema do dispositivo</option><option value="light">Claro</option><option value="dark">Escuro</option></select>
           </label>
+        </Card>}
+        {section==='audio'&&<Card className="space-y-5">
           <div className="border-t border-line pt-4 space-y-3">
-            <h3 className="text-base font-bold text-ink-strong">Leitura e pronúncia</h3>
+            <h3 className="text-base font-bold text-ink-strong">Pronúncia japonesa</h3>
             <label className="flex items-center justify-between gap-3 min-h-11">
               <span><span className="block font-bold text-sm text-ink-strong">Mostrar romaji</span><span className="block text-xs text-muted">Aparece após revelar o texto, nas frases que já têm leitura revisada.</span></span>
               <input type="checkbox" role="switch" aria-label="Mostrar romaji" checked={readingPreferences.showRomaji} onChange={e=>{if(!setReadingPreferences({showRomaji:e.target.checked}))toast?.('A opção foi aplicada nesta sessão, mas não pôde ser salva.');}} className="h-6 w-6 accent-primary" />
@@ -113,6 +124,15 @@ export function Settings({ state, setState, toast, update, changeLevel, theme, s
                 <option value={0.5}>0,5× · Bem devagar</option><option value={0.75}>0,75× · Devagar</option><option value={0.85}>0,85× · Padrão</option><option value={1}>1× · Normal</option><option value={1.15}>1,15× · Rápido</option>
               </select>
             </label>
+            <label className="block text-sm font-bold text-ink-strong">Voz japonesa padrão
+              <select aria-label="Voz japonesa padrão" value={readingPreferences.japaneseVoiceURI}
+                onChange={e=>setReadingPreferences({japaneseVoiceURI:e.target.value})}
+                className="mt-2 min-h-11 w-full rounded-xl border border-line bg-paper px-3 text-ink-strong">
+                <option value="">Automática (voz japonesa do dispositivo)</option>
+                {voices.map(voice=><option key={voice.voiceURI} value={voice.voiceURI}>{voice.name} ({voice.lang})</option>)}
+              </select>
+            </label>
+            <p className="text-xs text-muted">Estas opções são o padrão do aplicativo. Cada exercício com áudio pode escolher uma velocidade diferente sem mudar o padrão.</p>
           </div>
           <SoundSettings toast={toast} />
         </Card>}
