@@ -16,14 +16,14 @@ Cinco etapas situacionais agora intercalam vocabulário e gramática. Exemplos d
 
 - [x] Etapas recolhíveis; etapa atual aberta, objetivo, contagem e critério de conclusão.
 - [x] Separação de explicação, prática e checkpoint.
-- [x] Digitação retirada das lições e disponível apenas em Praticar → Treinos extras → Treino de teclado japonês.
+- [x] Digitação retirada das lições e disponível apenas em Praticar → Digitação japonesa (tela opcional própria).
 - [x] Unidades de digitação limitadas às acessíveis; não desbloqueia currículo.
 - [x] Estados derivados de checkpoints, sem converter exposição em aprovação.
 
 ## 3. Conteúdo
 
 - [x] Leitura/escuta em exemplos individuais com resposta comentada.
-- [x] Feedback de gramática recupera a explicação e o exemplo da unidade.
+- [x] Feedback de gramática só é revelado após confirmação explícita e permite consultar a explicação sem perder a resposta.
 - [x] Pacote editorial reúne conteúdo, alternativas e gabarito de todas as unidades, marcado pendente.
 - [ ] Revisão linguística independente do japonês, traduções e alternativas.
 - [ ] Explicação específica para confusões frequentes de kana/kanji e distratores; repetir gabaritos não basta.
@@ -32,6 +32,7 @@ Cinco etapas situacionais agora intercalam vocabulário e gramática. Exemplos d
 ## 4. Prática e avaliação
 
 - [x] Revisão de cartões explica a autoavaliação.
+- [x] Praticar mantém uma única chamada de revisão e separa os treinos opcionais, sem duplicar o percurso da Trilha.
 - [x] Checkpoint permite retornar à explicação depois de erro.
 - [x] Revisão, exposição e aprovação mantêm significados diferentes.
 - [x] Substituir a questão repetida de reconhecimento por aplicação em 21 unidades de gramática.

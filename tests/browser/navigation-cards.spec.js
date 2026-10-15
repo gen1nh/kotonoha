@@ -16,17 +16,18 @@ test('Praticar organiza atividades em cards e abre apenas a escolhida',async({pa
   await expect(page.getByRole('heading',{name:'Prática de escuta'})).toHaveCount(0);
   await page.getByRole('button',{name:'Escuta'}).click();
   await expect(page.getByRole('heading',{name:'Prática de escuta'})).toBeVisible();
-  await expect(page.getByRole('button',{name:'Biblioteca e escrita'})).toHaveCount(0);
+  await expect(page.getByRole('button',{name:/Consultar Biblioteca e Caderno/})).toHaveCount(0);
   await page.getByRole('button',{name:/Voltar para Praticar/}).click();
-  await expect(page.getByRole('button',{name:'Biblioteca e escrita'})).toBeVisible();
-  await page.getByRole('button',{name:'Laboratórios opcionais'}).click();
+  await expect(page.getByRole('button',{name:/Consultar Biblioteca e Caderno/})).toBeVisible();
+  await page.getByRole('button',{name:'Laboratórios'}).click();
   await expect(page.getByRole('button',{name:'Conversação'})).toBeDisabled();
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
 });
 
 test('Biblioteca e Caderno mantêm categorias separadas da ferramenta aberta',async({page})=>{
   await enter(page,'practice');
-  await page.getByRole('button',{name:'Biblioteca e escrita'}).click();
+  await page.getByRole('button',{name:/Consultar Biblioteca e Caderno/}).click();
+  await page.getByRole('button',{name:'Biblioteca'}).click();
   await expect(page.getByRole('button',{name:'Hiragana'})).toBeVisible();
   await expect(page.getByRole('button',{name:'Katakana'})).toBeVisible();
   await page.getByRole('button',{name:'Hiragana'}).click();
@@ -80,4 +81,16 @@ test('voltar e avançar do navegador restauram as subpáginas sem perder o menu'
   await expect(page.getByRole('combobox',{name:'Tema visual'})).toBeVisible();
   await page.goBack();
   await expect(page.getByRole('button',{name:'Aparência'})).toBeVisible();
+});
+
+test('Praticar não duplica desafio nem continuidade da Trilha e separa digitação',async({page})=>{
+  await enter(page,'practice');
+  await expect(page.getByRole('button',{name:'Desafio rápido'})).toHaveCount(1);
+  await expect(page.getByRole('heading',{name:'Continue sua Trilha'})).toHaveCount(0);
+  await expect(page.getByRole('heading',{name:'Digite em japonês'})).toHaveCount(0);
+  await page.getByRole('button',{name:'Digitação japonesa'}).click();
+  await expect(page.getByRole('heading',{name:'Digite em japonês'})).toBeVisible();
+  await expect(page.getByRole('button',{name:'Desafio rápido'})).toHaveCount(0);
+  await page.goBack();
+  await expect(page.getByRole('button',{name:'Digitação japonesa'})).toBeVisible();
 });
