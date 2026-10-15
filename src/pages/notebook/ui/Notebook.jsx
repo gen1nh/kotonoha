@@ -224,10 +224,10 @@ export default function Notebook({ state, update, toast, speak, go }) {
         <p className="text-sm text-muted">Encontre suas anotações, dúvidas e registros sem misturar as ferramentas.</p>
         <div className="grid grid-cols-2 gap-3">
           {[
-            {id:'notes',title:'Minhas anotações',description:'Notas e resumos de estudo.',icon:'paper',meta:notes.length+' notas'},
+            {id:'notes',title:'Minhas anotações',description:'Notas e resumos de estudo.',icon:'learn',meta:notes.length+' notas'},
             {id:'errors',title:'Meus erros',description:'Respostas que precisam de revisão.',icon:'review',meta:(state.errorMemory?.length||0)+' registros'},
-            {id:'doubts',title:'Minhas dúvidas',description:'Perguntas guardadas nas lições.',icon:'help',meta:doubts.length+' dúvidas'},
-            {id:'kanban',title:'Meu planejamento',description:'Organize tarefas e ideias.',icon:'chart',meta:kanban.length+' itens'},
+            {id:'doubts',title:'Minhas dúvidas',description:'Perguntas guardadas nas lições.',icon:'chat',meta:doubts.length+' dúvidas'},
+            {id:'kanban',title:'Meu planejamento',description:'Organize tarefas e ideias.',icon:'review',meta:kanban.length+' itens'},
           ].map(item=><NavigationTile key={item.id} {...item} onClick={()=>{setTab(item.id);setShowMenu(false);}}/>)}
         </div>
       </section>}

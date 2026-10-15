@@ -28,7 +28,7 @@ export default function PracticeHub({state,go,openSpeedQuiz,openGuidedLesson,ope
        <Button variant="primary" className="w-full" onClick={()=>go('review')}>Começar revisão →</Button>
      </section>
      <div className="grid grid-cols-2 gap-3" aria-label="Escolher prática">
-       <NavigationTile title="Escuta" description="Ouvir e entender frases N5." icon="headphones" onClick={()=>setScreen('listening')}/>
+       <NavigationTile title="Escuta" description="Ouvir e entender frases N5." icon="sound" onClick={()=>setScreen('listening')}/>
        <NavigationTile title="Biblioteca e escrita" description="Kana, kanji e leitura." icon="learn" onClick={()=>go('learn')}/>
        <NavigationTile title="Caderno" description="Anotações, erros e dúvidas." icon="academic" onClick={()=>go('notebook')}/>
        <NavigationTile title="Laboratórios opcionais" description="Frases, fala e pronúncia." icon="puzzle" onClick={()=>setScreen('labs')}/>
