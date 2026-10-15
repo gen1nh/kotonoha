@@ -13,7 +13,7 @@ const reviewed=new Map((published?.units||[]).map(unit=>[unit.id,unit]));
 const queueFile='data/editorial/n5-prerequisite-review.json';
 const existingQueue=fs.existsSync(queueFile)
  ?JSON.parse(fs.readFileSync(queueFile,'utf8')):null;
-const noJapanese=/[^\\u3040-\\u30ff\\u3400-\\u9fff]/g;
+const noJapanese=/[^\u3040-\u30ff\u3400-\u9fff]/g;
 const candidates=N5_UNITS.map((unit,index)=>{
  const content=JSON.stringify(unit.items);
  const stage=stageById.get(unit.id);
