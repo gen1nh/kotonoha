@@ -87,3 +87,31 @@ test('bank with 80 approved items but only one competency per skill does not cer
   assert.equal(exam.questions.length,0);
   assert.equal(n5ReleaseReadiness(incomplete).examAvailable,false);
 });
+
+test('certificação não aceita pontuação incompatível com a prova ou com as habilidades',()=>{
+ const exam=buildN5CertificationExam(bank(),77);
+ const grade=gradeAssessment(exam,Object.fromEntries(exam.questions.map(q=>[q.id,q.answerIndex])));
+ const goodState=initialState();
+ assert.equal(recordN5Result(goodState,grade,exam),true);
+ const cases=[
+  {...grade,total:100},
+  {...grade,correct:81},
+  {...grade,fraction:0.9},
+  {...grade,level:'N4'},
+  {...grade,bySkill:{...grade.bySkill,grammar:{...grade.bySkill.grammar,total:21}}},
+  {...grade,bySkill:{...grade.bySkill,reading:{...grade.bySkill.reading,correct:19}}},
+  {...grade,bySkill:{...grade.bySkill,listening:{...grade.bySkill.listening,fraction:0.6}}},
+ ];
+ for(const candidate of cases){
+  const state=initialState();
+  assert.equal(recordN5Result(state,candidate,exam),false);
+  assert.equal(hasUnlockedN4(state),false);
+ }
+ for(const candidate of cases.filter(c=>c.level==='N5' && c.total>=80)){
+  const historyState=initialState();
+  historyState.pedagogy.assessmentHistory.push({...candidate,policyVersion:N5_CERTIFICATION_POLICY.version,
+   competencyIds:Object.fromEntries(CORE_SKILLS.map(skill=>[skill,[...N5_REQUIRED_COMPETENCIES[skill]]])),
+  });
+  assert.equal(hasPassedInternalN5(historyState),false);
+ }
+});
