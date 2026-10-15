@@ -58,3 +58,22 @@ test('gramática e atividades contextualizadas carregam explicação sem marcar 
   }
  }
 });
+
+test('checkpoint de escuta mantém evidência de transcrição e modalidade no backup',()=>{
+ const state=initialState();
+ state.drafts['checkpoint:listening:0']={
+  answers:{'n5-listening-01':'exemplo'},
+  result:null,
+  transcripts:['n5-listening-01','n5-listening-01'],
+ };
+ state.checkpoints['listening:0']={score:80,date:'2026-10-15',modality:'reading-fallback'};
+ const restored=normalizeState(JSON.parse(JSON.stringify(state)));
+ assert.deepEqual(restored.drafts['checkpoint:listening:0'].transcripts,['n5-listening-01']);
+ assert.equal(restored.checkpoints['listening:0'].modality,'reading-fallback');
+ const legacy=initialState();
+ legacy.drafts['checkpoint:listening:0']={answers:{},result:null};
+ assert.deepEqual(normalizeState(legacy).drafts['checkpoint:listening:0'].transcripts,[]);
+ const corrupt=initialState();
+ corrupt.checkpoints['listening:0']={score:80,date:'2026-10-15',modality:'official-certified'};
+ assert.equal(normalizeState(corrupt).checkpoints['listening:0'].modality,undefined);
+});

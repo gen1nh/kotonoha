@@ -11,8 +11,7 @@ export default function CheckpointPlayer({state,topic,update,go,openGuidedLesson
  const [activeQuestion,setActiveQuestion]=useState(0);
  const readingPreferences=useReadingPreferences();
  const [speechRate,setSpeechRate]=useState(()=>readingPreferences.speechRate);
- const [revealed,setRevealed]=useState({});
- useEffect(()=>{setActiveQuestion(0);setRevealed({});setPlayed({});},[topic]);
+ useEffect(()=>{setActiveQuestion(0);setPlayed({});},[topic]);
  const [played,setPlayed]=useState({});
  const [audioNotice,setAudioNotice]=useState('');
  const unit=unitById(topic);
@@ -20,16 +19,19 @@ export default function CheckpointPlayer({state,topic,update,go,openGuidedLesson
  const attempt=state.attempts?.[key]||0;
  const answers=state.drafts?.[key]?.answers||{};
  const result=state.drafts?.[key]?.result??null;
+ const transcripts=state.drafts?.[key]?.transcripts||[];
+ const revealed=Object.fromEntries(transcripts.map(id=>[id,true]));
  const questions=checkpointQuestions(state,topic,5,attempt);
  const ready=checkpointScore(questions,answers)!==null;
  const passed=checkpointPassed(state,topic);
  const next=lessonsFor('N5')[lessonsFor('N5').findIndex(l=>l.id===topic)+1];
- const answer=(id,value)=>update(s=>{s.drafts||={};s.drafts[key]={answers:{...(s.drafts[key]?.answers||{}),[id]:value},result:null};});
+ const answer=(id,value)=>update(s=>{s.drafts||={};s.drafts[key]={...s.drafts[key],answers:{...(s.drafts[key]?.answers||{}),[id]:value},result:null};});
+ const revealTranscript=id=>update(s=>{s.drafts||={};const previous=s.drafts[key]||{};s.drafts[key]={...previous,answers:previous.answers||{},result:null,transcripts:[...new Set([...(previous.transcripts||[]),id])]};});
  const grade=()=>{const score=checkpointScore(questions,answers);if(score===null)return;setActiveQuestion(0);playSound(score>=PASS_PERCENT?'complete':'incorrect');update(s=>{
-   s.drafts||={};s.drafts[key]={answers:{...answers},result:score};
+   s.drafts||={};s.drafts[key]={...s.drafts[key],answers:{...answers},result:score};
    if(score>=PASS_PERCENT){s.checkpoints||={};const prev=s.checkpoints[topic];if(!prev||prev.score<score)s.checkpoints[topic]={score,date:new Date().toISOString(),...(unit.kind==='listening'?{modality:Object.keys(revealed).length?'reading-fallback':Object.keys(played).length===questions.length?'synthetic-listening':'unverified-audio'}:{})};}
  });};
- const retry=()=>{setPlayed({});setRevealed({});setAudioNotice('');update(s=>{s.attempts||={};s.attempts[key]=(s.attempts[key]||0)+1;delete s.drafts?.[key];});};
+ const retry=()=>{setPlayed({});setAudioNotice('');update(s=>{s.attempts||={};s.attempts[key]=(s.attempts[key]||0)+1;delete s.drafts?.[key];});};
  if(!unit)return <p role="alert">Checkpoint indisponível. <button onClick={()=>go('path')}>Voltar à Trilha</button></p>;
  return <div className="mx-auto max-w-2xl space-y-4 pb-8">
   <header className="rounded-3xl border border-line bg-paper p-5 space-y-2"><p className="font-black text-xs text-primary-strong">CHECKPOINT · N5</p><h1 className="text-2xl font-black text-ink-strong">{unit.title}</h1><p className="text-sm text-muted">Avaliação da microlição. Mínimo de {PASS_PERCENT}% para avançar. Seu rascunho é salvo automaticamente neste aparelho.</p></header>
@@ -44,7 +46,7 @@ export default function CheckpointPlayer({state,topic,update,go,openGuidedLesson
     {q.spokenText&&<div className="rounded-xl bg-raised p-3 space-y-2">
       <button type="button" disabled={result!==null} onClick={()=>speakJapanese(q.spokenText,setAudioNotice,{rate:speechRate,onStart:()=>setPlayed(old=>({...old,[q.id]:true}))})} className="min-h-11 rounded-xl border border-line px-4 text-sm font-bold">▶ Ouvir frase</button>
       <AudioRateControl rate={speechRate} onChange={setSpeechRate} defaultRate={readingPreferences.speechRate}/>
-      <button type="button" disabled={result!==null} onClick={()=>setRevealed(old=>({...old,[q.id]:true}))} className="block min-h-10 text-xs underline text-primary-strong font-bold">Não consegui ouvir · mostrar texto</button>
+      <button type="button" disabled={result!==null} onClick={()=>revealTranscript(q.id)} className="block min-h-10 text-xs underline text-primary-strong font-bold">Não consegui ouvir · mostrar texto</button>
       {(revealed[q.id]||result!==null)&&<p lang="ja" className="font-jp text-lg">{q.spokenText}</p>}
       <p className="text-xs text-muted">Se consultar o texto, o resultado será registrado como prática de leitura, não como evidência auditiva.</p>
     </div>}

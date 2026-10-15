@@ -207,7 +207,7 @@ export function normalizeState(value) {
       draft.answers && typeof draft.answers==='object' && !Array.isArray(draft.answers) &&
       Object.keys(draft.answers).length<=30 && Object.values(draft.answers).every(a=>typeof a==='string'&&a.length<=1000 || Number.isInteger(a)&&a>=0&&a<=4) &&
       (draft.result===null || draft.result===undefined || Number.isInteger(draft.result)&&draft.result>=0&&draft.result<=100)
-    ).slice(0,60).map(([key,draft])=>[key,{answers:{...draft.answers},result:draft.result??null}]));
+    ).slice(0,60).map(([key,draft])=>[key,{answers:{...draft.answers},result:draft.result??null,...(key.startsWith('checkpoint:')?{transcripts:Array.isArray(draft.transcripts)?[...new Set(draft.transcripts.filter(id=>typeof id==='string'&&id.length<=100))].slice(0,10):[]}: {})}]));
   }
   if(value.attempts && typeof value.attempts==='object' && !Array.isArray(value.attempts)) {
     base.attempts=Object.fromEntries(Object.entries(value.attempts).filter(([key,n])=>
@@ -251,7 +251,7 @@ export function normalizeState(value) {
       (["hiragana", "katakana", "words", "grammar"].includes(topic)||Boolean(unitById(topic))) && entry &&
       Number.isInteger(entry.score) && entry.score >= 0 && entry.score <= 100 &&
       typeof entry.date === "string" && entry.date.length <= 32
-    ).map(([topic, entry]) => [topic, { score: entry.score, date: entry.date }]));
+    ).map(([topic, entry]) => [topic, { score: entry.score, date: entry.date, ...(unitById(topic)?.kind==='listening' && ['reading-fallback','synthetic-listening','unverified-audio'].includes(entry.modality)?{modality:entry.modality}:{}) }]));
   }
   base.paper = Object.fromEntries(
     Object.entries(value.paper || {}).filter(([, v]) => v === true),
