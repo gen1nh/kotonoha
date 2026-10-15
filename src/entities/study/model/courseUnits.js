@@ -2,6 +2,7 @@
  * New units never inherit a legacy topic-wide checkpoint: old users must study
  * the newly added material rather than silently skipping it.
  */
+import {N5_STAGE_PLAN} from '../content/n5Sequence.js';
 import {HIRAGANA,KATAKANA,VOCAB,GRAMMAR} from './data.js';
 import {HIRAGANA_EXTENSIONS,KATAKANA_EXTENSIONS} from '../content/n5Kana.js';
 import {N5_KANJI} from '../content/n5Kanji.js';
@@ -37,7 +38,7 @@ const themedWords=N5_VOCAB_GROUPS.flatMap(group=>{
  const units=build('words',items,5,'vocabulary',wordIndex,group.title);
  wordIndex+=units.length;return units;
 });
-export const N5_UNITS=Object.freeze([
+export const LEGACY_N5_UNITS=Object.freeze([
  ...build('hiragana',HIRAGANA,6,'kana'),
  ...build('hiragana',HIRAGANA_EXTENSIONS,6,'kana',8,'Hiragana · sons modificados'),
  ...build('katakana',KATAKANA,6,'kana'),
@@ -49,6 +50,13 @@ export const N5_UNITS=Object.freeze([
  ...build('reading',N5_READING_TASKS,5,'reading'),
  ...build('listening',N5_LISTENING_TASKS,5,'listening'),
 ]);
+const sequenceIds=N5_STAGE_PLAN.flatMap(stage=>stage.ids);
+if(sequenceIds.length!==LEGACY_N5_UNITS.length||new Set(sequenceIds).size!==sequenceIds.length||sequenceIds.some(id=>!LEGACY_N5_UNITS.some(unit=>unit.id===id)))throw new Error('Invalid N5 sequence: missing or duplicated units');
+export const N5_UNITS=Object.freeze(sequenceIds.map(id=>LEGACY_N5_UNITS.find(unit=>unit.id===id)));
+export function legacyAccessibleIds(state){
+ const firstUnpassed=LEGACY_N5_UNITS.findIndex(unit=>!unitPassed(state,unit.id));
+ return LEGACY_N5_UNITS.slice(0,firstUnpassed<0?LEGACY_N5_UNITS.length:firstUnpassed+1).map(unit=>unit.id);
+}
 export const unitById=id=>N5_UNITS.find(unit=>unit.id===id)||null;
 export const unitsForTopic=topic=>N5_UNITS.filter(unit=>unit.topic===topic);
 export const cardIdsForUnit=unit=>!unit||!['hiragana','katakana','words','kanji'].includes(unit.topic)?[]:unit.items.map(row=>{
@@ -61,7 +69,7 @@ export function unitPassed(state,id){
  return Boolean(legacy||Number(state?.checkpoints?.[id]?.score)>=80);
 }
 export function topicPassed(state,topic){const units=unitsForTopic(topic);return units.length>0&&units.every(unit=>unitPassed(state,unit.id));}
-export function unitAccessible(state,id){const index=N5_UNITS.findIndex(unit=>unit.id===id);return index>=0&&N5_UNITS.slice(0,index).every(unit=>unitPassed(state,unit.id));}
+export function unitAccessible(state,id){const index=N5_UNITS.findIndex(unit=>unit.id===id);return index>=0&&(unitPassed(state,id)||state?.curriculumAccess?.includes(id)||N5_UNITS.slice(0,index).every(unit=>unitPassed(state,unit.id)));}
 export function unitPracticed(state,id){const unit=unitById(id);if(!unit)return false;
  if(['grammar','reading','listening'].includes(unit.kind))return state?.lessons?.[id]===true || (unit.kind==='grammar' && unit.index<5 && state?.lessons?.grammar===true);
  const cards=cardIdsForUnit(unit);return cards.length>0&&cards.every(cardId=>state?.cards?.[cardId]?.seen===true);

@@ -2,7 +2,7 @@ import {HIRAGANA_EXTENSIONS,KATAKANA_EXTENSIONS} from "../content/n5Kana.js";
 import {N5_KANJI} from "../content/n5Kanji.js";
 import { HIRAGANA, KATAKANA, VOCAB, JLPT_PATHS } from "./data.js";
 import { VOCAB_BY_LEVEL } from "./curriculum.js";
-import {unitById} from "./courseUnits.js";
+import {unitById,legacyAccessibleIds} from "./courseUnits.js";
 import {createPedagogyState, normalizePedagogyState} from "./pedagogy/engine.js";
 
 export const KEY = "kotonoha.v1";
@@ -158,6 +158,8 @@ export function initialState() {
     cards,
     lessons: {},
     checkpoints: {},
+    curriculumVersion: 2,
+    curriculumAccess: [],
     paper: {},
     streak: { last: "", days: 0 },
     stats: { reviews: 0, correct: 0 },
@@ -366,6 +368,10 @@ export function normalizeState(value) {
   }
   // Standalone pedagogy data is optional in v1/v2 backups; invalid future formats fail closed.
   if (value.pedagogy != null) base.pedagogy = normalizePedagogyState(value.pedagogy);
+  base.curriculumVersion=2;
+  base.curriculumAccess=value.curriculumVersion===2
+    ? [...new Set((Array.isArray(value.curriculumAccess)?value.curriculumAccess:[]).filter(id=>unitById(id)))]
+    : legacyAccessibleIds(base);
   return base;
 }
 export function markStudy(state) {

@@ -1,0 +1,11 @@
+const range=(topic,first,last)=>Array.from({length:last-first+1},(_,i)=>`${topic}:${first+i}`);
+const grammar=(...ids)=>ids.map(id=>`grammar:${id}`);
+/** Explicit, versioned sequence. Never change unit membership or existing IDs. */
+export const N5_SEQUENCE_VERSION=2;
+export const N5_STAGE_PLAN=[
+ {id:'first-steps',title:'Primeiros passos',goal:'Ler hiragana básico e reconhecer cumprimentos e frases de apresentação.',method:'Comece pelos sinais. Em seguida, conecte palavras e estruturas a uma apresentação curta.',ids:[...range('hiragana',0,7),...range('words',43,46),...grammar(0,1,2)]},
+ {id:'introductions',title:'Apresentações e pessoas',goal:'Entender como identificar pessoas, perguntar e expressar relações.',method:'Amplie a leitura, conheça palavras sobre pessoas e pratique frases nominais.',ids:[...range('hiragana',8,17),...range('katakana',0,7),...range('words',0,3),...range('words',38,42),...grammar(3,11,18,29,30,31),...range('kanji',0,2)]},
+ {id:'daily-life',title:'Vida cotidiana',goal:'Interpretar horários, ações, preferências e descrições da rotina.',method:'Alterne pequenos grupos de palavras com estruturas que permitem usá-las.',ids:[...range('katakana',8,17),...range('words',61,69),...grammar(6,12),...range('words',8,12),...range('words',81,90),...grammar(14,15,16,17,4,5,8,10),...range('words',22,29),...range('words',47,51),...grammar(19,20,26,27,40,45,13),...range('kanji',3,8)]},
+ {id:'situations',title:'Situações práticas',goal:'Entender pedidos, localização, compras, convites e descrições.',method:'Conecte lugares, objetos e ações às estruturas de cada situação.',ids:[...range('words',52,55),...range('words',97,99),...grammar(7,9,28,41),...range('words',70,73),...range('words',18,21),...range('words',56,60),...range('words',13,17),...grammar(42,32,33,34,35,36),...range('words',4,7),...range('words',74,80),...range('words',30,33),...grammar(21,22,23,24,25),...range('words',34,37),...grammar(37,38,39,43,44),...range('words',91,96),...range('words',100,106),...range('kanji',9,17)]},
+ {id:'consolidation',title:'Consolidação N5',goal:'Combinar as estruturas estudadas para compreender textos e situações de escuta.',method:'Leia ou ouça, procure a informação pedida e confira a explicação. Depois faça a revisão formativa.',ids:[...range('reading',0,4),...range('listening',0,7)]},
+];

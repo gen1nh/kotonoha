@@ -17,9 +17,9 @@ src/
 ├── pages/
 │   ├── home/                Tela inicial e desafio diário
 │   ├── learning-path/       Trilha
-│   ├── lesson/              Microlição e WanaKana
+│   ├── lesson/              Microlição guiada
 │   ├── checkpoint/          Avaliações por unidade
-│   ├── practice/            Prática e escuta
+│   ├── practice/            Prática, escuta e digitação opcional com WanaKana
 │   ├── library/             Biblioteca, caligrafia e KanjiVG
 │   ├── progress/            Progresso, diagnósticos e revisão N5
 │   ├── review/              SRS
@@ -66,3 +66,9 @@ O guard de arquitetura verifica caminhos ausentes, pastas legadas e limites de d
 ## Preferências e efeitos sonoros
 
 Preferências agrupa conta, ajustes de estudo e dados; IA e reinício usam divulgação progressiva. `shared/audio/index.js` centraliza Howler, volume e ativação por dispositivo (`kotonoha.audio.v1`). Eventos de resposta e conclusão chamam o serviço fora de atualizadores React. O quiz protege a finalização para não repetir sons nem gravar o resultado em loop. Os três WAV originais em `public/audio` entram no precache PWA; geração reproduzível em `scripts/generate-ui-sounds.py`. Pronúncia permanece independente. O WebKit automatizado no Windows não oferece AudioContext; validar reprodução audível no Safari de um iPhone real.
+
+## Sequência curricular v2
+
+`content/n5Sequence.js` declara a sequência explícita das cinco etapas. `courseUnits.js` mantém o catálogo legado para migração e expõe a nova ordem canônica; `courseStages.js` projeta os mesmos IDs para a Trilha. A página agrupa apenas capítulos consecutivos para não desfazer a alternância entre habilidades.
+
+`normalizeState` preserva acesso legado em `curriculumAccess` e grava `curriculumVersion: 2`. A primeira normalização de backup antigo calcula o prefixo antes acessível; normalizações seguintes preservam a lista. Aprovações, cartões e intervalos não são alterados. `unitAccessible` aceita aprovação existente, acesso migrado ou pré-requisitos completos na nova ordem.

@@ -24,6 +24,9 @@ test('microlição → cartões → checkpoint → próxima microlição, sem ab
  await enter(page,state);await page.getByRole('button',{name:/Continuar aprendendo/}).first().click();
  await expect(page.getByRole('heading',{name:first.title})).toBeVisible();
  await expect(page.getByRole('navigation',{name:'Navegação móvel'})).toHaveCount(0);
+ await expect(page.getByRole('button',{name:/Praticar 6 cartões/})).toBeHidden();
+ await expect(page.getByRole('heading',{name:'Digite em japonês'})).toBeHidden();
+ await page.getByRole('button',{name:/Entendi · começar a prática/}).click();
  await page.getByRole('button',{name:/Praticar 6 cartões/}).click();
  for(let i=0;i<cardIdsForUnit(first).length;i++){
   await page.getByRole('button',{name:'Revelar resposta'}).click();
@@ -52,6 +55,50 @@ test('checkpoint retoma respostas após recarga e aprovação entra na meta diá
  await expect.poll(()=>page.evaluate(day=>JSON.parse(localStorage.getItem('kotonoha.v1')).activityLog[day]||[],todayKey())).toContain(`checkpoint:${first.id}`);
 });
 
+test('trilha destaca etapa atual e digitação só aparece como treino opcional',async({page})=>{
+ await enter(page);await tab(page,'Trilha').click();
+ const stage=page.locator('details').filter({has:page.getByRole('heading',{name:'Primeiros passos',exact:true})}).first();
+ await expect(stage).toHaveAttribute('open','');
+ await expect(page.getByText('Ler hiragana básico e reconhecer cumprimentos e frases de apresentação.',{exact:false})).toBeVisible();
+ await tab(page,'Praticar').click();
+ await expect(page.getByRole('heading',{name:'Digite em japonês'})).toBeHidden();
+ await page.getByText('Treinos extras',{exact:true}).click();
+ await page.getByText('Treino de teclado japonês',{exact:true}).click();
+ await expect(page.getByRole('heading',{name:'Digite em japonês'})).toBeVisible();
+ await expect(page.getByRole('combobox',{name:'Conteúdo para praticar'}).locator('option')).toHaveCount(1);
+ await page.getByRole('textbox',{name:'Digite a leitura deste item'}).fill('a');
+ await page.getByRole('button',{name:'Conferir resposta'}).click();
+ await expect(page.getByText('Correto!',{exact:true})).toBeVisible();
+});
+
+test('gramática separa explicação de prática e permite consultar sem perder resposta',async({page})=>{
+ const state=seeded(),unit=N5_UNITS.find(u=>u.kind==='grammar');
+ for(const previous of N5_UNITS.slice(0,N5_UNITS.indexOf(unit)))state.checkpoints[previous.id]={score:100,date:new Date().toISOString()};
+ await enter(page,state);await page.goto(`/?view=lesson&topic=${encodeURIComponent(unit.id)}&level=N5`);
+ await expect(page.getByRole('radio')).toHaveCount(0);
+ await page.getByRole('button',{name:/Entendi · começar a prática/}).click();
+ await expect(page.getByRole('button',{name:/Concluir prática/})).toBeDisabled();
+ await page.getByRole('radio',{name:unit.items[0].meaning,exact:true}).check();
+ await page.getByRole('button',{name:'Consultar explicação e exemplos'}).click();
+ await page.getByRole('button',{name:/Entendi · começar a prática/}).click();
+ await expect(page.getByRole('radio',{name:unit.items[0].meaning,exact:true})).toBeChecked();
+ await page.getByRole('button',{name:/Concluir prática/}).click();
+ await expect(page.getByRole('button',{name:/Fazer checkpoint/})).toBeVisible();
+});
+
+for(const kind of ['reading','listening'])test(`${kind}: um exemplo por vez antes de confirmar o estudo`,async({page})=>{
+ const state=seeded(),unit=N5_UNITS.find(u=>u.kind===kind);
+ for(const previous of N5_UNITS.slice(0,N5_UNITS.indexOf(unit)))state.checkpoints[previous.id]={score:100,date:new Date().toISOString()};
+ await enter(page,state);await page.goto(`/?view=lesson&topic=${encodeURIComponent(unit.id)}&level=N5`);
+ await expect(page.locator('article')).toHaveCount(1);
+ await expect(page.getByRole('button',{name:/Estudei os exemplos/})).toHaveCount(0);
+ await expect(page.getByRole('button',{name:'Exemplo anterior'})).toBeDisabled();
+ for(let i=1;i<unit.items.length;i++)await page.getByRole('button',{name:/Próximo exemplo/}).click();
+ await expect(page.getByText(`EXEMPLO ${unit.items.length} DE ${unit.items.length}`,{exact:true})).toBeVisible();
+ await page.getByRole('button',{name:/Estudei os exemplos/}).click();
+ await expect(page.getByRole('button',{name:/Fazer checkpoint/})).toBeVisible();
+});
+
 test('filtro N1 não desbloqueia laboratórios nem URLs',async({page})=>{
  const state=seeded();state.selectedLevel='N1';await enter(page,state);
  await page.goto('/?view=line');await expect(page.getByRole('heading',{name:'Praticar'})).toBeVisible();
@@ -69,6 +116,7 @@ test('tema escuro, configurações e backup',async({page})=>{
 
 test('caligrafia recebe toque no canvas sem interceptação',async({page})=>{
  await enter(page);await tab(page,'Praticar').click();
+ await page.getByText('Consultar e organizar',{exact:true}).click();
  await page.getByRole('button',{name:'Abrir ferramenta →'}).first().click();
  const canvas=page.locator('canvas[data-drawing-surface]').first();await canvas.scrollIntoViewIfNeeded();
  const r=await canvas.boundingBox();expect(r).not.toBeNull();

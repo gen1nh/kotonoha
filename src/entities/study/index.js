@@ -10,6 +10,7 @@ export * from './content/n5WordsMore.js';
 export * from './model/ai.js';
 export * from './model/checkpoints.js';
 export * from './model/courseUnits.js';
+export * from './model/courseStages.js';
 export * from './model/curriculum.js';
 export * from './model/dailyPlan.js';
 export * from './model/data.js';

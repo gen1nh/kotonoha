@@ -29,8 +29,7 @@ export function Review({ state, queue, update, go, speak, openGuidedCheckpoint, 
           </Button>
         }
       >
-        Você concluiu sua fila de repetição espaçada. Sessões curtas e diárias
-        fixam muito mais do que longas maratonas.
+        Você praticou os cartões desta sessão. Isso registra sua revisão; a verificação da lição acontece no checkpoint.
       </EmptyState>
     );
   }
@@ -39,8 +38,8 @@ export function Review({ state, queue, update, go, speak, openGuidedCheckpoint, 
     <div className="w-full min-w-0 space-y-6">
       {/* Cabeçalho de Revisão SRS */}
       <PageHeading
-        title="Repetição Espaçada (SRS)"
-        description="Revisão espaçada dos cartões selecionados. O nível de consulta não altera sua Trilha."
+        title={returnToLesson ? "Prática da lição" : "Revisão de cartões"}
+        description="Tente responder de memória antes de revelar. Depois, compare com a resposta e escolha como foi lembrar. Não precisa digitar."
         icon="review"
         iconBg="bg-blue-soft"
         iconColor="text-blue"
@@ -84,7 +83,7 @@ export function Review({ state, queue, update, go, speak, openGuidedCheckpoint, 
         )}
       </Card>
 
-      <div className="flex items-center justify-center gap-3">
+      <div className="flex flex-wrap items-center justify-center gap-3">
         <Button
           variant="secondary"
           size="lg"
@@ -105,30 +104,30 @@ export function Review({ state, queue, update, go, speak, openGuidedCheckpoint, 
       </div>
 
       {revealed && (
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
+        <div className="space-y-3"><p className="text-sm text-muted" role="status">Como foi lembrar? Sua escolha ajusta quando este cartão volta à revisão.</p><div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
           {[
             {
               rating: "again",
               label: "Errei",
-              hint: "Rever em 10m",
+              hint: "Não lembrei",
               variant: "danger",
             },
             {
               rating: "hard",
               label: "Difícil",
-              hint: "Intervalo curto",
+              hint: "Lembrei com esforço",
               variant: "flame",
             },
             {
               rating: "good",
               label: "Bom",
-              hint: "Intervalo normal",
+              hint: "Lembrei corretamente",
               variant: "primary",
             },
             {
               rating: "easy",
               label: "Fácil",
-              hint: "Intervalo longo",
+              hint: "Lembrei sem esforço",
               variant: "blue",
             },
           ].map((item) => (
@@ -149,7 +148,7 @@ export function Review({ state, queue, update, go, speak, openGuidedCheckpoint, 
               </span>
             </Button>
           ))}
-        </div>
+        </div></div>
       )}
     </div>
   );

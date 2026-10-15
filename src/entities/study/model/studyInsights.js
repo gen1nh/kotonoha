@@ -7,7 +7,7 @@ export function cardMastery(card) {
 }
 export function levelInsights(state, level = 'N5', now = Date.now()) {
   const cards = Object.values(state.cards || {}).filter(card =>
-    ['Hiragana', 'Katakana', `Vocabulário ${level}`].includes(card.type) &&
+    ['Hiragana', 'Katakana', `Vocabulário ${level}`, `Kanji ${level}`].includes(card.type) &&
     (level === 'N5' || card.type === `Vocabulário ${level}`));
   const counts = { new: 0, learning: 0, stable: 0, retry: 0 };
   for (const card of cards) counts[cardMastery(card)]++;
