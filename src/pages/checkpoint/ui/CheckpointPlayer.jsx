@@ -6,12 +6,23 @@ import {unitById} from '../../../entities/study/index.js';
 import {lessonsFor} from '../../../entities/study/index.js';
 import {Button,AudioRateControl} from '../../../shared/ui/index.jsx';
 import {useReadingPreferences} from '../../../entities/study/index.js';
+/** Resume at the first unanswered question, including after a browser/PWA reload.
+ * Completed attempts start at question one so feedback remains easy to review. */
+export function resumeCheckpointQuestion(state,topic){
+ const key=`checkpoint:${topic}`;
+ const draft=state?.drafts?.[key];
+ if(draft?.result!=null)return 0;
+ const questions=checkpointQuestions(state,topic,5,state?.attempts?.[key]||0);
+ if(!questions.length)return 0;
+ const index=questions.findIndex(q=>draft?.answers?.[q.id]===undefined);
+ return index===-1?questions.length-1:index;
+}
 /** Tentativa e respostas são persistidas, inclusive entre atualizações da PWA. */
 export default function CheckpointPlayer({state,topic,update,go,openGuidedLesson}){
- const [activeQuestion,setActiveQuestion]=useState(0);
+ const [activeQuestion,setActiveQuestion]=useState(()=>resumeCheckpointQuestion(state,topic));
  const readingPreferences=useReadingPreferences();
  const [speechRate,setSpeechRate]=useState(()=>readingPreferences.speechRate);
- useEffect(()=>{setActiveQuestion(0);setPlayed({});},[topic]);
+ useEffect(()=>{setActiveQuestion(resumeCheckpointQuestion(state,topic));setPlayed({});},[topic]);
  const [played,setPlayed]=useState({});
  const [audioNotice,setAudioNotice]=useState('');
  const unit=unitById(topic);
