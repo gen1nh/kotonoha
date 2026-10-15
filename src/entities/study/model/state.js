@@ -356,6 +356,16 @@ export function normalizeState(value) {
       typeof r.date === 'string' && !Number.isNaN(Date.parse(r.date))
     ).slice(-30);
   }
+  // Restore unfinished personal evaluations without marking them completed.
+  if(value.diagnosticDrafts && typeof value.diagnosticDrafts==='object' && !Array.isArray(value.diagnosticDrafts)){
+    base.diagnosticDrafts=Object.fromEntries(Object.entries(value.diagnosticDrafts).filter(([level,d])=>
+      ['N5','N4','N3','N2','N1'].includes(level)&&d&&typeof d==='object'&&!Array.isArray(d)&&
+      Number.isInteger(d.step)&&d.step>=0&&d.step<8&&d.answers&&typeof d.answers==='object'&&!Array.isArray(d.answers)&&
+      Object.keys(d.answers).length<=8&&Object.entries(d.answers).every(([id,choice])=>
+        typeof id==='string'&&id.length<=100&&Number.isInteger(choice)&&choice>=0&&choice<=4
+      )
+    ).map(([level,d])=>[level,{step:d.step,answers:{...d.answers}}]));
+  }
   // Formative course review; never store it in the certification assessmentHistory.
   const practice=value.n5Practice;
   if(practice&&typeof practice==='object'&&!Array.isArray(practice)){

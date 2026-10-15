@@ -24,7 +24,8 @@ test('preferências priorizam ajustes, preservam áudio local e mantêm acesso a
   await page.getByRole('slider', { name: 'Volume dos efeitos' }).fill('25');
   await page.getByRole('switch', { name: 'Efeitos sonoros' }).uncheck();
   await page.reload();
-  await page.getByRole('button', { name: 'Áudio e leitura' }).click();
+  // Subpages are URL-addressable and survive reloads without returning to the menu.
+  await expect(page.getByRole('combobox', { name: 'Velocidade padrão do japonês' })).toBeVisible();
   await expect(page.getByRole('switch', { name: 'Efeitos sonoros' })).not.toBeChecked();
   await expect(page.getByRole('button', { name: 'Ouvir acerto' })).not.toBeVisible();
   await page.getByRole('switch', { name: 'Efeitos sonoros' }).check();

@@ -5,7 +5,7 @@ const initial = () => {const state=initialState();state.onboardingCompleted=true
 test.use({viewport:{width:390,height:844}});
 
 test('Simulados separa tarefas e exibe apenas uma questão por vez', async ({page}) => {
-  await page.addInitScript(state=>localStorage.setItem('kotonoha.v1',JSON.stringify(state)),initial());
+  await page.addInitScript(state=>{if(!localStorage.getItem('kotonoha.v1'))localStorage.setItem('kotonoha.v1',JSON.stringify(state));},initial());
   await page.goto('/?view=progress');
   await page.getByRole('button',{name:'Simulados'}).click();
   await expect(page.getByRole('heading',{name:'Simulados e prática'})).toBeVisible();
@@ -18,6 +18,7 @@ test('Simulados separa tarefas e exibe apenas uma questão por vez', async ({pag
   await expect(page.getByRole('button',{name:'Próxima questão →'})).toBeEnabled();
   await page.getByRole('button',{name:'Próxima questão →'}).click();
   await expect(page.getByText('Questão 2 de 8')).toBeVisible();
+  await page.waitForFunction(()=>Boolean(JSON.parse(localStorage.getItem('kotonoha.v1')||'{}').diagnosticDrafts?.N5?.step===1));
   await page.reload();
   await expect(page.getByText('Questão 2 de 8')).toBeVisible();
   await expect(page.locator('fieldset')).toHaveCount(1);
