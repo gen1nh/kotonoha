@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import Icon from "../../../shared/ui/Icon.jsx";
-import { Button, Card } from "../../../shared/ui/index.jsx";
+import { Button, Card, AudioRateControl } from "../../../shared/ui/index.jsx";
+import {useReadingPreferences} from "../../../entities/study/index.js";
 import { PageHeading } from "../../../shared/ui/index.jsx";
 
 export const PITCH_EXERCISES = [
@@ -63,9 +64,13 @@ export const PITCH_EXERCISES = [
 ];
 
 export default function PitchAccentLab({ speak, toast }) {
+  const readingPreferences=useReadingPreferences();
+  const [speechRate,setSpeechRate]=useState(()=>readingPreferences.speechRate);
+  const audioPlaybackRef=useRef(null);
   const [selectedWordIndex, setSelectedWordIndex] = useState(0);
   const [isRecording, setIsRecording] = useState(false);
   const [audioUrl, setAudioUrl] = useState(null);
+  useEffect(()=>{if(audioPlaybackRef.current)audioPlaybackRef.current.playbackRate=speechRate;},[speechRate,audioUrl]);
   const [waveformActive, setWaveformActive] = useState(false);
   const [senseiFeedback, setSenseiFeedback] = useState(null);
 
@@ -296,12 +301,16 @@ export default function PitchAccentLab({ speak, toast }) {
             )}
 
             {audioUrl && (
-              <div className="flex items-center gap-3">
-                <audio controls src={audioUrl} className="h-10 rounded-xl" />
+              <div className="flex flex-col gap-3">
+                <audio ref={audioPlaybackRef} controls src={audioUrl} className="h-10 rounded-xl" aria-label="Ouvir minha gravação" />
               </div>
             )}
           </div>
 
+          {audioUrl&&<details className="rounded-xl border border-line bg-paper p-3">
+            <summary className="min-h-11 cursor-pointer text-sm font-bold text-ink-strong">Velocidade da minha gravação</summary>
+            <div className="pt-2"><AudioRateControl rate={speechRate} onChange={setSpeechRate} defaultRate={readingPreferences.speechRate}/></div>
+          </details>}
           {/* Canvas Waveform com Maior Altura */}
           <div className="h-36 sm:h-40 w-full rounded-2xl bg-paper border-2 border-b-4 border-line overflow-hidden flex items-center justify-center relative">
             <canvas

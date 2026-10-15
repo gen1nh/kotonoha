@@ -358,7 +358,7 @@ export default function MediaLab({ state, update, speak, toast }) {
                       <strong className="block font-jp font-bold" lang="ja">
                         {w.ja}
                       </strong>
-                      <small className="block opacity-80">{w.ro}</small>
+                      {readingPreferences.showRomaji&&<small lang="ja-Latn" className="block opacity-80">{w.ro}</small>}
                     </button>
                   ))}
                 </div>
@@ -378,7 +378,7 @@ export default function MediaLab({ state, update, speak, toast }) {
                 >
                   {selectedWord.ja}
                 </strong>
-                <span className="text-xs text-muted">({selectedWord.ro})</span>
+                {readingPreferences.showRomaji&&<span lang="ja-Latn" className="text-xs text-muted">({selectedWord.ro})</span>}
               </div>
               <p className="text-sm text-ink">{selectedWord.pt}</p>
             </div>
