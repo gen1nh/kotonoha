@@ -1,14 +1,16 @@
 import { playSound } from '../../../shared/audio/index.js';
 import React, { useState, useEffect } from "react";
 import Icon from "../../../shared/ui/Icon.jsx";
-import { Card, Button, ProgressBar, EmptyState } from "../../../shared/ui/index.jsx";
+import { Card, Button, ProgressBar, EmptyState, AudioRateControl } from "../../../shared/ui/index.jsx";
 import { PageHeading } from "../../../shared/ui/index.jsx";
 import { rateCard } from "../../../entities/study/index.js";
 import {recordActivity} from "../../../entities/study/index.js";
-import { nextGuidedAction } from "../../../entities/study/index.js";
+import { nextGuidedAction,useReadingPreferences } from "../../../entities/study/index.js";
 export function Review({ state, queue, update, go, speak, openGuidedCheckpoint, returnToLesson }) {
   const [index, setIndex] = useState(0);
   const [revealed, setRevealed] = useState(false);
+  const readingPreferences=useReadingPreferences();
+  const [speechRate,setSpeechRate]=useState(()=>readingPreferences.speechRate);
 
   useEffect(() => {
     setIndex(0);
@@ -87,7 +89,7 @@ export function Review({ state, queue, update, go, speak, openGuidedCheckpoint, 
         <Button
           variant="secondary"
           size="lg"
-          onClick={() => speak(card.spoken || card.prompt)}
+          onClick={() => speak(card.spoken || card.prompt,{rate:speechRate})}
         >
           <Icon name="sound" /> Ouvir pronúncia
         </Button>
@@ -103,6 +105,10 @@ export function Review({ state, queue, update, go, speak, openGuidedCheckpoint, 
         ) : null}
       </div>
 
+      <details className="rounded-xl border border-line bg-paper p-3">
+        <summary className="min-h-11 cursor-pointer text-sm font-bold text-ink-strong">Ajustar pronúncia desta revisão</summary>
+        <div className="pt-2"><AudioRateControl rate={speechRate} onChange={setSpeechRate} defaultRate={readingPreferences.speechRate}/></div>
+      </details>
       {revealed && (
         <div className="space-y-3"><p className="text-sm text-muted" role="status">Como foi lembrar? Sua escolha ajusta quando este cartão volta à revisão.</p><div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
           {[

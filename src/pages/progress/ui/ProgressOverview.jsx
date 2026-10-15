@@ -1,25 +1,17 @@
-import React, {useState} from 'react';
+import React from 'react';
+import {useSubpageNavigation} from '../../../shared/lib/useSubpageNavigation.js';
 import { lessonsFor,isDone } from '../../../entities/study/index.js';
 import { dailyActivityCount,dailyGoal } from '../../../entities/study/index.js';
 import { todayKey } from '../../../entities/study/index.js';
 import { hasUnlockedN4 } from '../../../entities/study/index.js';
 import Icon from '../../../shared/ui/Icon.jsx';
 import JlptDiagnostic from './JlptDiagnostic.jsx';
-import { LEVELS } from '../../../entities/study/index.js';
+import {NavigationTile} from '../../../shared/ui/index.jsx';
+import SimuladosHub from './SimuladosHub.jsx';
 import { courseLevel } from '../../../entities/study/index.js';
 import N5Readiness from './N5Readiness.jsx';
 export default function ProgressOverview({state,go,update,toast,changeLevel}) {
-  const [mockScore,setMockScore]=useState('');
-  const [mockError,setMockError]=useState('');
-  const displayLevel=state.selectedLevel||'N5';
-  const mocks=(state.mocks||[]).filter(entry=>entry.level===displayLevel).slice(0,5);
-  const addMock=(event)=>{
-    event.preventDefault();
-    const score=Number(mockScore);
-    if(mockScore.trim()==='' || !Number.isFinite(score) || score<0 || score>100){setMockError('Informe um percentual válido entre 0 e 100.');return;}
-    update(s=>{s.mocks ||= [];s.mocks.unshift({level:displayLevel,score,date:new Date().toISOString().slice(0,10)});s.mocks=s.mocks.slice(0,200);});
-    setMockError('');setMockScore('');toast?.('Resultado pessoal registrado no dispositivo.');
-  };
+  const [section,setSection,backSection]=useSubpageNavigation('progress','overview',['overview','preparation','exam']);
   const currentLevel=courseLevel(state);
   const lessons=lessonsFor(currentLevel);
   const completed=lessons.filter(l=>isDone(state,currentLevel,l)).length;
@@ -31,7 +23,12 @@ export default function ProgressOverview({state,go,update,toast,changeLevel}) {
   const total=Object.values(state.cards||{}).length;
   const todaySeconds=state.studyLog?.[todayKey()] || 0;
   return <div className="mx-auto max-w-3xl space-y-5">
-    <header className="space-y-1"><p className="text-sm text-primary-strong font-bold">Sua evolução</p><h1 className="text-2xl font-black text-ink-strong">Progresso</h1><p className="text-sm text-muted">O progresso da trilha é validado por checkpoints, não apenas por tempo de uso.</p></header>
+    <header className="space-y-1"><p className="text-sm text-primary-strong font-bold">Sua evolução</p><h1 className="text-2xl font-black text-ink-strong">Progresso</h1><p className="text-sm text-muted">Acompanhe suas atividades concluídas e o que falta aprender.</p></header>
+    {section==='overview'?<nav aria-label="Seções do progresso" className="grid grid-cols-2 gap-3">
+      <NavigationTile title="Preparação N5" icon="learn" description="Áreas estudadas e próximos passos." onClick={()=>setSection('preparation')}/>
+      <NavigationTile title="Simulados" icon="review" description="Questões, provas e resultados." onClick={()=>setSection('exam')}/>
+    </nav>:<button type="button" className="min-h-11 text-sm font-bold text-primary-strong" onClick={backSection}>← Voltar ao resumo</button>}
+    {section==="overview"&&<>
     <section className="rounded-2xl border border-line bg-paper p-5 space-y-4" aria-label="Resumo da aprendizagem">
       <h2 className="font-bold text-lg text-ink-strong">Competências {currentLevel}</h2>
       <div className="flex items-center justify-between"><p className="text-sm text-ink">{completed} de {lessons.length} etapas validadas</p><strong className="text-primary-strong">{Math.round(100*completed/Math.max(1,lessons.length))}%</strong></div>
@@ -45,26 +42,16 @@ export default function ProgressOverview({state,go,update,toast,changeLevel}) {
       <div className="rounded-2xl border border-line bg-paper p-4"><p className="text-xs text-muted">Revisões vencidas</p><p className="font-black text-2xl text-ink-strong">{due}</p><p className="text-xs text-muted">Cartões aguardando prática</p></div>
       <div className="rounded-2xl border border-line bg-paper p-4"><p className="text-xs text-muted">Tempo ativo hoje</p><p className="font-black text-2xl text-ink-strong">{Math.floor(todaySeconds/60)} <span className="text-sm">min</span></p><p className="text-xs text-muted">Indicador complementar</p></div>
     </section>
+    <details className="rounded-2xl border border-line bg-paper p-4">
+      <summary className="min-h-11 flex cursor-pointer items-center font-bold text-ink-strong">Estatísticas detalhadas e tempo de estudo</summary>
+      <div className="pt-3"><JlptDiagnostic state={state} update={update} toast={toast}/></div>
+    </details>
+    </>}
+    {section==="preparation"&&<>
     <N5Readiness state={state} go={go} update={update}/>
     <section className="rounded-2xl border border-line bg-paper p-5 space-y-2"><h2 className="font-bold text-ink-strong">Próximos níveis</h2><p className="text-sm text-muted">{hasUnlockedN4(state) ? 'N5 validado internamente. O N4 introdutório está disponível; o currículo completo N4–N1 ainda está em construção.' : 'Checkpoints concluídos não equivalem à aprovação no N5. Continue estudando e acompanhe a preparação para a prova de passagem.'}</p></section>
-    <details className="rounded-2xl border border-line bg-paper p-4 sm:p-5 space-y-3">
-      <summary className="cursor-pointer min-h-11 flex items-center font-bold text-lg text-ink-strong">Preparação para o JLPT e exercícios extras <span className="ml-auto text-xs font-normal text-muted">Opcional</span></summary>
-      <div className="pt-4 space-y-5">
-        <div className="rounded-xl bg-raised p-4 space-y-3">
-          <p className="text-sm text-muted">As provas de prática, exercícios para imprimir e registros são recursos opcionais. Não desbloqueiam a Trilha nem substituem os checkpoints.</p>
-          <label className="block text-sm font-bold text-ink-strong">Consultar nível de referência
-            <select className="mt-2 min-h-11 w-full rounded-lg border border-line bg-paper p-2 text-ink-strong" aria-label="Consultar nível JLPT" value={displayLevel} onChange={e=>changeLevel(e.target.value)}>{LEVELS.map(([id,label])=><option key={id} value={id}>{id} · {label}</option>)}</select>
-          </label>
-          <div className="flex flex-wrap gap-3"><a href="https://www.jlpt.jp/e/samples/sampleindex.html" target="_blank" rel="noreferrer" className="inline-flex items-center min-h-11 text-sm font-bold underline text-primary-strong">Exemplos de provas JLPT ↗</a><a href="https://www.jlpt.jp/e/samples/forlearners.html" target="_blank" rel="noreferrer" className="inline-flex items-center min-h-11 text-sm font-bold underline text-primary-strong">Questões e áudios oficiais ↗</a></div>
-        </div>
-        <JlptDiagnostic state={state} update={update} toast={toast}/>
-        <section className="rounded-xl border border-line p-4 space-y-3" aria-labelledby="mock-results-title">
-          <h3 id="mock-results-title" className="font-bold text-ink-strong">Meu registro de simulados · {displayLevel}</h3>
-          <p className="text-sm text-muted">Anote o percentual de uma prova ou exercício que realizou. Esse registro é pessoal e não indica aprovação oficial.</p>
-          <form onSubmit={addMock} className="flex gap-2 items-start"><div className="flex-1"><label htmlFor="mock-score" className="sr-only">Percentual de acertos</label><input id="mock-score" type="number" step="1" min="0" max="100" value={mockScore} onChange={e=>setMockScore(e.target.value)} placeholder="Acertos (%)" className="min-h-11 w-full rounded-lg border border-line bg-paper px-3 text-ink-strong"/>{mockError&&<p role="alert" className="text-xs text-danger mt-1">{mockError}</p>}</div><button type="submit" className="min-h-11 rounded-lg bg-primary text-white font-bold text-sm px-4">Registrar</button></form>
-          <ul className="space-y-2 text-sm">{mocks.map((entry,index)=><li key={`${entry.date}-${index}`} className="rounded-lg p-2 bg-raised flex items-center justify-between gap-3"><span className="text-ink-strong">{entry.date}</span><strong className="text-primary-strong">{entry.score}%</strong></li>)}{!mocks.length&&<li className="text-muted">Nenhum resultado registrado.</li>}</ul>
-        </section>
-      </div>
-    </details>
+    </>}
+    {section==="exam"&&<SimuladosHub state={state} update={update} toast={toast}/>}
+
   </div>;
 }

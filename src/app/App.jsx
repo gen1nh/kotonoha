@@ -123,7 +123,7 @@ export default function App(){
   const changeLevel=level=>{if(level===state.selectedLevel)return;update(s=>{s.selectedLevel=level;});toast(`Mostrando conteúdos ${level}. O nível desbloqueado não muda.`);};
 
   useEffect(()=>{const stopWatching=warmJapaneseVoices();return()=>{stopWatching();stopSpeech();};},[]);
-  const speak=text=>speakJapanese(text,toast);
+  const speak=(text,options={})=>speakJapanese(text,toast,options);
   const install=async()=>{if(!installPrompt)return;await installPrompt.prompt();await installPrompt.userChoice;setInstallPrompt(null);};
   const shared={state,update,toast,go,goBack,speak,queue,setState,changeLevel,study,studyUnit,openLearn,openLesson,openGuidedLesson,openCheckpoint,route,reviewContext,learnTopic,cloud};
   return <>

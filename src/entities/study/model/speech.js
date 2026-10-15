@@ -1,3 +1,4 @@
+import { getReadingPreferences } from './readingPreferences.js';
 /**
  * Browser-native Japanese speech for learning and FORMATIVE practice.
  * No audio service, download, microphone or API key is needed.
@@ -72,8 +73,8 @@ export function speakJapanese(text, onError = () => {}, options = {}) {
     synthesis.cancel();
     const utterance = new window.SpeechSynthesisUtterance(phrase);
     utterance.lang = 'ja-JP';
-    utterance.rate = Number.isFinite(options.rate) ? Math.min(1.15, Math.max(0.65, options.rate)) : 0.85;
-    const voice = chooseJapaneseVoice(available, options.voiceURI || preferredVoiceURI);
+    utterance.rate = Number.isFinite(options.rate) ? Math.min(1.15, Math.max(0.5, options.rate)) : getReadingPreferences().speechRate;
+    const voice = chooseJapaneseVoice(available, options.voiceURI || getReadingPreferences().japaneseVoiceURI || preferredVoiceURI);
     if (voice) utterance.voice = voice;
     activeUtterance = utterance;
     utterance.onstart = () => { if (activeUtterance === utterance) options.onStart?.(); };

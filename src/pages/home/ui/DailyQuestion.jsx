@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
+import {playSound} from "../../../shared/audio/index.js";
 import { markStudy, todayKey } from "../../../entities/study/index.js";
-import { HOME_QUESTION } from "../../../entities/study/index.js";
-import { Card, Button } from "../../../shared/ui/index.jsx";
+import { HOME_QUESTION,useReadingPreferences } from "../../../entities/study/index.js";
+import { Card, Button, AudioRateControl } from "../../../shared/ui/index.jsx";
 import Icon from "../../../shared/ui/Icon.jsx";
 
 export default function DailyQuestion({ state, update, go, speak, level: guidedLevel }) {
@@ -12,6 +13,8 @@ export default function DailyQuestion({ state, update, go, speak, level: guidedL
     () => state.dailyAnswers?.[key] ?? null,
   );
   const [showReview, setShowReview] = useState(false);
+  const readingPreferences=useReadingPreferences();
+  const [speechRate,setSpeechRate]=useState(()=>readingPreferences.speechRate);
 
   useEffect(() => {
     setSelected(state.dailyAnswers?.[key] ?? null);
@@ -19,6 +22,7 @@ export default function DailyQuestion({ state, update, go, speak, level: guidedL
 
   function answer(index) {
     if (selected !== null) return;
+    playSound(index===question.answer?'correct':'incorrect');
     setSelected(index);
     update((next) => {
       const alreadyAnswered = Number.isInteger(next.dailyAnswers?.[key]);
@@ -107,15 +111,19 @@ export default function DailyQuestion({ state, update, go, speak, level: guidedL
             <Button
               variant="secondary"
               size="sm"
-              onClick={() => speak(question.sentence)}
+              onClick={() => speak(question.sentence,{rate:speechRate})}
               title="Ouvir pronúncia"
             >
               <Icon name="sound" /> Ouvir
             </Button>
           )}
         </div>
-        {question.romaji && (
-          <p className="mt-1 text-xs text-muted tabular-nums">
+        {speak&&<details className="mt-2 rounded-xl border border-line bg-paper p-3">
+          <summary className="min-h-11 cursor-pointer text-xs font-bold text-ink-strong">Velocidade desta pergunta</summary>
+          <div className="pt-2"><AudioRateControl rate={speechRate} onChange={setSpeechRate} defaultRate={readingPreferences.speechRate}/></div>
+        </details>}
+        {complete && readingPreferences.showRomaji && question.romaji && (
+          <p lang="ja-Latn" className="mt-1 text-xs text-muted tabular-nums">
             {question.romaji}
           </p>
         )}

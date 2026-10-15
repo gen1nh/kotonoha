@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import Icon from "../../../shared/ui/Icon.jsx";
-import { Button, Card } from "../../../shared/ui/index.jsx";
+import { Button, Card, AudioRateControl } from "../../../shared/ui/index.jsx";
 import { PageHeading } from "../../../shared/ui/index.jsx";
-import { chatCompletion } from "../../../entities/study/index.js";
+import { chatCompletion, useReadingPreferences } from "../../../entities/study/index.js";
 
 export const LINE_SCENARIOS = [
   {
@@ -94,6 +94,8 @@ export const LINE_SCENARIOS = [
 ];
 
 export default function LineSimulator({ toast, speak }) {
+  const readingPreferences=useReadingPreferences();
+  const [speechRate,setSpeechRate]=useState(()=>readingPreferences.speechRate);
   const [scenarioIndex, setScenarioIndex] = useState(0);
   const [formality, setFormality] = useState("keigo"); // "keigo", "tameguchi"
   const [messages, setMessages] = useState([]);
@@ -302,6 +304,10 @@ Formate a resposta exatamente assim:
           <span className="truncate">{scenario.culturalNuance}</span>
         </div>
 
+        <details className="mx-4 mt-3 rounded-xl border border-line bg-paper p-3">
+          <summary className="min-h-11 cursor-pointer text-sm font-bold text-ink-strong">Velocidade das frases</summary>
+          <div className="pt-2"><AudioRateControl rate={speechRate} onChange={setSpeechRate} defaultRate={readingPreferences.speechRate}/></div>
+        </details>
         {/* Área de Mensagens (Fundo Suave LINE com maior altura) */}
         <div className="flex-1 p-4 sm:p-6 overflow-y-auto space-y-4 min-h-[min(320px,45dvh)] max-h-[48dvh]">
           {messages.map((m) => (
@@ -334,15 +340,15 @@ Formate a resposta exatamente assim:
                       {speak && (
                         <button
                           type="button"
-                          onClick={() => speak(m.ja)}
-                          className="p-1 rounded-lg text-muted hover:text-ink-strong cursor-pointer"
-                          title="Ouvir áudio"
+                          onClick={() => speak(m.ja,{rate:speechRate})}
+                          className="min-h-11 min-w-11 flex items-center justify-center rounded-lg text-muted hover:text-ink-strong cursor-pointer"
+                          title="Ouvir áudio" aria-label="Ouvir frase em japonês"
                         >
                           <Icon name="sound" />
                         </button>
                       )}
                     </div>
-                    {m.ro && <p className="text-[11px] text-muted mt-0.5">{m.ro}</p>}
+                    {readingPreferences.showRomaji&&m.ro&&<p lang="ja-Latn" className="text-[11px] text-muted mt-0.5">{m.ro}</p>}
                     {m.pt && (
                       <p className="text-[11px] text-muted pt-1 mt-1 border-t border-line">
                         {m.pt}

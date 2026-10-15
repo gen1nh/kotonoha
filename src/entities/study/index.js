@@ -34,3 +34,5 @@ export * from './model/pedagogy/n5DraftItems.js';
 export * from './model/pedagogy/n5Review.js';
 export * from './model/pedagogy/publishedItems.js';
 export * from './model/pedagogy/readiness.js';
+export * from './model/readingPreferences.js';
+

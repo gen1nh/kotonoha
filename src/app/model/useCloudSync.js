@@ -2,9 +2,9 @@ import { useEffect, useRef, useState } from 'react';
 import { supabase } from '../../shared/auth/index.js';
 import { KEY, normalizeState } from '../../entities/study/index.js';
 import { fingerprint, syncDecision } from './syncDecision.js';
+import {saveRecoverySnapshot,RECOVERY_PREFIX} from '../../shared/lib/recoverySnapshots.js';
 
 const META = 'kotonoha.sync.v1';
-export const RECOVERY_PREFIX = 'kotonoha.sync.recovery.';
 const messages = {
   local: 'Somente neste aparelho', loading: 'Verificando conta…', syncing: 'Sincronizando…',
   synced: 'Sincronizado', pending: 'Alterações aguardando envio', offline: 'Sem conexão. Seu estudo continua salvo neste aparelho.',
@@ -61,8 +61,7 @@ export function useCloudSync({ state, setState, blocked }) {
     setLastSync(new Date().toISOString());
   }
   function preserve(local, cloud) {
-    const key = RECOVERY_PREFIX + new Date().toISOString() + '.' + crypto.randomUUID();
-    localStorage.setItem(key, JSON.stringify({ createdAt: new Date().toISOString(), local, cloud: cloud?.payload || null }));
+    saveRecoverySnapshot(local,cloud?.payload||null);
   }
 
   async function sync(choice = null) {
@@ -111,7 +110,7 @@ export function useCloudSync({ state, setState, blocked }) {
       if (!valid()) return;
       setStatus(navigator.onLine ? 'error' : 'offline');
       setError(e.code === 'PGRST205' || e.code === '42P01' || e.code === 'PGRST202'
-        ? 'O banco ainda precisa ser preparado. Execute o script 001_personal_sync.sql no Supabase.'
+        ? 'Não foi possível acessar seu progresso na conta. Seus dados neste aparelho continuam preservados.'
         : e.name === 'QuotaExceededError' ? 'Sem espaço para a cópia de segurança. Exporte seu backup antes de continuar.'
         : 'Não foi possível sincronizar. Seus dados locais foram mantidos. Confira a conexão e tente novamente.');
     } finally { running.current = false; setBusy(false); }

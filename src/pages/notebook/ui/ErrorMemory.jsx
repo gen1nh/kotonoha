@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import Icon from "../../../shared/ui/Icon.jsx";
-import { Button, Card, EmptyState } from "../../../shared/ui/index.jsx";
+import { Button, Card, EmptyState, AudioRateControl } from "../../../shared/ui/index.jsx";
 import { PageHeading } from "../../../shared/ui/index.jsx";
-import { chatCompletion } from "../../../entities/study/index.js";
+import { chatCompletion, useReadingPreferences } from "../../../entities/study/index.js";
 
 export default function ErrorMemory({ state, update, toast, speak, go }) {
+  const readingPreferences=useReadingPreferences();
+  const [speechRate,setSpeechRate]=useState(()=>readingPreferences.speechRate);
   const [filter, setFilter] = useState("all"); // "all", "pending", "resolved"
   const [activeDrill, setActiveDrill] = useState(null);
   const [aiLoading, setAiLoading] = useState(false);
@@ -53,7 +55,7 @@ export default function ErrorMemory({ state, update, toast, speak, go }) {
         item.resolved = !item.resolved;
       }
     });
-    if (toast) toast("Status do erro atualizado no Diário de Bordo.");
+    if (toast) toast("Status atualizado.");
   };
 
   const handlePracticeWithSensei = async (errorItem) => {
@@ -88,9 +90,13 @@ Dê um reforço caloroso e socrático em 3 partes:
 
   return (
     <div className="w-full space-y-6">
+      <details className="rounded-xl border border-line bg-paper p-3">
+        <summary className="min-h-11 cursor-pointer text-sm font-bold text-ink-strong">Velocidade das frases deste caderno</summary>
+        <div className="pt-2"><AudioRateControl rate={speechRate} onChange={setSpeechRate} defaultRate={readingPreferences.speechRate}/></div>
+      </details>
       {/* Topo do Diário de Bordo */}
       <PageHeading
-        title="Diário de Bordo · Memória Persistente de Erros"
+        title="Meus erros"
         description="Registre dificuldades recorrentes e pratique com o tutor virtual opcional, sem perder o histórico de erros."
         icon="brain"
         iconBg="bg-danger-soft"
@@ -251,7 +257,7 @@ Dê um reforço caloroso e socrático em 3 partes:
                     {speak && (
                       <button
                         type="button"
-                        onClick={() => speak(err.correctAnswer)}
+                        onClick={() => speak(err.correctAnswer,{rate:speechRate})}
                         className="p-1 rounded-lg text-primary hover:bg-paper cursor-pointer"
                         title="Ouvir pronúncia nativa"
                       >

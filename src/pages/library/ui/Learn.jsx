@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
+import {useSubpageNavigation} from "../../../shared/lib/useSubpageNavigation.js";
 import Icon from "../../../shared/ui/Icon.jsx";
-import { Card, Button } from "../../../shared/ui/index.jsx";
+import { Card, Button, NavigationTile, AudioRateControl } from "../../../shared/ui/index.jsx";
+import {speakJapanese,useReadingPreferences} from "../../../entities/study/index.js";
 import { PageHeading } from "../../../shared/ui/index.jsx";
 import { HIRAGANA, KATAKANA, VOCAB, GRAMMAR } from "../../../entities/study/index.js";
 import { CURRICULUM, VOCAB_BY_LEVEL } from "../../../entities/study/index.js";
-import { handleTabKeys } from "../../../shared/lib/index.js";
 import WebResources from "./WebResources.jsx";
 import MediaLab from "./MediaLab.jsx";
 import Drawing from "./Drawing.jsx";
@@ -21,12 +22,24 @@ export function Learn({
   changeLevel,
 }) {
   const [tab, setTab] = useState(learnTopic);
+  const readingPreferences=useReadingPreferences();
+  const [speechRate,setSpeechRate]=useState(()=>readingPreferences.speechRate);
+  const playJapanese=text=>speakJapanese(text,toast,{rate:speechRate});
+  const [page,setPage,backCategory]=useSubpageNavigation('learn','menu',['menu','hiragana','katakana','kanji','vocabulary','grammar','web_resources','media_lab']);
+  const showCategories=page==='menu';
   useEffect(() => {
+    if(learnTopic!=='hiragana' && ['katakana','kanji','vocabulary','grammar','web_resources','media_lab'].includes(learnTopic))setPage(learnTopic);
     setTab(learnTopic);
     setCharacter(learnTopic === "katakana" ? "ア" : learnTopic === "kanji" ? N5_KANJI[0].glyph : "あ");
   }, [learnTopic]);
 
-  const [quiz, setQuiz] = useState(false);
+  useEffect(()=>{
+    if(page!=='menu' && page!==tab) {
+      setTab(page);
+      setCharacter(page==='katakana'?'ア':page==='kanji'?N5_KANJI[0].glyph:'あ');
+    }
+  },[page]);
+    const [quiz, setQuiz] = useState(false);
   const [answers, setAnswers] = useState({});
   const [character, setCharacter] = useState(
     learnTopic === "katakana" ? "ア" : learnTopic === "kanji" ? N5_KANJI[0].glyph : "あ",
@@ -55,6 +68,7 @@ export function Learn({
 
   function changeTab(next) {
     setTab(next);
+    setPage(next);
     setQuiz(false);
     setAnswers({});
     setCharacter(next === "katakana" ? "ア" : next === "kanji" ? N5_KANJI[0].glyph : "あ");
@@ -94,6 +108,28 @@ export function Learn({
         iconColor="text-blue"
       />
 
+      {showCategories&&<section className="space-y-3" aria-label="Categorias da Biblioteca">
+        <button type="button" className="min-h-11 text-sm font-bold text-primary-strong" onClick={()=>go("practice")}>← Voltar a Praticar</button>
+        <h2 className="text-base font-bold text-ink-strong">O que você quer consultar?</h2>
+        <div className="grid grid-cols-2 gap-3">
+          {LEARN_TABS.map(item=><NavigationTile key={item.id} symbol={item.glyph} title={item.label}
+            description={item.id==='hiragana'?'Alfabeto básico.':item.id==='katakana'?'Palavras estrangeiras.':item.id==='kanji'?'Caracteres e leituras.':item.id==='vocabulary'?'Palavras do seu nível.':'Estruturas e partículas.'}
+            meta={item.count?item.count+' itens':null} onClick={()=>changeTab(item.id)}/>)}
+        </div>
+        <details className="rounded-2xl border border-line bg-paper p-4">
+          <summary className="min-h-11 cursor-pointer font-bold text-sm text-ink-strong">Materiais complementares</summary>
+          <div className="grid grid-cols-2 gap-3 pt-3">
+            <NavigationTile symbol="本" title="Fontes Web" description="Materiais para consultar." onClick={()=>changeTab('web_resources')}/>
+            <NavigationTile symbol="音" title="Mídia" description="Explorar japonês na cultura." onClick={()=>changeTab('media_lab')}/>
+          </div>
+        </details>
+      </section>}
+      {!showCategories&&<>
+        <button type="button" className="min-h-11 font-bold text-sm text-primary-strong" onClick={backCategory}>← Todas as categorias</button>
+        <details className="rounded-xl border border-line bg-paper p-3">
+          <summary className="min-h-11 cursor-pointer text-sm font-bold text-ink-strong">Ajustar áudio desta consulta</summary>
+          <div className="pt-2"><AudioRateControl rate={speechRate} onChange={setSpeechRate} defaultRate={readingPreferences.speechRate}/></div>
+        </details>
       <div className="rounded-2xl border border-line bg-paper p-4 space-y-2" aria-label="Orientação de estudo">
         <p className="font-bold text-ink-strong">Estude sem se perder</p>
         <p className="text-sm text-muted">Leia os exemplos, ouça a pronúncia e pratique. Para avançar, retorne à lição guiada na Trilha. As fontes e mídias abaixo são materiais opcionais.</p>
@@ -111,48 +147,7 @@ export function Learn({
           <button type="button" className="rounded-lg border border-line px-3 py-2 text-sm text-primary" onClick={() => changeTab('media_lab')}>Mídia & Animes</button>
         </div>
       </details>
-      {/* Abas da Biblioteca */}
-      <div
-        className="flex flex-wrap gap-2 p-1.5 bg-paper rounded-2xl border-2 border-b-4 border-line"
-        role="tablist"
-        aria-label="Conteúdos da biblioteca"
-        onKeyDown={handleTabKeys}
-      >
-        {visibleTabs.map((item) => {
-          const active = tab === item.id;
-          return (
-            <button
-              key={item.id}
-              role="tab"
-              id={`tab-${item.id}`}
-              aria-controls="learn-panel"
-              tabIndex={active ? 0 : -1}
-              aria-selected={active}
-              onClick={() => changeTab(item.id)}
-              className={`flex items-center gap-2 px-3.5 py-2 rounded-xl type-caption transition-all cursor-pointer select-none active:translate-y-px ${
-                active
-                  ? "bg-accent-soft text-primary-strong border-2 border-b-4 border-primary border-b-primary-dark shadow-xs"
-                  : "text-muted hover:text-ink hover:bg-raised border-2 border-transparent"
-              }`}
-            >
-              <span
-                className={`font-jp text-base ${item.color || "text-primary"}`}
-                aria-hidden="true"
-              >
-                {item.glyph}
-              </span>
-              <span>{item.label}</span>
-              {item.count && (
-                <span className="text-[11px] px-1.5 py-0.5 rounded-full bg-raised border border-line text-muted">
-                  {item.count}
-                </span>
-              )}
-            </button>
-          );
-        })}
-      </div>
-
-      <div id="learn-panel" role="tabpanel" aria-label="Conteúdo selecionado da biblioteca">
+      <div id="learn-panel" aria-label="Conteúdo selecionado da biblioteca">
         {tab === "web_resources" ? (
           <WebResources state={state} update={update} toast={toast} />
         ) : tab === "media_lab" ? (
@@ -195,7 +190,7 @@ export function Learn({
                       aria-label={`${ch}, ${ro}. Ouvir e praticar`}
                       onClick={() => {
                         setCharacter(ch);
-                        speak(ch);
+                        playJapanese(ch);
                       }}
                       className={`relative flex flex-col items-center justify-center p-3 rounded-2xl border-2 border-b-4 transition-all cursor-pointer active:translate-y-px ${
                         isSelected
@@ -248,7 +243,7 @@ export function Learn({
                 <Button
                   variant="secondary"
                   size="sm"
-                  onClick={() => speak(character)}
+                  onClick={() => playJapanese(character)}
                 >
                   <Icon name="sound" /> Ouvir som ({character})
                 </Button>
@@ -258,7 +253,7 @@ export function Learn({
                 random={() => {
                   const ch = array[Math.floor(Math.random() * array.length)][0];
                   setCharacter(ch);
-                  speak(ch);
+                  playJapanese(ch);
                 }}
                 save={() => {
                   update((s) => {
@@ -327,7 +322,7 @@ export function Learn({
                     <span className="text-sm font-semibold text-ink">
                       {kana}{" "}
                       <span className="text-xs text-muted font-normal">
-                        ({romaji})
+                        {readingPreferences.showRomaji?`(${romaji})`:null}
                       </span>
                     </span>
                     <p className="text-xs text-muted truncate">{meaning}</p>
@@ -335,7 +330,7 @@ export function Learn({
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => speak(kana)}
+                    onClick={() => playJapanese(kana)}
                     title={`Ouvir ${kana}`}
                   >
                     <Icon name="sound" />
@@ -418,7 +413,7 @@ export function Learn({
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => speak(g.example)}
+                        onClick={() => playJapanese(g.example)}
                         title="Ouvir exemplo"
                       >
                         <Icon name="sound" />
@@ -465,6 +460,7 @@ export function Learn({
           </div>
         )}
       </div>
+      </>}
     </div>
   );
 }

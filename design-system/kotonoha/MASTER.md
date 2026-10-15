@@ -1,6 +1,6 @@
 # Kotonoha — Sistema de design vigente
 
-**Versão de referência:** refatoração estrutural de 13/10/2026. **Este arquivo substitui as diretrizes antigas** de seis laboratórios na Home e tipografia Inter. Antes de criar componentes, consulte este arquivo, `docs/UX_ARCHITECTURE.md` e `src/index.css`.
+**Versão de referência:** refatoração estrutural de 13/10/2026. **Este arquivo substitui as diretrizes antigas** de seis laboratórios na Home e tipografia Inter. Antes de criar componentes, consulte este arquivo, `docs/UX_ARCHITECTURE.md` e `src/app/index.css`.
 
 ## Princípios
 
@@ -13,13 +13,13 @@
 ## Tipografia
 
 - **UI em português:** `Nunito` (700/800/900 para títulos e ações; 400/600/700 para textos). Aplica-se em body, campos, botões e diálogos.
-- **Kana e kanji:** `M PLUS Rounded 1c` por `[lang="ja"]`, com fallback `Hiragino Maru Gothic ProN`/Meiryo.
-- Os estilos `.type-display`, `.type-h1`, `.type-h2`, `.type-h3`, `.type-body`, `.type-body-sm`, `.type-caption`, `.type-button` estão definidos em `src/index.css`.
+- **Kana e kanji:** `Zen Maru Gothic` por `.font-jp` e `[lang="ja"]`, com fallback `Hiragino Maru Gothic ProN`/Meiryo.
+- Os estilos `.type-display`, `.type-h1`, `.type-h2`, `.type-h3`, `.type-body`, `.type-body-sm`, `.type-caption`, `.type-button` estão definidos em `src/app/index.css`.
 - A fonte remota precisa de conexão na primeira carga. O aplicativo dispõe de alternativas locais legíveis durante o uso offline; **não afirmar que arquivos das fontes estão embutidos**.
 
 ## Cores semânticas
 
-Os valores implementados estão em `src/index.css` (`@theme`); não introduzir hexadecimais novos em componentes. A marca usa **`--color-brand: #58cc02`** como realce. Para texto normal e botões preenchidos, use a variante de maior contraste: **`--color-primary: #2e7c26`**, `--color-primary-strong: #276f22`, `--color-primary-dark: #24641e`.
+Os valores implementados estão em `src/app/index.css` (`@theme`); não introduzir hexadecimais novos em componentes. A marca usa **`--color-brand: #58cc02`** como realce. Para texto normal e botões preenchidos, use a variante de maior contraste: **`--color-primary: #2e7c26`**, `--color-primary-strong: #276f22`, `--color-primary-dark: #24641e`.
 
 | Categoria | Tokens | Aplicação |
 | --- | --- | --- |
@@ -40,8 +40,8 @@ Os valores implementados estão em `src/index.css` (`@theme`); não introduzir h
 
 ## Componentes e estados
 
-- Reutilizar `src/components/ui/index.jsx`: `Button`, `Card`, `Badge`, controles, estados vazios. Botões primários têm borda inferior mais espessa e reação visual ao toque; links textuais continuam links.
-- Ícones vetoriais centralizados em `src/components/Icon.jsx`. Predomínio de ícones preenchidos; o cadeado pode usar contorno por clareza. Tamanho e peso consistentes entre telas da mesma categoria.
+- Reutilizar `src/shared/ui/index.jsx`: `Button`, `Card`, `Badge`, controles, estados vazios. Botões primários têm borda inferior mais espessa e reação visual ao toque; links textuais continuam links.
+- Ícones vetoriais centralizados em `src/shared/ui/Icon.jsx`. Predomínio de ícones preenchidos; o cadeado pode usar contorno por clareza. Tamanho e peso consistentes entre telas da mesma categoria.
 - Estados obrigatórios: disponível, bloqueado com pré-requisito, em andamento, pronto para checkpoint, aprovado, revisão vencida, offline, erro e salvamento falho.
 - Não usar indicadores interativos sobre uma superfície de desenho. Controles em uma região separada do canvas.
 - Não criar sliders, overlays e abas customizados quando os elementos HTML semânticos resolvem a mesma tarefa. Todas as abas precisam de `aria-selected`, `aria-controls`, foco e painel correspondente.
@@ -71,9 +71,9 @@ Os valores implementados estão em `src/index.css` (`@theme`); não introduzir h
 1. `npm ci`, `npm test`, `npm run build` e `npm run test:e2e` verdes em ambiente com dependências e browsers.
 2. Verificações mobile em 320, 375, 390, 430px, landscape e teclado virtual.
 3. Teste real de Safari: fala, gravação, saída de background, canvas, atualização PWA e uso offline.
-4. Backups anteriores importam sem perda de cartões, notas e checkpoints; não há sincronização em nuvem nesta versão.
+4. Backups anteriores importam sem perda de cartões, notas e checkpoints; conta Google e sincronização Supabase são opcionais; dados locais e cópias de recuperação têm regras distintas.
 5. Qualquer alteração de progresso acompanhada de teste de regressão e documentação.
 
 ## Preferências — conta e áudio
 
-Conta em painel compacto acima dos ajustes. Meta, tema e áudio ficam visíveis; importação, IA, ajuda e reinício são expansíveis. Exportar backup continua acessível diretamente. Não repetir estatísticas da tela Progresso. Efeitos sonoros discretos, ajustáveis por aparelho, nunca substituem feedback textual nem interrompem a pronúncia.
+Preferências usam menu de mini-cards que abre páginas próprias: Estudo, Áudio e leitura, Aparência, Conta e backups, Mais opções. Importação, IA, ajuda e reinício mantêm confirmação e divulgação progressiva. Exportar backup continua acessível diretamente. Não repetir estatísticas da tela Progresso. Efeitos sonoros discretos, ajustáveis por aparelho, nunca substituem feedback textual nem interrompem a pronúncia.

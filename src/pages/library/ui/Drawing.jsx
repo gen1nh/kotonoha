@@ -229,7 +229,7 @@ export default function Drawing({ character, random, save }) {
       </div>
 
       {/* 2. Banner de Orientação: Onde Começar a Desenhar Primeiro */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl border-2 border-flame/40 bg-flame-soft/40 text-ink">
+      <div className="hidden sm:flex sm:items-center justify-between gap-3 p-4 rounded-2xl border-2 border-flame/40 bg-flame-soft/40 text-ink">
         <div className="flex items-center gap-2.5 min-w-0">
           <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-flame text-white text-xs font-black">
             {currentStepInfo?.n || 1}
@@ -275,6 +275,10 @@ export default function Drawing({ character, random, save }) {
         </div>
       </div>
 
+      <div className="sm:hidden rounded-xl border border-line bg-paper p-3 text-sm text-ink-strong flex items-start gap-2" role="note">
+        <span aria-hidden="true" className="font-bold text-primary-strong">{activeStep+1}/{totalStrokes||1}</span>
+        <span>{currentStepInfo?.hint || 'Siga o guia de traços e pratique no quadro abaixo.'}</span>
+      </div>
       {/* 3. Área Central da Lousa (Canvas Amplo e Guiado) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start w-full min-w-0">
         {/* Painel do Canvas de Caligrafia */}

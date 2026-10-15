@@ -34,8 +34,12 @@ test('microlição → cartões → checkpoint → próxima microlição, sem ab
  }
  await expect(page.getByRole('button',{name:/Fazer checkpoint/})).toBeVisible();
  await page.getByRole('button',{name:/Fazer checkpoint/}).click();
- for(const [index,q] of questions.entries())await page.locator('fieldset').nth(index).getByRole('radio',{name:q.answer,exact:true}).check();
- await page.getByRole('button',{name:'Corrigir checkpoint'}).click();
+ for(const [index,q] of questions.entries()){
+  await expect(page.locator('fieldset')).toHaveCount(1);
+  await page.locator('fieldset').first().getByRole('radio',{name:q.answer,exact:true}).check();
+  if(index<questions.length-1)await page.getByRole('button',{name:'Próxima questão →'}).click();
+ }
+ await page.getByRole('button',{name:'Finalizar e conferir respostas'}).click();
  await expect(page.getByText('Checkpoint aprovado!')).toBeVisible();
  await page.getByRole('button',{name:/Próxima microlição/}).click();
  await expect(page.getByRole('heading',{name:N5_UNITS[1].title})).toBeVisible();
@@ -48,8 +52,11 @@ test('checkpoint retoma respostas após recarga e aprovação entra na meta diá
  await page.locator('fieldset').first().getByRole('radio',{name:question.answer,exact:true}).check();
  await page.reload();await expect(page.locator('fieldset').first().getByRole('radio',{name:question.answer,exact:true})).toBeChecked();
  const qs=checkpointQuestions(state,first.id);
- for(const [i,q] of qs.entries())await page.locator('fieldset').nth(i).getByRole('radio',{name:q.answer,exact:true}).check();
- await page.getByRole('button',{name:'Corrigir checkpoint'}).click();
+ for(const [i,q] of qs.entries()){
+  await page.locator('fieldset').first().getByRole('radio',{name:q.answer,exact:true}).check();
+  if(i<qs.length-1)await page.getByRole('button',{name:'Próxima questão →'}).click();
+ }
+ await page.getByRole('button',{name:'Finalizar e conferir respostas'}).click();
  await expect(page.getByText('Checkpoint aprovado!',{exact:true})).toBeVisible();
  // Persistence is debounced; verify the saved activity after the write completes.
  await expect.poll(()=>page.evaluate(day=>JSON.parse(localStorage.getItem('kotonoha.v1')).activityLog[day]||[],todayKey())).toContain(`checkpoint:${first.id}`);
@@ -103,21 +110,25 @@ test('filtro N1 não desbloqueia laboratórios nem URLs',async({page})=>{
  const state=seeded();state.selectedLevel='N1';await enter(page,state);
  await page.goto('/?view=line');await expect(page.getByRole('heading',{name:'Praticar'})).toBeVisible();
  await page.getByText('Laboratórios opcionais').click();
- await expect(page.getByRole('button',{name:'Bloqueado'}).first()).toBeDisabled();
+ await expect(page.getByRole('button',{name:'Conversação'})).toBeDisabled();
+ await expect(page.getByRole('button',{name:'Pronúncia'})).toBeDisabled();
 });
 
 test('tema escuro, configurações e backup',async({page})=>{
  await enter(page);await page.getByRole('button',{name:'Abrir preferências'}).click();
+ await page.getByRole('button',{name:'Aparência'}).click();
  await page.getByRole('combobox',{name:'Tema visual'}).selectOption('dark');
  await expect(page.locator('html')).toHaveAttribute('data-theme','dark');
+ await page.getByRole('button',{name:/Voltar às preferências/}).click();
+ await page.getByRole('button',{name:'Conta e backups'}).click();
  const download=page.waitForEvent('download');await page.getByRole('button',{name:'Exportar backup JSON'}).click();
  expect((await download).suggestedFilename()).toContain('kotonoha-backup');
 });
 
 test('caligrafia recebe toque no canvas sem interceptação',async({page})=>{
  await enter(page);await tab(page,'Praticar').click();
- await page.getByText('Consultar e organizar',{exact:true}).click();
- await page.getByRole('button',{name:'Abrir ferramenta →'}).first().click();
+ await page.getByRole('button',{name:'Biblioteca e escrita'}).click();
+ await page.getByRole('button',{name:'Hiragana'}).click();
  const canvas=page.locator('canvas[data-drawing-surface]').first();await canvas.scrollIntoViewIfNeeded();
  const r=await canvas.boundingBox();expect(r).not.toBeNull();
  const onTop=await canvas.evaluate(c=>document.elementFromPoint(c.getBoundingClientRect().left+c.clientWidth/2,c.getBoundingClientRect().top+c.clientHeight/2)===c);

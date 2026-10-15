@@ -1,11 +1,13 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
+import {useSubpageNavigation} from "../../../shared/lib/useSubpageNavigation.js";
 import { SoundSettings } from './SoundSettings.jsx';
+import { useReadingPreferences, setReadingPreferences, japaneseVoices, warmJapaneseVoices } from '../../../entities/study/index.js';
 import { AccountSync } from './AccountSync.jsx';
-import { Card, Button } from "../../../shared/ui/index.jsx";
+import { Card, Button, NavigationTile } from "../../../shared/ui/index.jsx";
 import { PageHeading } from "../../../shared/ui/index.jsx";
 import { todayKey, initialState, normalizeState } from "../../../entities/study/index.js";
 import { dailyGoal, GOAL_OPTIONS } from "../../../entities/study/index.js";
-export function Settings({ state, setState, toast, update, changeLevel, theme, setTheme, install, installPrompt, onOpenOnboarding, cloud }) {
+export function Settings({ state, setState, toast, update, changeLevel, go, theme, setTheme, install, installPrompt, onOpenOnboarding, cloud }) {
   const [key, setKey] = useState(
     () => { try{return sessionStorage.getItem("kotonoha.groqKey") || "";}catch{return "";} },
   );
@@ -14,7 +16,11 @@ export function Settings({ state, setState, toast, update, changeLevel, theme, s
   );
   const [models, setModels] = useState(() => (model ? [model] : []));
   const [busy, setBusy] = useState(false);
+  const readingPreferences = useReadingPreferences();
   const importInput = useRef(null);
+  const [section,setSection,backSection]=useSubpageNavigation("settings","menu",["menu","study","audio","appearance","account","advanced"]);
+  const [voices,setVoices]=useState(()=>japaneseVoices());
+  useEffect(()=>warmJapaneseVoices(setVoices),[]);
 
   async function loadModels() {
     if (!key.trim()) {
@@ -82,21 +88,64 @@ export function Settings({ state, setState, toast, update, changeLevel, theme, s
 
   return (
     <div className="space-y-6 w-full min-w-0">
-      <PageHeading title="Preferências" description="Seu ritmo, sua conta e os ajustes do aplicativo." icon="settings" iconBg="bg-raised" iconColor="text-ink-strong" />
-      <AccountSync cloud={cloud} state={state} />
+      {section==='menu'&&<PageHeading title="Preferências" description="Seu ritmo, sua conta e os ajustes do aplicativo." icon="settings" iconBg="bg-raised" iconColor="text-ink-strong" />}
+      {section==='menu'&&<button type="button" className="min-h-11 text-sm font-bold text-primary-strong" onClick={()=>go("home")}>← Voltar ao início</button>}
+      {section==='menu'&&cloud?.user&&['choose','conflict','receive','pending','error'].includes(cloud.status)&&
+        <div role="status" className="rounded-xl border border-line bg-accent-soft p-4 space-y-2">
+          <p className="text-sm font-bold text-ink-strong">Confira seu progresso na conta</p>
+          <p className="text-xs text-ink">Acesse Conta e backups para verificar a sincronização antes de continuar em outro aparelho.</p>
+          <Button variant="primary" className="w-full" onClick={()=>setSection('account')}>Resolver sincronização →</Button>
+        </div>}
+      {section==='menu'?<nav aria-label="Seções de preferências" className="grid grid-cols-2 gap-3">
+        <NavigationTile title="Estudo" description="Sua meta diária." icon="learn" onClick={()=>setSection('study')}/>
+        <NavigationTile title="Áudio e leitura" description="Pronúncia, voz, velocidade e romaji." icon="sound" onClick={()=>setSection('audio')}/>
+        <NavigationTile title="Aparência" description="Tema claro ou escuro." icon="settings" onClick={()=>setSection('appearance')}/>
+        <NavigationTile title="Conta e backups" description="Login e cópias de segurança." icon="academic" onClick={()=>setSection('account')}/>
+        <NavigationTile title="Mais opções" description="Assistente e gerenciamento." icon="puzzle" onClick={()=>setSection('advanced')}/>
+      </nav>:<div className="space-y-2">
+        <button type="button" className="min-h-11 text-sm font-bold text-primary-strong" onClick={backSection}>← Voltar às preferências</button>
+        <h1 className="text-xl font-black text-ink-strong">{({study:'Estudo',audio:'Áudio e leitura',appearance:'Aparência',account:'Conta e backups',advanced:'Mais opções'})[section]}</h1>
+      </div>}
+      {section==="account"&&<AccountSync cloud={cloud} state={state} />}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 items-start">
-        <Card className="space-y-5">
+        {section==="study"&&<Card className="space-y-5">
           <div><h2 className="text-lg font-bold text-ink-strong">Seu jeito de estudar</h2><p className="text-sm text-muted mt-1">Ajustes salvos automaticamente.</p></div>
           <label className="block text-sm font-bold text-ink-strong">Meta diária de atividades
             <select aria-label="Meta diária de atividades" className="mt-2 min-h-12 w-full rounded-xl border border-line bg-paper text-ink-strong px-3" value={dailyGoal(state)} onChange={e=>update(s=>{s.dailyActivityGoal=Number(e.target.value);})}>{GOAL_OPTIONS.map(n=><option key={n} value={n}>{n} {n===1?'atividade':'atividades'} por dia</option>)}</select>
           </label>
+          <p className="text-xs text-muted">Uma atividade é uma microlição concluída, o desafio do dia, um checkpoint aprovado ou uma sessão de revisão. Repetir a mesma etapa não aumenta sua meta.</p>
+        </Card>}
+        {section==='appearance'&&<Card className="space-y-4">
           <label className="block text-sm font-bold text-ink-strong">Tema visual
             <select aria-label="Tema visual" className="mt-2 min-h-12 w-full rounded-xl border border-line bg-paper text-ink-strong px-3" value={theme} onChange={e=>setTheme(e.target.value)}><option value="system">Usar tema do dispositivo</option><option value="light">Claro</option><option value="dark">Escuro</option></select>
           </label>
+        </Card>}
+        {section==='audio'&&<Card className="space-y-5">
+          <div className="border-t border-line pt-4 space-y-3">
+            <h3 className="text-base font-bold text-ink-strong">Pronúncia japonesa</h3>
+            <label className="flex items-center justify-between gap-3 min-h-11">
+              <span><span className="block font-bold text-sm text-ink-strong">Mostrar romaji</span><span className="block text-xs text-muted">Aparece somente onde há leitura revisada. Em questões avaliativas, apenas depois de responder.</span></span>
+              <input type="checkbox" role="switch" aria-label="Mostrar romaji" checked={readingPreferences.showRomaji} onChange={e=>{if(!setReadingPreferences({showRomaji:e.target.checked}))toast?.('A opção foi aplicada nesta sessão, mas não pôde ser salva.');}} className="h-6 w-6 accent-primary" />
+            </label>
+            <label className="block text-sm font-bold text-ink-strong">Velocidade padrão do japonês
+              <select aria-label="Velocidade padrão do japonês" value={readingPreferences.speechRate} onChange={e=>{if(!setReadingPreferences({speechRate:Number(e.target.value)}))toast?.('A velocidade não pôde ser salva.');}} className="mt-2 min-h-11 w-full rounded-xl border border-line bg-paper text-ink-strong px-3">
+                <option value={0.5}>0,5× · Bem devagar</option><option value={0.75}>0,75× · Devagar</option><option value={0.85}>0,85× · Padrão</option><option value={1}>1× · Normal</option><option value={1.15}>1,15× · Rápido</option>
+              </select>
+            </label>
+            <label className="block text-sm font-bold text-ink-strong">Voz japonesa padrão
+              <select aria-label="Voz japonesa padrão" value={readingPreferences.japaneseVoiceURI}
+                onChange={e=>setReadingPreferences({japaneseVoiceURI:e.target.value})}
+                className="mt-2 min-h-11 w-full rounded-xl border border-line bg-paper px-3 text-ink-strong">
+                <option value="">Automática (voz japonesa do dispositivo)</option>
+                {voices.map(voice=><option key={voice.voiceURI} value={voice.voiceURI}>{voice.name} ({voice.lang})</option>)}
+              </select>
+            </label>
+            <p className="text-xs text-muted">Estas opções ficam salvas neste aparelho. Cada atividade com áudio pode usar outra velocidade sem alterar o padrão.</p>
+          </div>
           <SoundSettings toast={toast} />
-        </Card>
+        </Card>}
         <div className="space-y-4">
-          <Card className="space-y-4">
+          {section==="account"&&<Card className="space-y-4">
             <h2 className="text-lg font-bold text-ink-strong">Seus dados</h2>
             <p className="text-sm text-muted">Guarde uma cópia independente do seu progresso.</p>
             <Button variant="secondary" onClick={exportBackup}>Exportar backup JSON</Button>
@@ -106,13 +155,13 @@ export function Settings({ state, setState, toast, update, changeLevel, theme, s
               <Button variant="secondary" onClick={()=>importInput.current?.click()}>Escolher arquivo de backup</Button>
             </details>
             <input ref={importInput} type="file" accept="application/json" hidden onChange={importBackup} />
-          </Card>
-          <details className="rounded-2xl border-2 border-line bg-paper p-5 sm:p-6">
+          </Card>}
+          {section==="advanced"&&<details className="rounded-2xl border-2 border-line bg-paper p-5 sm:p-6">
             <summary className="cursor-pointer min-h-11 text-ink-strong font-bold">Assistente de IA <span className="font-normal text-sm text-muted">· opcional</span></summary>
             <div className="pt-4">      <div className="space-y-4">
-        <h3 className="text-lg font-bold text-ink">
+        <h2 className="text-lg font-bold text-ink">
           Conectar assistente de IA
-        </h3>
+        </h2>
         <p className="text-xs text-muted leading-relaxed">
           A prática guiada funciona sem IA. Para respostas geradas, use a Groq
           ou o serviço local configurado no computador. Esses recursos dependem
@@ -183,15 +232,15 @@ export function Settings({ state, setState, toast, update, changeLevel, theme, s
       </div>
 
 </div>
-          </details>
-          <details className="rounded-2xl border-2 border-line bg-paper p-5 sm:p-6">
+          </details>}
+          {section==="advanced"&&<details className="rounded-2xl border-2 border-line bg-paper p-5 sm:p-6">
             <summary className="cursor-pointer min-h-11 text-ink-strong font-bold">Ajuda e gerenciamento</summary>
             <div className="pt-4 space-y-5">
               <div className="flex flex-wrap gap-3">{onOpenOnboarding&&<Button variant="secondary" onClick={onOpenOnboarding}>Ver orientação</Button>}{installPrompt&&<Button variant="secondary" onClick={install}>Instalar aplicativo neste dispositivo</Button>}</div>
               <details className="border-t border-line pt-3"><summary className="cursor-pointer min-h-11 text-sm font-bold text-danger">Reiniciar progresso</summary><div className="pt-3">      <div className="space-y-4">
-        <h3 className="text-lg font-bold text-danger">
+        <h2 className="text-lg font-bold text-danger">
           Recomeçar Progresso do Zero
-        </h3>
+        </h2>
         <p className="text-xs text-muted">
           Apaga todo o histórico local, cartões estudados e ofensiva deste
           navegador. Essa ação não pode ser desfeita.
@@ -217,7 +266,7 @@ export function Settings({ state, setState, toast, update, changeLevel, theme, s
         </div>
       </div></div></details>
             </div>
-          </details>
+          </details>}
         </div>
       </div>
     </div>

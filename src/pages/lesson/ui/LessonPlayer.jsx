@@ -1,7 +1,8 @@
 import { playSound } from '../../../shared/audio/index.js';
 import React,{useState,useEffect,useRef} from 'react';
 import Icon from '../../../shared/ui/Icon.jsx';
-import {Button} from '../../../shared/ui/index.jsx';
+import {Button,AudioRateControl} from '../../../shared/ui/index.jsx';
+import {useReadingPreferences} from '../../../entities/study/index.js';
 import {guidedLesson,guidedLessonProgress,guidedSamples,advancedLessonScore} from '../../../entities/study/index.js';
 import {checkpointPassed} from '../../../entities/study/index.js';
 import {unitById,unitPracticed} from '../../../entities/study/index.js';
@@ -14,12 +15,16 @@ export default function LessonPlayer({state,level='N5',topic,update,go,studyUnit
  const unit=unitById(topic);
  const lesson=guidedLesson(state,topic,level);
  const [result,setResult]=useState(null);
+ const readingPreferences=useReadingPreferences();
+ const [speechRate,setSpeechRate]=useState(()=>readingPreferences.speechRate);
+ const playJapanese=phrase=>speak(phrase,{rate:speechRate});
  const [revealed,setRevealed]=useState({});
  const [phase,setPhase]=useState('learn');
  const [exampleIndex,setExampleIndex]=useState(0);
  const stageHeading=useRef(null);
  useEffect(()=>{setRevealed({});setPhase('learn');setExampleIndex(0);setResult(null);},[topic]);
  useEffect(()=>{stageHeading.current?.focus();},[phase]);
+
  if(!lesson)return <p role="alert">Lição indisponível. <button type="button" onClick={()=>go('path')}>Voltar à Trilha</button></p>;
  const draftKey=`lesson:${topic}`;
  const answers=state.drafts?.[draftKey]?.answers||{};
@@ -50,14 +55,18 @@ export default function LessonPlayer({state,level='N5',topic,update,go,studyUnit
     <p className="text-xs font-black text-primary-strong">MICROLIÇÃO · N5 · {listening?'ESCUTA':'LEITURA'}</p>
     <h1 className="text-2xl font-black text-ink-strong">{unit.title}</h1>
     <p className="text-sm text-muted">{unit.detail}</p>
-    {listening&&<p className="text-xs text-muted">Voz sintética do navegador: adequada para prática, não equivalente à prova oficial JLPT. Se a voz não funcionar, revele a transcrição e use como leitura.</p>}
+    {listening&&<details className="rounded-xl border border-line bg-paper p-3 text-xs text-muted">
+      <summary className="cursor-pointer min-h-10 content-center font-bold">Sobre e velocidade desta escuta</summary>
+      <div className="pt-2"><AudioRateControl rate={speechRate} onChange={setSpeechRate} defaultRate={readingPreferences.speechRate}/></div>
+      <p className="pt-2">A voz vem do seu dispositivo e pode variar. Se não funcionar, revele a transcrição e continue como leitura. Esta prática não substitui uma prova oficial.</p>
+    </details>}
    </header>
    <p className="text-sm text-muted">{listening?'Leia a situação, ouça e tente responder mentalmente à pergunta. Repita o áudio quando precisar; a transcrição serve de apoio.':'Leia a pergunta e procure a informação no texto. Tente responder mentalmente antes de passar ao próximo exemplo.'} Ao final, o checkpoint verifica sua compreensão.</p>
    {unit.items.slice(exampleIndex,exampleIndex+1).map((item)=><article key={item.id} className="rounded-2xl border border-line bg-paper p-4 space-y-3">
      <p role="status" className="text-xs font-black text-primary-strong">EXEMPLO {exampleIndex+1} DE {unit.items.length}</p>
      <p className="text-sm font-bold text-ink-strong">{listening?item.context:item.title}</p>
      {listening?<>
-       <Button variant="secondary" onClick={()=>speak(item.spokenText)}>▶ Ouvir japonês</Button>
+       <Button variant="secondary" onClick={()=>playJapanese(item.spokenText)}>▶ Ouvir japonês</Button>
        <button type="button" className="block min-h-11 text-xs text-primary-strong font-bold underline" onClick={()=>setRevealed(prev=>({...prev,[item.id]:!prev[item.id]}))}>{revealed[item.id]?'Esconder':'Revelar'} transcrição</button>
        {revealed[item.id]&&<p lang="ja" className="font-jp text-xl rounded-xl bg-raised p-3">{item.spokenText}</p>}
      </>:<p lang="ja" className="font-jp text-xl leading-relaxed rounded-xl bg-raised p-4">{item.text}</p>}
@@ -85,7 +94,7 @@ export default function LessonPlayer({state,level='N5',topic,update,go,studyUnit
   </header>
   {level!=='N5'?<section className="rounded-3xl border border-line bg-paper p-5 space-y-4">
    <h2 className="font-black text-ink-strong">Leia e responda</h2><p className="text-sm text-ink">{lesson.explanation}</p>
-   {lesson.example&&<div className="rounded-2xl bg-raised p-4"><p className="font-jp text-xl text-ink-strong" lang="ja">{lesson.example}</p><p className="text-sm text-muted">{lesson.translation}</p><button className="min-h-11 text-primary-strong font-bold" type="button" onClick={()=>speak(lesson.example)}>Ouvir exemplo <Icon name="sound"/></button></div>}
+   {lesson.example&&<div className="rounded-2xl bg-raised p-4"><p className="font-jp text-xl text-ink-strong" lang="ja">{lesson.example}</p><p className="text-sm text-muted">{lesson.translation}</p><button className="min-h-11 text-primary-strong font-bold" type="button" onClick={()=>playJapanese(lesson.example)}>Ouvir exemplo <Icon name="sound"/></button></div>}
    <p className="text-xs text-muted">Conteúdo autoral introdutório. Não cobre integralmente o exame JLPT.</p>
    {lesson.questions.map((q,i)=><fieldset key={q.id} className="rounded-2xl border border-line p-3 space-y-2" disabled={result!==null||Boolean(state.lessons?.[topic])}><legend className="font-bold text-ink-strong">{i+1}. {q.prompt}</legend>{q.sentence&&<p lang="ja" className="font-jp">{q.sentence}</p>}{q.choices.map((c,j)=><label key={j} className="min-h-12 flex items-center gap-3 rounded-xl border border-line p-2"><input type="radio" name={`advanced-${q.id}`} checked={answers[q.id]===j} onChange={()=>updateAnswer(q.id,j)}/>{c}</label>)}{result!==null&&<p className="text-xs text-muted">{q.explanation}</p>}</fieldset>)}
    {result!==null&&<p role="status" className="font-bold">{result}% · {result>=80?'Aprovada':'Revise os exemplos e tente novamente'}</p>}
@@ -96,8 +105,8 @@ export default function LessonPlayer({state,level='N5',topic,update,go,studyUnit
    {phase==='learn'&&<section className="rounded-3xl border border-line bg-paper p-4 sm:p-5 space-y-4">
     <h2 ref={stageHeading} tabIndex={-1} className="text-lg font-black text-ink-strong">{quiz?'1. Entenda a regra':unit.kind==='kanji'?'1. Reconheça o kanji na palavra':'1. Conheça o conteúdo'}</h2>
     <p className="text-sm text-muted">{quiz?'Leia a explicação e compare a frase com a tradução. Depois você vai identificar o significado do exemplo.':unit.kind==='kana'?'Observe cada sinal e sua leitura. Toque para ouvir e tente repetir. Nesta etapa, consulte as respostas à vontade.':'Leia a palavra, sua leitura e o significado. Toque para ouvir. Depois você vai tentar lembrar sem consultar a resposta.'}</p>
-    {quiz?<div className="rounded-2xl bg-raised p-4 space-y-3"><h3 className="font-bold text-ink-strong">{g.title}</h3><p className="text-sm text-ink">{g.text}</p><p className="font-jp text-2xl" lang="ja">{g.example}</p><p className="text-sm text-muted">{g.meaning}</p><Button variant="secondary" onClick={()=>speak(g.example)}>Ouvir frase <Icon name="sound"/></Button></div>:
-    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">{samples.map(sample=><button type="button" key={sample.glyph} onClick={()=>speak(sample.spoken||sample.kana||sample.glyph)} className="min-h-32 rounded-2xl border-2 border-line bg-surface p-3 flex flex-col items-center justify-center gap-1 text-center focus-visible:outline-2 focus-visible:outline-primary"><span className="font-jp text-3xl font-black" lang="ja">{sample.glyph}</span><span className="text-sm font-bold">{sample.reading}</span><span className="text-xs text-muted">{sample.meaning}</span>{sample.example&&<span className="text-xs font-jp text-muted">{sample.example} · {sample.exampleReading}</span>}<span className="text-xs text-primary-strong">Ouvir <Icon name="sound"/></span></button>)}</div>}
+    {quiz?<div className="rounded-2xl bg-raised p-4 space-y-3"><h3 className="font-bold text-ink-strong">{g.title}</h3><p className="text-sm text-ink">{g.text}</p><p className="font-jp text-2xl" lang="ja">{g.example}</p><p className="text-sm text-muted">{g.meaning}</p><Button variant="secondary" onClick={()=>playJapanese(g.example)}>Ouvir frase <Icon name="sound"/></Button></div>:
+    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">{samples.map(sample=><button type="button" key={sample.glyph} onClick={()=>playJapanese(sample.spoken||sample.kana||sample.glyph)} className="min-h-32 rounded-2xl border-2 border-line bg-surface p-3 flex flex-col items-center justify-center gap-1 text-center focus-visible:outline-2 focus-visible:outline-primary"><span className="font-jp text-3xl font-black" lang="ja">{sample.glyph}</span><span className="text-sm font-bold">{sample.reading}</span><span className="text-xs text-muted">{sample.meaning}</span>{sample.example&&<span className="text-xs font-jp text-muted">{sample.example} · {sample.exampleReading}</span>}<span className="text-xs text-primary-strong">Ouvir <Icon name="sound"/></span></button>)}</div>}
    {unit.kind==='kana'&&unit.index>=8&&<p className="rounded-2xl bg-raised p-4 text-xs text-muted">Combinações com sons sonoros e yōon (ゃ・ゅ・ょ). Lembre-se: っ/ッ indica uma pausa/consoante dupla, enquanto ー alonga uma vogal no katakana. {KANA_PRONUNCIATION_NOTES[3].detail}</p>}
     <Button variant="primary" className="w-full" onClick={()=>setPhase('practice')}>{passed||ready?'Ver próxima etapa →':'Entendi · começar a prática →'}</Button>
    </section>}

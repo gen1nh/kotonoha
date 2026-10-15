@@ -4,7 +4,7 @@ Aplicação pessoal de aprendizagem de japonês em português, local-first, para
 
 ## Direção vigente
 
-O usuário pediu remover obsoleto e redundâncias, corrigir fluxos e rejeitou verde/amarelo, chips decorativos e tipografia inconsistente. A interface atual usa superfícies neutras, carvão, acento sakura e Inter local. Não adicionar ilustrações decorativas. Funcionalidades existentes e dados salvos são preservados.
+Preservar a identidade gamificada já implementada: Nunito para a interface, Zen Maru Gothic para japonês (com fallback), superfícies claras/escuras, bordas táteis e verde semântico do design system. Não reinventar tokens, ilustrações ou navegação sem motivo. Mini-cards organizam a escolha de tarefas; cada atividade abre em contexto próprio. Dados e progressão existentes são preservados.
 
 ## Funções atuais
 
