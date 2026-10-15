@@ -28,7 +28,7 @@ export function AccountSync({ cloud, state }) {
       {user && <div className="flex flex-wrap gap-2 shrink-0"><Button variant="secondary" size="sm" disabled={busy || blocked || status === 'paused'} onClick={() => cloud.sync()}>{busy ? 'Verificando…' : 'Sincronizar agora'}</Button><Button variant="ghost" size="sm" disabled={busy} onClick={cloud.logout}>Sair da conta</Button></div>}
     </div>
     {error && <p role="alert" className="text-sm text-danger">{error}</p>}
-    {!cloud.configured ? <p className="text-sm text-muted">A conexão com o Supabase ainda não foi configurada neste ambiente.</p>
+    {!cloud.configured ? <p className="text-sm text-muted">Entrar com Google está indisponível no momento. Você pode continuar estudando neste aparelho.</p>
       : !user ? <Button onClick={cloud.login} disabled={busy || blocked}><svg aria-hidden="true" focusable="false" viewBox="0 0 48 48" width="20" height="20" className="inline-block shrink-0 mr-2"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 5.38 6.51 13.22 2.56l7.98 6.19C11.43 13.72 17.22 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.31 5.48-4.85 7.18l7.73 6C44.33 38.03 46.98 31.88 46.98 24.55z"/><path fill="#FBBC05" d="M10.53 28.37A14.4 14.4 0 0 1 9.75 24c0-1.52.27-3 .76-4.37l-7.98-6.19A23.87 23.87 0 0 0 0 24c0 3.86.93 7.52 2.55 10.56l7.98-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.91-5.8l-7.73-6c-2.15 1.45-4.92 2.3-8.18 2.3-6.78 0-12.57-4.22-14.65-10.13l-7.98 6.19C5.38 41.49 14.62 48 24 48z"/></svg> {busy ? 'Abrindo login…' : 'Entrar com Google'}</Button>
       : <>
         {needsChoice && <div className="space-y-3 border-t border-line pt-4">

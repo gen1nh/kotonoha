@@ -48,7 +48,7 @@ export default function LessonPlayer({state,level='N5',topic,update,go,studyUnit
     <p className="text-xs font-black text-primary-strong">MICROLIÇÃO · N5 · {listening?'ESCUTA':'LEITURA'}</p>
     <h1 className="text-2xl font-black text-ink-strong">{unit.title}</h1>
     <p className="text-sm text-muted">{unit.detail}</p>
-    {listening&&<p className="text-xs text-muted">Voz sintética do navegador: adequada para prática, não equivalente à prova oficial JLPT. Se a voz não funcionar, revele a transcrição e use como leitura.</p>}
+    {listening&&<details className="text-xs text-muted"><summary className="cursor-pointer min-h-10 content-center font-bold">Sobre esta escuta</summary><p className="pb-2">A voz vem do seu dispositivo e pode variar. Se não funcionar, revele a transcrição e continue como leitura. Esta prática não substitui uma prova oficial.</p></details>}
    </header>
    {unit.items.map((item,i)=><article key={item.id} className="rounded-2xl border border-line bg-paper p-4 space-y-3">
      <p className="text-xs font-black text-primary-strong">EXEMPLO {i+1} DE {unit.items.length}</p>

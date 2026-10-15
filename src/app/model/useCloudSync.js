@@ -111,7 +111,7 @@ export function useCloudSync({ state, setState, blocked }) {
       if (!valid()) return;
       setStatus(navigator.onLine ? 'error' : 'offline');
       setError(e.code === 'PGRST205' || e.code === '42P01' || e.code === 'PGRST202'
-        ? 'O banco ainda precisa ser preparado. Execute o script 001_personal_sync.sql no Supabase.'
+        ? 'Não foi possível acessar seu progresso na conta. Seus dados neste aparelho continuam preservados.'
         : e.name === 'QuotaExceededError' ? 'Sem espaço para a cópia de segurança. Exporte seu backup antes de continuar.'
         : 'Não foi possível sincronizar. Seus dados locais foram mantidos. Confira a conexão e tente novamente.');
     } finally { running.current = false; setBusy(false); }

@@ -32,7 +32,7 @@ export default function ProgressOverview({state,go,update,toast,changeLevel}) {
   const total=Object.values(state.cards||{}).length;
   const todaySeconds=state.studyLog?.[todayKey()] || 0;
   return <div className="mx-auto max-w-3xl space-y-5">
-    <header className="space-y-1"><p className="text-sm text-primary-strong font-bold">Sua evolução</p><h1 className="text-2xl font-black text-ink-strong">Progresso</h1><p className="text-sm text-muted">O progresso da trilha é validado por checkpoints, não apenas por tempo de uso.</p></header>
+    <header className="space-y-1"><p className="text-sm text-primary-strong font-bold">Sua evolução</p><h1 className="text-2xl font-black text-ink-strong">Progresso</h1><p className="text-sm text-muted">Acompanhe suas atividades concluídas e o que falta aprender.</p></header>
     <nav aria-label="Seções do progresso" className="flex gap-2 overflow-x-auto pb-1">
       {[["overview","Resumo"],["preparation","Preparação N5"],["exam","Simulados"]].map(([id,label])=><button type="button" key={id} aria-current={section===id?"page":undefined} onClick={()=>setSection(id)} className={`shrink-0 min-h-11 rounded-xl border-2 px-4 text-sm font-bold ${section===id?"border-primary bg-accent-soft text-primary-strong":"border-line bg-paper text-ink-strong"}`}>{label}</button>)}
     </nav>
