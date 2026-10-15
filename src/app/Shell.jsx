@@ -1,23 +1,23 @@
-import React,{useState,useEffect} from 'react';
+import React,{useState,useEffect,lazy,Suspense} from 'react';
 import {useThemePreference} from './model/useThemePreference.js';
-import {Learn} from '../pages/library/index.js';
-import {Review} from '../pages/review/index.js';
-import {Settings} from '../pages/settings/index.js';
+const Learn=lazy(()=>import('../pages/library/index.js').then(module=>({default:module.Learn})));
+const Review=lazy(()=>import('../pages/review/index.js').then(module=>({default:module.Review})));
+const Settings=lazy(()=>import('../pages/settings/index.js').then(module=>({default:module.Settings})));
 import Home from '../pages/home/index.js';
 import PathTimeline from '../pages/learning-path/index.js';
 import PracticeHub from '../pages/practice/index.js';
 import ProgressOverview from '../pages/progress/index.js';
-import LessonPlayer from '../pages/lesson/index.js';
-import CheckpointPlayer from '../pages/checkpoint/index.js';
+const LessonPlayer=lazy(()=>import('../pages/lesson/index.js'));
+const CheckpointPlayer=lazy(()=>import('../pages/checkpoint/index.js'));
 import Icon from '../shared/ui/Icon.jsx';
 import {Brand,NAVIGATION,NavItem} from '../shared/ui/index.jsx';
 import OnboardingModal from './ui/OnboardingModal.jsx';
 import StreakPopover from './ui/StreakPopover.jsx';
 import SpeedQuiz from './ui/SpeedQuiz.jsx';
-import SyntaxLab from '../pages/syntax/index.js';
-import LineSimulator from '../pages/conversation/index.js';
-import PitchAccentLab from '../pages/pronunciation/index.js';
-import Notebook from '../pages/notebook/index.js';
+const SyntaxLab=lazy(()=>import('../pages/syntax/index.js'));
+const LineSimulator=lazy(()=>import('../pages/conversation/index.js'));
+const PitchAccentLab=lazy(()=>import('../pages/pronunciation/index.js'));
+const Notebook=lazy(()=>import('../pages/notebook/index.js'));
 
 const PAGE_TITLES={home:'Início',path:'Trilha',practice:'Praticar',progress:'Progresso',learn:'Biblioteca',lesson:'Lição',checkpoint:'Checkpoint',review:'Revisão',notebook:'Caderno',errors:'Diário de erros',syntax:'Laboratório de frases',line:'Conversação',pitch:'Pronúncia',settings:'Preferências'};
 const PRACTICE_VIEWS=['learn','review','notebook','errors','syntax','line','pitch'];
@@ -57,7 +57,7 @@ export default function Shell({view,state,shared,message,install,installPrompt})
           </div>
         </header>}
         <main id="main-content" tabIndex={-1} className={`flex-1 w-full min-w-0 px-4 sm:px-7 lg:px-10 py-5 lg:py-8 ${immersive?'pb-[calc(2rem+env(safe-area-inset-bottom))]':'pb-[calc(6.5rem+env(safe-area-inset-bottom))] lg:pb-10'}`}>
-          <section id={`view-${view}`} className="w-full min-w-0">
+          <section id={`view-${view}`} className="w-full min-w-0"><Suspense fallback={<p role="status" aria-live="polite" className="p-4 text-sm text-muted">Carregando conteúdo…</p>}>
             {view==='home'&&<Home {...shared}/>}
             {view==='path'&&<PathTimeline {...shared}/>}
             {view==='lesson'&&<LessonPlayer {...shared} topic={shared.route.topic} level={shared.route.level}/>}
@@ -71,7 +71,7 @@ export default function Shell({view,state,shared,message,install,installPrompt})
             {view==='line'&&<LineSimulator {...shared}/>}
             {view==='pitch'&&<PitchAccentLab {...shared}/>}
             {view==='settings'&&<Settings {...shared} theme={theme} setTheme={setTheme} install={install} installPrompt={installPrompt} onOpenOnboarding={()=>setOnboardingOpen(true)}/>}
-          </section>
+          </Suspense></section>
         </main>
         {!immersive&&<nav aria-label="Navegação móvel" className="lg:hidden fixed inset-x-0 bottom-0 z-30 bg-paper/95 backdrop-blur-md border-t border-line grid grid-cols-4 px-2 pt-1 pb-[calc(0.5rem+env(safe-area-inset-bottom))] mobile-tabbar">{NAVIGATION.map(item=><NavItem mobile key={item.id} item={item} active={navActive(item.id)} onClick={()=>shared.go(item.id)}/>)}</nav>}
       </div>

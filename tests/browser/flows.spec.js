@@ -240,3 +240,24 @@ test('checkpoint retomado abre a primeira questão pendente sem perder respostas
  await page.getByRole('button',{name:'← Anterior'}).click();
  await expect(page.locator('fieldset').getByRole('radio',{name:questions[1].answer,exact:true})).toBeChecked();
 });
+
+test('PWA mantém tela opcional em cache depois da divisão do bundle',async({page,context},testInfo)=>{
+ test.skip(testInfo.project.name!=='chromium','Offline PWA validado no Chromium; Safari físico ainda requer conferência.');
+ await enter(page);
+ await page.evaluate(()=>navigator.serviceWorker.ready);
+ await page.reload();
+ await page.waitForFunction(()=>Boolean(navigator.serviceWorker.controller));
+ await context.setOffline(true);
+ await tab(page,'Praticar').click();
+ await page.getByRole('button',{name:/Consultar Biblioteca e Caderno/}).click();
+ await page.getByRole('button',{name:'Biblioteca'}).click();
+ await expect(page.getByRole('button',{name:'Hiragana'})).toBeVisible();
+});
+
+test('rota carregada sob demanda mantém foco no título para teclado',async({page})=>{
+ await enter(page);
+ await tab(page,'Praticar').click();
+ await page.getByRole('button',{name:/Consultar Biblioteca e Caderno/}).click();
+ await page.getByRole('button',{name:'Biblioteca'}).click();
+ await expect(page.getByRole('heading',{name:'Biblioteca & Alfabetos Kana',level:1})).toBeFocused();
+});
