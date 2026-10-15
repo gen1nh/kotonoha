@@ -23,19 +23,31 @@ export default function ProgressOverview({state,go,update,toast,changeLevel}) {
   const total=Object.values(state.cards||{}).length;
   const todaySeconds=state.studyLog?.[todayKey()] || 0;
   return <div className="mx-auto max-w-3xl space-y-5">
-    <header className="space-y-1"><p className="text-sm text-primary-strong font-bold">Sua evolução</p><h1 className="text-2xl font-black text-ink-strong">Progresso</h1><p className="text-sm text-muted">Acompanhe suas atividades concluídas e o que falta aprender.</p></header>
-    {section==='overview'?<nav aria-label="Seções do progresso" className="grid grid-cols-2 gap-3">
-      <NavigationTile title="Preparação N5" icon="learn" description="Áreas estudadas e próximos passos." onClick={()=>setSection('preparation')}/>
-      <NavigationTile title="Simulados" icon="review" description="Questões, provas e resultados." onClick={()=>setSection('exam')}/>
-    </nav>:<button type="button" className="min-h-11 text-sm font-bold text-primary-strong" onClick={backSection}>← Voltar ao resumo</button>}
+    <header className="space-y-1"><p className="text-sm text-muted font-semibold">Sua jornada e suas ferramentas</p><h1 className="text-2xl font-black text-ink-strong">Meu espaço</h1><p className="text-sm text-muted">Veja o que aprendeu e encontre ajuda quando precisar.</p></header>
+    {section!=='overview'&&<button type="button" className="min-h-11 text-sm font-semibold text-ink-strong" onClick={backSection}>← Voltar ao meu espaço</button>}
     {section==="overview"&&<>
     <section className="rounded-2xl border border-line bg-paper p-5 space-y-4" aria-label="Resumo da aprendizagem">
-      <h2 className="font-bold text-lg text-ink-strong">Competências {currentLevel}</h2>
-      <div className="flex items-center justify-between"><p className="text-sm text-ink">{completed} de {lessons.length} etapas validadas</p><strong className="text-primary-strong">{Math.round(100*completed/Math.max(1,lessons.length))}%</strong></div>
+      <h2 className="font-bold text-lg text-ink-strong">Seu progresso no {currentLevel}</h2>
+      <div className="flex items-center justify-between"><p className="text-sm text-ink">{completed} de {lessons.length} lições concluídas</p><strong className="text-primary-strong">{Math.round(100*completed/Math.max(1,lessons.length))}%</strong></div>
       <div role="progressbar" aria-label="Etapas validadas" aria-valuemin={0} aria-valuemax={lessons.length} aria-valuenow={completed} className="h-3 overflow-hidden bg-raised rounded-full"><div className="bg-primary h-full rounded-full" style={{width:`${100*completed/Math.max(1,lessons.length)}%`}} /></div>
-      <p className="text-sm text-muted">Seu próximo passo é mostrado na Home. A timeline com todos os detalhes fica somente na Trilha.</p>
-      <button onClick={()=>go('path')} className="min-h-11 text-sm text-primary-strong font-bold">Ir para minha trilha →</button>
+      <p className="text-sm text-muted">A próxima lição já está preparada em Hoje.</p>
+      <button onClick={()=>go('path')} className="min-h-11 text-sm text-ink-strong underline font-semibold">Ver minha trilha</button>
     </section>
+    <section aria-labelledby="my-tools-heading" className="space-y-3">
+      <h2 id="my-tools-heading" className="text-lg font-bold text-ink-strong">Quando precisar</h2>
+      <nav aria-label="Ferramentas e recursos" className="grid grid-cols-2 gap-3">
+       <NavigationTile title="Revisar" icon="review" description="Relembrar o que aprendeu." onClick={()=>go('review')}/>
+       <NavigationTile title="Biblioteca" icon="learn" description="Consultar palavras e caracteres." onClick={()=>go('learn')}/>
+       <NavigationTile title="Caderno" icon="academic" description="Suas notas e dúvidas." onClick={()=>go('notebook')}/>
+       <NavigationTile title="Mais exercícios" icon="bolt" description="Escuta, escrita e outros treinos." onClick={()=>go('practice')}/>
+       <NavigationTile title="Preparação N5" icon="learn" description="Acompanhar a preparação." onClick={()=>setSection('preparation')}/>
+       <NavigationTile title="Simulados" icon="review" description="Praticar com questões." onClick={()=>setSection('exam')}/>
+       <NavigationTile title="Preferências" icon="settings" description="Áudio, conta e aparência." onClick={()=>go('settings')}/>
+      </nav>
+    </section>
+    <details className="rounded-2xl border border-line bg-paper p-4">
+     <summary className="min-h-11 cursor-pointer font-semibold text-ink-strong">Ver mais números</summary>
+     <div className="pt-3 space-y-3">
     <section className="grid grid-cols-2 gap-3" aria-label="Indicadores complementares">
       <div className="rounded-2xl border border-line bg-paper p-4"><p className="text-xs text-muted">Atividades hoje</p><p className="font-black text-2xl text-ink-strong">{today}<span className="text-sm text-muted">/{goal}</span></p><p className="text-xs text-muted">Concluídas, não tempo de tela</p></div>
       <div className="rounded-2xl border border-line bg-paper p-4"><p className="text-xs text-muted">Precisão em revisões</p><p className="font-black text-2xl text-ink-strong">{reviews?Math.round(correct/reviews*100):0}%</p><p className="text-xs text-muted">Em {reviews} avaliações de cartões</p></div>
@@ -46,7 +58,9 @@ export default function ProgressOverview({state,go,update,toast,changeLevel}) {
       <summary className="min-h-11 flex cursor-pointer items-center font-bold text-ink-strong">Estatísticas detalhadas e tempo de estudo</summary>
       <div className="pt-3"><JlptDiagnostic state={state} update={update} toast={toast}/></div>
     </details>
-    </>}
+     </div>
+    </details>
+    </>
     {section==="preparation"&&<>
     <N5Readiness state={state} go={go} update={update}/>
     <section className="rounded-2xl border border-line bg-paper p-5 space-y-2"><h2 className="font-bold text-ink-strong">Próximos níveis</h2><p className="text-sm text-muted">{hasUnlockedN4(state) ? 'N5 validado internamente. O N4 introdutório está disponível; o currículo completo N4–N1 ainda está em construção.' : 'Checkpoints concluídos não equivalem à aprovação no N5. Continue estudando e acompanhe a preparação para a prova de passagem.'}</p></section>
