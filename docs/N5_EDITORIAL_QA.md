@@ -11,7 +11,7 @@ npm run editorial:prerequisites
 npm run editorial:prerequisites -- --write
 ```
 
-O primeiro comando apenas inspeciona a estrutura e conta os 220 registros; o segundo cria `data/editorial/n5-prerequisite-review.json` caso ainda não exista. Se houver uma cópia com anotações, a geração **recusa sobrescrever**. O relatório é uma fila de *candidatos a revisão*, nunca um carimbo de aprovação.
+O primeiro comando verifica a estrutura, conta os 220 registros e, se existir uma fila editada, informa quantas revisões humanas foram registradas por etapa (sem validar sua qualidade). Um registro conta apenas com `languageReview.status: "reviewed"`, `reviewer` e `reviewedAt` preenchidos; isso **não** equivale à aprovação linguística independente. O segundo cria `data/editorial/n5-prerequisite-review.json` caso ainda não exista. Se houver uma cópia com anotações, a geração **recusa sobrescrever**. IDs duplicados ou desconhecidos numa fila existente provocam erro, em vez de produzir uma contagem enganosa. O relatório é uma fila de *candidatos a revisão*, nunca um carimbo de aprovação.
 
 Cada unidade tem: etapa e modalidade, último pré-requisito de **acesso**, até seis unidades anteriores de gramática como *contexto candidato*, inventário de questões, flags estruturais e campos vazios para dependências gramaticais, vocabulário e escrita. O contexto candidato não prova que a frase seja linguisticamente acessível: só uma revisão por texto/áudio determina os pré-requisitos reais.
 
