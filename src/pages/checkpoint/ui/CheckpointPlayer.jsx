@@ -1,7 +1,7 @@
 import { playSound } from '../../../shared/audio/index.js';
 import React,{useState,useEffect} from 'react';
 import {speakJapanese} from '../../../entities/study/index.js';
-import {checkpointQuestions,checkpointScore,PASS_PERCENT,checkpointPassed} from '../../../entities/study/index.js';
+import {checkpointQuestions,checkpointScore,PASS_PERCENT,checkpointPassed,explainCheckpointAnswer} from '../../../entities/study/index.js';
 import {unitById} from '../../../entities/study/index.js';
 import {lessonsFor} from '../../../entities/study/index.js';
 import {Button,AudioRateControl} from '../../../shared/ui/index.jsx';
@@ -25,7 +25,7 @@ export default function CheckpointPlayer({state,topic,update,go,openGuidedLesson
  const passed=checkpointPassed(state,topic);
  const next=lessonsFor('N5')[lessonsFor('N5').findIndex(l=>l.id===topic)+1];
  const answer=(id,value)=>update(s=>{s.drafts||={};s.drafts[key]={answers:{...(s.drafts[key]?.answers||{}),[id]:value},result:null};});
- const grade=()=>{const score=checkpointScore(questions,answers);if(score===null)return;playSound(score>=PASS_PERCENT?'complete':'incorrect');update(s=>{
+ const grade=()=>{const score=checkpointScore(questions,answers);if(score===null)return;setActiveQuestion(0);playSound(score>=PASS_PERCENT?'complete':'incorrect');update(s=>{
    s.drafts||={};s.drafts[key]={answers:{...answers},result:score};
    if(score>=PASS_PERCENT){s.checkpoints||={};const prev=s.checkpoints[topic];if(!prev||prev.score<score)s.checkpoints[topic]={score,date:new Date().toISOString(),...(unit.kind==='listening'?{modality:Object.keys(revealed).length?'reading-fallback':Object.keys(played).length===questions.length?'synthetic-listening':'unverified-audio'}:{})};}
  });};
@@ -48,13 +48,16 @@ export default function CheckpointPlayer({state,topic,update,go,openGuidedLesson
       {(revealed[q.id]||result!==null)&&<p lang="ja" className="font-jp text-lg">{q.spokenText}</p>}
       <p className="text-xs text-muted">Se consultar o texto, o resultado será registrado como prática de leitura, não como evidência auditiva.</p>
     </div>}
-    <div className="space-y-2">{q.options.map(opt=><label key={opt} className={`min-h-12 flex items-center gap-3 rounded-xl border-2 p-3 cursor-pointer ${answers[q.id]===opt?'border-primary bg-accent-soft':'border-line bg-surface'}`}><input type="radio" name={`q-${q.id}`} checked={answers[q.id]===opt} onChange={()=>answer(q.id,opt)}/><span className="text-sm text-ink-strong">{opt}</span></label>)}</div>{result!==null&&<p className="text-sm text-muted">{answers[q.id]===q.answer?'✓ Correto':`Resposta correta: ${q.answer}`} {q.explanation||''}</p>}</fieldset>)}</section>}
+    <div className="space-y-2">{q.options.map(opt=><label key={opt} className={`min-h-12 flex items-center gap-3 rounded-xl border-2 p-3 cursor-pointer ${answers[q.id]===opt?'border-primary bg-accent-soft':'border-line bg-surface'}`}><input type="radio" name={`q-${q.id}`} checked={answers[q.id]===opt} onChange={()=>answer(q.id,opt)}/><span className="text-sm text-ink-strong">{opt}</span></label>)}</div>{result!==null&&<div className="rounded-xl bg-raised p-3 space-y-2" role="status">
+       <p className="text-sm font-bold text-ink-strong">{answers[q.id]===q.answer?'✓ Você acertou esta questão.':'Resposta correta: '+q.answer}</p>
+       <p className="text-sm text-muted">{explainCheckpointAnswer(q,answers[q.id])}</p>
+     </div>}</fieldset>)}</section>}
   {questions.length>=4&&<nav aria-label="Navegar entre questões" className="flex items-center gap-3">
     <Button variant="secondary" disabled={activeQuestion===0} onClick={()=>setActiveQuestion(n=>Math.max(0,n-1))}>← Anterior</Button>
-    {activeQuestion<questions.length-1&&<Button variant="primary" className="flex-1" disabled={answers[questions[activeQuestion]?.id]===undefined} onClick={()=>setActiveQuestion(n=>Math.min(questions.length-1,n+1))}>Próxima questão →</Button>}
+    {activeQuestion<questions.length-1&&<Button variant="primary" className="flex-1" disabled={result===null&&answers[questions[activeQuestion]?.id]===undefined} onClick={()=>setActiveQuestion(n=>Math.min(questions.length-1,n+1))}>{result!==null?'Próxima resposta →':'Próxima questão →'}</Button>}
   </nav>}
   {audioNotice&&<p role="alert" className="text-sm text-muted">{audioNotice}</p>}
-  {result!==null?<section role="status" className="rounded-3xl border-2 border-primary bg-paper p-5 space-y-3"><h2 className="text-xl font-black">{result>=PASS_PERCENT?'Checkpoint aprovado!':'Ainda não. Você pode tentar novamente.'}</h2><p className="text-sm">Resultado: {result}%. {result>=PASS_PERCENT?'Próxima microlição desbloqueada.':'Revise os erros acima. Uma nova tentativa altera a seleção de questões.'} {unit.kind==='listening'?'A voz sintetizada e a leitura alternativa não substituem uma avaliação auditiva oficial.':''}</p>{result>=PASS_PERCENT?<Button variant="primary" className="w-full" onClick={()=>next?openGuidedLesson(next.id,'N5'):go('path')}>{next?'Próxima microlição →':'Voltar à Trilha →'}</Button>:<Button variant="primary" className="w-full" onClick={retry}>Tentar novamente</Button>}</section>:<Button variant="primary" size="lg" className="w-full" disabled={!ready||questions.length<4||activeQuestion!==questions.length-1} onClick={grade}>Finalizar e conferir respostas</Button>}
+  {result!==null?<section role="status" className="rounded-3xl border-2 border-primary bg-paper p-5 space-y-3"><h2 className="text-xl font-black">{result>=PASS_PERCENT?'Checkpoint aprovado!':'Ainda não. Você pode tentar novamente.'}</h2><p className="text-sm">Resultado: {result}%. Revise as respostas usando Anterior e Próxima resposta; cada questão traz a explicação depois da correção. {result>=PASS_PERCENT?'Próxima microlição desbloqueada.':'Uma nova tentativa altera a seleção de questões.'} {unit.kind==='listening'?'A voz sintetizada e a leitura alternativa não substituem uma avaliação auditiva oficial.':''}</p>{result>=PASS_PERCENT?<Button variant="primary" className="w-full" onClick={()=>next?openGuidedLesson(next.id,'N5'):go('path')}>{next?'Próxima microlição →':'Voltar à Trilha →'}</Button>:<Button variant="primary" className="w-full" onClick={retry}>Tentar novamente</Button>}</section>:<Button variant="primary" size="lg" className="w-full" disabled={!ready||questions.length<4||activeQuestion!==questions.length-1} onClick={grade}>Finalizar e conferir respostas</Button>}
   {result!==null&&result<PASS_PERCENT&&<Button variant="secondary" className="w-full" onClick={()=>openGuidedLesson(topic,'N5')}>Rever explicação desta lição</Button>}
   {passed&&result===null&&<p className="text-xs text-muted">Você já foi aprovado nesta etapa. Refazer não apaga sua aprovação.</p>}
   <button type="button" onClick={()=>go('path')} className="min-h-11 text-primary-strong font-bold">← Voltar à Trilha</button>

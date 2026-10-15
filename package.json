@@ -14,7 +14,8 @@
     "audit:n5-course": "node scripts/audit-n5-course.mjs",
     "check:architecture": "node scripts/check-architecture.mjs",
     "audit:dead-code": "node scripts/audit-dead-code.mjs",
-    "check:quality": "npm run check:architecture && npm run audit:dead-code && npm run audit:n5-course"
+    "check:quality": "npm run check:architecture && npm run audit:dead-code && npm run audit:n5-course && npm run editorial:prerequisites",
+    "editorial:prerequisites": "node scripts/audit-n5-prerequisites.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.117.3",

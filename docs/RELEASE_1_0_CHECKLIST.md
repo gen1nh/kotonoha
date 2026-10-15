@@ -7,7 +7,8 @@ Escopo: aprender e revisar N5 em português, no iPhone e desktop, com dados loca
 - [x] Inventário reproduzível de todas as 220 unidades, conteúdos e questões: `N5_CURRICULUM_MAP.md` e `data/editorial/n5-course-review.json`.
 - [x] Objetivo e método por etapa, com cobertura exata dos IDs existentes.
 - [x] Sequência situacional implementada (revisão independente pendente): primeiros passos → apresentações → rotina → situações práticas → consolidação.
-- [ ] Mapa de pré-requisitos por estrutura/palavra em cada texto e áudio; não inferir suficiência apenas pelo título da unidade.
+- [x] Fila auditável por unidade para revisar dependências linguísticas (gerador `editorial:prerequisites`, sem aprovação automática).
+- [ ] Conferir e aprovar pré-requisitos reais por estrutura/palavra em cada texto e áudio; não inferir suficiência pela sequência de acesso.
 - [x] Migração explícita da sequência com testes de todos os 220 limites de progresso legado e acesso a unidades já concluídas.
 
 Cinco etapas situacionais agora intercalam vocabulário e gramática. Exemplos de aplicação com áudio aparecem nas etapas iniciais; os blocos completos de leitura e escuta ficam na consolidação porque misturam estruturas avançadas. A revisão independente dos pré-requisitos linguísticos continua pendente.
@@ -26,7 +27,8 @@ Cinco etapas situacionais agora intercalam vocabulário e gramática. Exemplos d
 - [x] Feedback de gramática só é revelado após confirmação explícita e permite consultar a explicação sem perder a resposta.
 - [x] Pacote editorial reúne conteúdo, alternativas e gabarito de todas as unidades, marcado pendente.
 - [ ] Revisão linguística independente do japonês, traduções e alternativas.
-- [ ] Explicação específica para confusões frequentes de kana/kanji e distratores; repetir gabaritos não basta.
+- [x] Feedback pós-checkpoint percorrível em todas as questões, com contrastes baseados nos próprios cartões quando disponíveis.
+- [ ] Revisão editorial específica das confusões de kana/kanji e de cada distrator; feedback automático não substitui o especialista.
 - [ ] Resolver todos os achados da revisão sem marcar automaticamente registros como aprovados.
 
 ## 4. Prática e avaliação

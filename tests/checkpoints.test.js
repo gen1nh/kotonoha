@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { initialState, normalizeState } from '../src/entities/study/index.js';
-import { checkpointQuestions, checkpointScore, checkpointPassed, exposureComplete } from '../src/entities/study/index.js';
+import { checkpointQuestions, checkpointScore, checkpointPassed, exposureComplete, explainCheckpointAnswer } from '../src/entities/study/index.js';
 test('checkpoint requer respostas completas e 80% de acerto', () => {
  const state=initialState();
  const qs=checkpointQuestions(state,'hiragana');
@@ -31,4 +31,30 @@ test('gramática exige checkpoint e oferece cinco questões com alternativas ún
  for(const question of questions){assert.ok(question.options.includes(question.answer));assert.equal(new Set(question.options).size,question.options.length)}
  assert.equal(checkpointPassed(state,'grammar'),false);
  assert.equal(exposureComplete(state,'grammar'),true);
+});
+
+test('feedback distingue alternativas parecidas sem mudar gabarito nem revelar durante a tentativa',()=>{
+ const state=initialState();
+ const ids=['hiragana:0','katakana:0','words:0','kanji:0'];
+ for(const id of ids){
+  const questions=checkpointQuestions(state,id);
+  for(const q of questions){
+   assert.ok(q.explanation?.length>15,`missing explanation: ${q.id}`);
+   assert.equal(explainCheckpointAnswer(q,q.answer),q.explanation);
+   const wrong=q.options.find(x=>x!==q.answer);
+   const feedback=explainCheckpointAnswer(q,wrong);
+   assert.ok(feedback.length>15);
+   if(q.distractorContext?.[wrong])assert.ok(feedback.includes(q.distractorContext[wrong]));
+   assert.equal(checkpointScore([q],{[q.id]:q.answer}),100);
+  }
+ }
+});
+test('gramática e atividades contextualizadas carregam explicação sem marcar itens aprovados',()=>{
+ const state=initialState();
+ for(const id of ['grammar:0','reading:0','listening:0']){
+  for(const q of checkpointQuestions(state,id)) {
+   assert.ok(q.explanation?.length>15,`explanation missing for ${q.id}`);
+   assert.ok(q.options.includes(q.answer));
+  }
+ }
 });
