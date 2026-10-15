@@ -54,9 +54,14 @@ test('checkpoint retoma respostas após recarga e aprovação entra na meta diá
  const question=checkpointQuestions(state,first.id)[0];await enter(page,state);
  await page.getByRole('button',{name:/Fazer checkpoint/}).first().click();
  await page.locator('fieldset').first().getByRole('radio',{name:question.answer,exact:true}).check();
- await page.reload();await expect(page.locator('fieldset').first().getByRole('radio',{name:question.answer,exact:true})).toBeChecked();
+ await page.reload();
  const qs=checkpointQuestions(state,first.id);
- for(const [i,q] of qs.entries()){
+ await expect(page.getByText(`QUESTÃO 2 DE ${qs.length}`,{exact:true})).toBeVisible();
+ await page.getByRole('button',{name:'← Anterior'}).click();
+ await expect(page.locator('fieldset').first().getByRole('radio',{name:question.answer,exact:true})).toBeChecked();
+ await page.getByRole('button',{name:'Próxima questão →'}).click();
+ for(let i=1;i<qs.length;i++){
+  const q=qs[i];
   await page.locator('fieldset').first().getByRole('radio',{name:q.answer,exact:true}).check();
   if(i<qs.length-1)await page.getByRole('button',{name:'Próxima questão →'}).click();
  }
