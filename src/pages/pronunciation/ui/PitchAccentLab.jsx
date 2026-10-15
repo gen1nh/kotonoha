@@ -223,7 +223,7 @@ export default function PitchAccentLab({ speak, toast }) {
           <Button
             variant="blue"
             size="md"
-            onClick={() => speak && speak(currentItem.word.split(" ")[0])}
+            onClick={() => speak && speak(currentItem.word.split(" ")[0],{rate:speechRate})}
           >
             <Icon name="sound" /> Ouvir voz de referência (sintética)
           </Button>

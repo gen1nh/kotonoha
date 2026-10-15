@@ -238,6 +238,7 @@ export default function Notebook({ state, update, toast, speak, go }) {
           <button type="button" className="min-h-11 text-sm font-bold text-primary-strong" onClick={backTab}>← Voltar ao Caderno</button>
           {tab==='notes'&&<button type="button" className="min-h-11 rounded-xl bg-primary text-white px-4 text-sm font-bold" onClick={()=>handleCreateNote()}>+ Nova Nota</button>}
         </div>
+        <h1 className="text-xl font-black text-ink-strong">{({notes:'Minhas anotações',errors:'Meus erros',doubts:'Minhas dúvidas',kanban:'Meu planejamento'})[tab]}</h1>
       <div className="rounded-xl border border-line p-4 bg-paper"><p className="text-sm text-muted">Notas, planejamento, dúvidas e erros no mesmo caderno. Seus flashcards pessoais entram nas revisões.</p></div>
       {/* ABA 1: QUADRO KANBAN ("Meu Fluxo de Japonês") */}
       {tab === "kanban" && (

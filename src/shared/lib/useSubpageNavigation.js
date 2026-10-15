@@ -7,6 +7,13 @@ export function useSubpageNavigation(scope,defaultPage='menu',allowedPages=[]) {
     return value && allowedPages.includes(value)?value:defaultPage;
   },[parameter,defaultPage,allowedPages.join('|')]);
   const [page,setPage]=useState(read);
+  // Move keyboard/VoiceOver focus to the newly displayed page heading.
+  useEffect(()=>{
+    const heading=document.querySelector('#main-content h1, #main-content h2');
+    if(!heading)return;
+    heading.setAttribute('tabindex','-1');
+    heading.focus({preventScroll:true});
+  },[page]);
   useEffect(()=>{
     const onPop=()=>setPage(read());
     window.addEventListener('popstate',onPop);

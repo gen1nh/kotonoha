@@ -142,6 +142,8 @@ export default function MediaLab({ state, update, speak, toast }) {
   const [isRecording, setIsRecording] = useState(false);
   const [recordedAudioUrl, setRecordedAudioUrl] = useState(null);
 
+  const recordedPlayerRef=useRef(null);
+  useEffect(()=>{if(recordedPlayerRef.current)recordedPlayerRef.current.playbackRate=speechRate;},[speechRate,recordedAudioUrl]);
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
   useEffect(
@@ -440,6 +442,7 @@ export default function MediaLab({ state, update, speak, toast }) {
                   Sua gravação:
                 </small>
                 <audio
+                  ref={recordedPlayerRef}
                   controls
                   src={recordedAudioUrl}
                   className="w-full min-w-0"

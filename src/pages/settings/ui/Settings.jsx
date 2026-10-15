@@ -98,7 +98,7 @@ export function Settings({ state, setState, toast, update, changeLevel, go, them
         <NavigationTile title="Mais opções" description="Assistente e gerenciamento." icon="puzzle" onClick={()=>setSection('advanced')}/>
       </nav>:<div className="space-y-2">
         <button type="button" className="min-h-11 text-sm font-bold text-primary-strong" onClick={backSection}>← Voltar às preferências</button>
-        <h2 className="text-xl font-black text-ink-strong">{({study:'Estudo',audio:'Áudio e leitura',appearance:'Aparência',account:'Conta e backups',advanced:'Mais opções'})[section]}</h2>
+        <h1 className="text-xl font-black text-ink-strong">{({study:'Estudo',audio:'Áudio e leitura',appearance:'Aparência',account:'Conta e backups',advanced:'Mais opções'})[section]}</h1>
       </div>}
       {section==="account"&&<AccountSync cloud={cloud} state={state} />}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 items-start">
