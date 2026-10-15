@@ -1,4 +1,5 @@
 import React,{useState} from 'react';
+import {useSubpageNavigation} from '../../../shared/lib/useSubpageNavigation.js';
 import {LEVELS} from '../../../entities/study/index.js';
 import {Button} from '../../../shared/ui/index.jsx';
 import DiagnosticPractice from './DiagnosticPractice.jsx';
@@ -14,7 +15,7 @@ const PAGE_SIZE=3;
 
 /** Um objetivo por tela. Simulados não misturam avaliação, estatísticas e materiais. */
 export default function SimuladosHub({state,update,toast,changeLevel}) {
-  const [screen,setScreen]=useState('menu');
+  const [screen,setScreen,backScreen]=useSubpageNavigation('simulados','menu',['menu','diagnostic','paper','history','resources']);
   const [score,setScore]=useState('');
   const [error,setError]=useState('');
   const [page,setPage]=useState(0);
@@ -43,7 +44,7 @@ export default function SimuladosHub({state,update,toast,changeLevel}) {
         <h2 className="text-xl font-black text-ink-strong">Simulados e prática</h2>
         <p className="text-sm text-muted">Escolha o que deseja fazer. Sua trilha e seus checkpoints não mudam aqui.</p>
       </> : <>
-        <button type="button" className="min-h-11 text-sm font-bold text-primary-strong" onClick={()=>setScreen('menu')}>← Voltar para Simulados</button>
+        <button type="button" className="min-h-11 text-sm font-bold text-primary-strong" onClick={backScreen}>← Voltar para Simulados</button>
         <h2 className="text-xl font-black text-ink-strong">{selected.title}</h2>
         <p className="text-sm text-muted">{selected.detail}</p>
       </>}

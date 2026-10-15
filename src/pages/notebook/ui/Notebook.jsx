@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import {useSubpageNavigation} from "../../../shared/lib/useSubpageNavigation.js";
 import Icon from "../../../shared/ui/Icon.jsx";
 import {NavigationTile} from "../../../shared/ui/index.jsx";
 import ErrorMemory from "./ErrorMemory.jsx";
@@ -32,8 +33,8 @@ const NOTE_TEMPLATES = {
 };
 
 export default function Notebook({ state, update, toast, speak, go }) {
-  const [showMenu,setShowMenu]=useState(true);
-  const [tab, setTab] = useState("kanban"); // "kanban", "notes", "doubts"
+  const [tab,setTab,backTab]=useSubpageNavigation("notebook","menu",["menu","kanban","notes","doubts","errors"]);
+  const showMenu=tab==="menu";
   const [search, setSearch] = useState("");
   const [activeNoteId, setActiveNoteId] = useState(
     () => state.notebook?.notes?.[0]?.id || null,
@@ -229,12 +230,12 @@ export default function Notebook({ state, update, toast, speak, go }) {
             {id:'errors',title:'Meus erros',description:'Respostas que precisam de revisão.',icon:'review',meta:(state.errorMemory?.length||0)+' registros'},
             {id:'doubts',title:'Minhas dúvidas',description:'Perguntas guardadas nas lições.',icon:'chat',meta:doubts.length+' dúvidas'},
             {id:'kanban',title:'Meu planejamento',description:'Organize tarefas e ideias.',icon:'review',meta:kanban.length+' itens'},
-          ].map(item=><NavigationTile key={item.id} {...item} onClick={()=>{setTab(item.id);setShowMenu(false);}}/>)}
+          ].map(item=><NavigationTile key={item.id} {...item} onClick={()=>{setTab(item.id);}}/>)}
         </div>
       </section>}
       {!showMenu&&<>
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <button type="button" className="min-h-11 text-sm font-bold text-primary-strong" onClick={()=>setShowMenu(true)}>← Voltar ao Caderno</button>
+          <button type="button" className="min-h-11 text-sm font-bold text-primary-strong" onClick={backTab}>← Voltar ao Caderno</button>
           {tab==='notes'&&<button type="button" className="min-h-11 rounded-xl bg-primary text-white px-4 text-sm font-bold" onClick={()=>handleCreateNote()}>+ Nova Nota</button>}
         </div>
       <div className="rounded-xl border border-line p-4 bg-paper"><p className="text-sm text-muted">Notas, planejamento, dúvidas e erros no mesmo caderno. Seus flashcards pessoais entram nas revisões.</p></div>

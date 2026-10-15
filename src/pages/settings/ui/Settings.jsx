@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import {useSubpageNavigation} from "../../../shared/lib/useSubpageNavigation.js";
 import { SoundSettings } from './SoundSettings.jsx';
 import { useReadingPreferences, setReadingPreferences, japaneseVoices, warmJapaneseVoices } from '../../../entities/study/index.js';
 import { AccountSync } from './AccountSync.jsx';
@@ -17,7 +18,7 @@ export function Settings({ state, setState, toast, update, changeLevel, go, them
   const [busy, setBusy] = useState(false);
   const readingPreferences = useReadingPreferences();
   const importInput = useRef(null);
-  const [section,setSection]=useState("menu");
+  const [section,setSection,backSection]=useSubpageNavigation("settings","menu",["menu","study","audio","appearance","account","advanced"]);
   const [voices,setVoices]=useState(()=>japaneseVoices());
   useEffect(()=>warmJapaneseVoices(setVoices),[]);
 
@@ -96,7 +97,7 @@ export function Settings({ state, setState, toast, update, changeLevel, go, them
         <NavigationTile title="Conta e backups" description="Login e cópias de segurança." icon="academic" onClick={()=>setSection('account')}/>
         <NavigationTile title="Mais opções" description="Assistente e gerenciamento." icon="puzzle" onClick={()=>setSection('advanced')}/>
       </nav>:<div className="space-y-2">
-        <button type="button" className="min-h-11 text-sm font-bold text-primary-strong" onClick={()=>setSection('menu')}>← Voltar às preferências</button>
+        <button type="button" className="min-h-11 text-sm font-bold text-primary-strong" onClick={backSection}>← Voltar às preferências</button>
         <h2 className="text-xl font-black text-ink-strong">{({study:'Estudo',audio:'Áudio e leitura',appearance:'Aparência',account:'Conta e backups',advanced:'Mais opções'})[section]}</h2>
       </div>}
       {section==="account"&&<AccountSync cloud={cloud} state={state} />}
