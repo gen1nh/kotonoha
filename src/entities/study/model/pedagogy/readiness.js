@@ -43,6 +43,19 @@ const validSkillOutcome = (record, skill) => {
     outcome.correct / outcome.total >= N5_CERTIFICATION_POLICY.minSkillFraction;
 };
 
+/** Reject contradictory totals or impossible coverage in a persisted internal result. */
+function consistentN5Score(record) {
+ if (!record || !Number.isInteger(record.total) || !Number.isInteger(record.correct) ||
+     !Number.isFinite(record.fraction) || record.total <= 0 || record.correct < 0 || record.correct > record.total ||
+     Math.abs(record.fraction - record.correct / record.total) > 1e-9) return false;
+ const outcomes = CORE_SKILLS.map(skill => record.bySkill?.[skill]);
+ if (!outcomes.every(x => x && Number.isInteger(x.total) && Number.isInteger(x.correct) &&
+     x.total >= 0 && x.correct >= 0 && x.correct <= x.total &&
+     Number.isFinite(x.fraction) && Math.abs(x.fraction - (x.total ? x.correct / x.total : 0)) <= 1e-9)) return false;
+ return outcomes.reduce((sum,x) => sum + x.total,0) === record.total &&
+   outcomes.reduce((sum,x) => sum + x.correct,0) === record.correct;
+}
+
 /** Do not equate completed micro-checkpoints or legacy scores with level certification. */
 export function hasPassedInternalN5(state) {
   const history = state?.pedagogy?.assessmentHistory;
@@ -50,6 +63,7 @@ export function hasPassedInternalN5(state) {
   return history.some(record => record?.kind === 'kotonoha-internal' && record?.level === 'N5' &&
     record?.status === 'passed' && record?.passed === true && record?.policyVersion === N5_CERTIFICATION_POLICY.version &&
     CORE_SKILLS.every(skill => validSkillOutcome(record, skill)) &&
+    consistentN5Score(record) &&
     Number.isInteger(record.total) && record.total >= CORE_SKILLS.length * N5_CERTIFICATION_POLICY.minItemsPerSkill &&
     Number.isInteger(record.correct) && record.correct >= Math.ceil(record.total * N5_CERTIFICATION_POLICY.minTotalFraction) &&
     record.correct <= record.total &&
@@ -114,6 +128,10 @@ export function recordN5Result(state, graded, assessment) {
   if (examIds.length < CORE_SKILLS.length * required || new Set(examIds).size !== examIds.length ||
       assessment.questions.some(item => item.level !== 'N5' || item.status !== 'approved' || validateItem(item).length) ||
       !coversAllCompetencies(assessment.questions)) return false;
+  // An assessment result must account for this exact question set and every skill.
+  if (!consistentN5Score(graded) || graded.level !== 'N5' || graded.kind !== 'kotonoha-internal' ||
+      graded.total !== assessment.questions.length ||
+      CORE_SKILLS.some(skill => graded.bySkill?.[skill]?.total !== assessment.questions.filter(item => item.skill === skill).length)) return false;
   const result = { ...graded, passed: true, policyVersion: N5_CERTIFICATION_POLICY.version,
     date: new Date().toISOString(), itemIds: examIds,
     competencyIds: Object.fromEntries(CORE_SKILLS.map(skill => [skill, [...new Set(assessment.questions.filter(q=>q.skill===skill).map(q=>q.competencyId))]])) };
