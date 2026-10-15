@@ -71,7 +71,7 @@ test('trilha destaca etapa atual e digitação só aparece como treino opcional'
  await expect(page.getByRole('heading',{name:'Digite em japonês'})).toBeHidden();
  await page.getByRole('button',{name:'Digitação japonesa'}).click();
  await expect(page.getByRole('heading',{name:'Digite em japonês'})).toBeVisible();
- await expect(page.getByRole('combobox',{name:'Conteúdo para praticar'}).locator('option')).toHaveCount(1);
+ await expect(page.getByRole('combobox',{name:'Conteúdo já disponível na sua Trilha'}).locator('option')).toHaveCount(1);
  await page.getByRole('textbox',{name:'Digite a leitura deste item'}).fill('a');
  await page.getByRole('button',{name:'Conferir resposta'}).click();
  await expect(page.getByText('Correto!',{exact:true})).toBeVisible();
