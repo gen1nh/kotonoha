@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Icon from "../../../shared/ui/Icon.jsx";
 import { Card, Button, NavigationTile } from "../../../shared/ui/index.jsx";
+import {speakJapanese,useReadingPreferences,AudioRateControl} from "../../../entities/study/index.js";
 import { PageHeading } from "../../../shared/ui/index.jsx";
 import { HIRAGANA, KATAKANA, VOCAB, GRAMMAR } from "../../../entities/study/index.js";
 import { CURRICULUM, VOCAB_BY_LEVEL } from "../../../entities/study/index.js";
@@ -20,6 +21,9 @@ export function Learn({
   changeLevel,
 }) {
   const [tab, setTab] = useState(learnTopic);
+  const readingPreferences=useReadingPreferences();
+  const [speechRate,setSpeechRate]=useState(()=>readingPreferences.speechRate);
+  const playJapanese=text=>speakJapanese(text,toast,{rate:speechRate});
   const [showCategories,setShowCategories]=useState(learnTopic==="hiragana");
   useEffect(() => {
     setTab(learnTopic);
@@ -97,6 +101,7 @@ export function Learn({
       />
 
       {showCategories&&<section className="space-y-3" aria-label="Categorias da Biblioteca">
+        <button type="button" className="min-h-11 text-sm font-bold text-primary-strong" onClick={()=>go("practice")}>← Voltar a Praticar</button>
         <h2 className="text-base font-bold text-ink-strong">O que você quer consultar?</h2>
         <div className="grid grid-cols-2 gap-3">
           {LEARN_TABS.map(item=><NavigationTile key={item.id} symbol={item.glyph} title={item.label}
@@ -113,6 +118,10 @@ export function Learn({
       </section>}
       {!showCategories&&<>
         <button type="button" className="min-h-11 font-bold text-sm text-primary-strong" onClick={()=>setShowCategories(true)}>← Todas as categorias</button>
+        <details className="rounded-xl border border-line bg-paper p-3">
+          <summary className="min-h-11 cursor-pointer text-sm font-bold text-ink-strong">Ajustar áudio desta consulta</summary>
+          <div className="pt-2"><AudioRateControl rate={speechRate} onChange={setSpeechRate}/></div>
+        </details>
       <div className="rounded-2xl border border-line bg-paper p-4 space-y-2" aria-label="Orientação de estudo">
         <p className="font-bold text-ink-strong">Estude sem se perder</p>
         <p className="text-sm text-muted">Leia os exemplos, ouça a pronúncia e pratique. Para avançar, retorne à lição guiada na Trilha. As fontes e mídias abaixo são materiais opcionais.</p>
@@ -173,7 +182,7 @@ export function Learn({
                       aria-label={`${ch}, ${ro}. Ouvir e praticar`}
                       onClick={() => {
                         setCharacter(ch);
-                        speak(ch);
+                        playJapanese(ch);
                       }}
                       className={`relative flex flex-col items-center justify-center p-3 rounded-2xl border-2 border-b-4 transition-all cursor-pointer active:translate-y-px ${
                         isSelected
@@ -226,7 +235,7 @@ export function Learn({
                 <Button
                   variant="secondary"
                   size="sm"
-                  onClick={() => speak(character)}
+                  onClick={() => playJapanese(character)}
                 >
                   <Icon name="sound" /> Ouvir som ({character})
                 </Button>
@@ -236,7 +245,7 @@ export function Learn({
                 random={() => {
                   const ch = array[Math.floor(Math.random() * array.length)][0];
                   setCharacter(ch);
-                  speak(ch);
+                  playJapanese(ch);
                 }}
                 save={() => {
                   update((s) => {
@@ -313,7 +322,7 @@ export function Learn({
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => speak(kana)}
+                    onClick={() => playJapanese(kana)}
                     title={`Ouvir ${kana}`}
                   >
                     <Icon name="sound" />
@@ -396,7 +405,7 @@ export function Learn({
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => speak(g.example)}
+                        onClick={() => playJapanese(g.example)}
                         title="Ouvir exemplo"
                       >
                         <Icon name="sound" />

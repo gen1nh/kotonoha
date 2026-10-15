@@ -1,5 +1,5 @@
 import React from 'react';
-import {useReadingPreferences} from '../index.js';
+import {useReadingPreferences} from '../model/readingPreferences.js';
 
 const SPEEDS = [
   [0.5, '0,5× · Bem devagar'],[0.75, '0,75× · Devagar'],

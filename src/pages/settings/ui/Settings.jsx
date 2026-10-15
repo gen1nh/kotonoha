@@ -6,7 +6,7 @@ import { Card, Button, NavigationTile } from "../../../shared/ui/index.jsx";
 import { PageHeading } from "../../../shared/ui/index.jsx";
 import { todayKey, initialState, normalizeState } from "../../../entities/study/index.js";
 import { dailyGoal, GOAL_OPTIONS } from "../../../entities/study/index.js";
-export function Settings({ state, setState, toast, update, changeLevel, theme, setTheme, install, installPrompt, onOpenOnboarding, cloud }) {
+export function Settings({ state, setState, toast, update, changeLevel, go, theme, setTheme, install, installPrompt, onOpenOnboarding, cloud }) {
   const [key, setKey] = useState(
     () => { try{return sessionStorage.getItem("kotonoha.groqKey") || "";}catch{return "";} },
   );
@@ -88,6 +88,7 @@ export function Settings({ state, setState, toast, update, changeLevel, theme, s
   return (
     <div className="space-y-6 w-full min-w-0">
       <PageHeading title="Preferências" description="Seu ritmo, sua conta e os ajustes do aplicativo." icon="settings" iconBg="bg-raised" iconColor="text-ink-strong" />
+      {section==='menu'&&<button type="button" className="min-h-11 text-sm font-bold text-primary-strong" onClick={()=>go("home")}>← Voltar ao início</button>}
       {section==='menu'?<nav aria-label="Seções de preferências" className="grid grid-cols-2 gap-3">
         <NavigationTile title="Estudo" description="Sua meta diária." icon="learn" onClick={()=>setSection('study')}/>
         <NavigationTile title="Áudio e leitura" description="Pronúncia, voz, velocidade e romaji." icon="sound" onClick={()=>setSection('audio')}/>
