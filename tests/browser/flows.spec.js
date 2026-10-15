@@ -186,6 +186,7 @@ test('escuta: revelar transcrição continua marcado após recarga e gera evidê
  await expect(page.locator('fieldset [lang="ja"]')).toBeVisible();
  for(const [i,q] of questions.entries()){
   await page.locator('fieldset').first().getByRole('radio',{name:q.answer,exact:true}).check();
+  if(i>0)await page.getByRole('button',{name:/mostrar texto/i}).click();
   if(i<questions.length-1)await page.getByRole('button',{name:'Próxima questão →'}).click();
  }
  await page.getByRole('button',{name:'Finalizar e conferir respostas'}).click();
