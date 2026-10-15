@@ -192,3 +192,20 @@ test('escuta: revelar transcrição continua marcado após recarga e gera evidê
  await expect(page.getByText('Checkpoint aprovado!',{exact:true})).toBeVisible();
  await expect.poll(()=>page.evaluate(id=>JSON.parse(localStorage.getItem('kotonoha.v1')).checkpoints[id]?.modality,unit.id)).toBe('reading-fallback');
 });
+
+test('checkpoint retomado abre a primeira questão pendente sem perder respostas',async({page})=>{
+ const state=seeded(),unit=N5_UNITS[0];
+ for(const id of cardIdsForUnit(unit))state.cards[id].seen=true;
+ const questions=checkpointQuestions(state,unit.id);
+ state.drafts[`checkpoint:${unit.id}`]={
+  answers:{[questions[0].id]:questions[0].answer,[questions[1].id]:questions[1].answer},
+  result:null,
+ };
+ await enter(page,state);
+ await page.goto(`/?view=checkpoint&topic=${encodeURIComponent(unit.id)}&level=N5`);
+ await expect(page.getByText(`QUESTÃO 3 DE ${questions.length}`,{exact:true})).toBeVisible();
+ await page.reload();
+ await expect(page.getByText(`QUESTÃO 3 DE ${questions.length}`,{exact:true})).toBeVisible();
+ await page.getByRole('button',{name:'← Anterior'}).click();
+ await expect(page.locator('fieldset').getByRole('radio',{name:questions[1].answer,exact:true})).toBeChecked();
+});
