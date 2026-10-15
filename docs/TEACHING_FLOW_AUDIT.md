@@ -58,7 +58,7 @@ Cobertura inclui percurso lição → cartões → checkpoint, retorno à explic
 A `main` já continha a migração das 220 unidades para cinco etapas e o pacote editorial. Não refazer IDs, sequência, `curriculumVersion` ou `curriculumAccess`.
 
 **Ajustes feitos nesta continuação:**
-- A escolha da alternativa de gramática deixa de tocar o som de acerto/erro e de revelar o gabarito imediatamente. O aluno decide quando conferir; a conclusão só é liberada após confirmação correta. A explicação permanece consultável sem perda do rascunho.
+- A escolha da alternativa de gramática deixa de tocar o som de acerto/erro e de revelar o gabarito imediatamente; a posição correta também deixa de ser sempre a primeira. O aluno decide quando conferir; a conclusão só é liberada após confirmação correta. A explicação permanece consultável sem perda do rascunho.
 - Praticar tem uma única ação principal de revisão e um menu curto de atividades opcionais. O desafio rápido deixa de ser duplicado, a chamada redundante para continuar a Trilha sai dessa tela e Biblioteca/Caderno ficam em uma área de consulta dedicada.
 - A digitação abre em tela própria e continua opcional, acessível apenas para unidades já liberadas. Não participa da aprovação dos checkpoints.
 

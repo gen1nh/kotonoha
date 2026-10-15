@@ -35,7 +35,13 @@ export default function LessonPlayer({state,level='N5',topic,update,go,studyUnit
  const samples=unit?guidedSamples(topic):[];
  const quiz=unit?.kind==='grammar';
  const g=quiz?unit.items[0]:null;
- const grammarChoices=quiz?[g.meaning,...GRAMMAR.filter(row=>row!==g&&row.meaning!==g.meaning).slice((unit.index*3)%Math.max(1,GRAMMAR.length-4)).slice(0,3).map(row=>row.meaning)]:[];
+ const grammarChoices=quiz?(()=>{
+   const choices=GRAMMAR.filter(row=>row!==g&&row.meaning!==g.meaning)
+     .slice((unit.index*3)%Math.max(1,GRAMMAR.length-4)).slice(0,3).map(row=>row.meaning);
+   // The correct answer must not always occupy the first position.
+   choices.splice(unit.index%(choices.length+1),0,g.meaning);
+   return choices;
+ })():[];
  const chosen=answers.practice;
  const updateAnswer=(key,value)=>update(s=>{s.drafts||={};s.drafts[draftKey]={answers:{...(s.drafts[draftKey]?.answers||{}),[key]:value}};});
  const questionScore=level!=='N5'?advancedLessonScore(lesson,answers):null;
