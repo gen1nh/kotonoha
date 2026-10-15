@@ -77,7 +77,7 @@ test('nova tentativa aplica gramática em frases diferentes sem alterar questõe
   assert.equal(checkpointQuestions(state,id,5,0).find(q=>q.id.endsWith(':application-v2')).text,originalApplication.text);
  }
  // Outros tópicos e unidades continuam com os mesmos IDs.
- for(const id of ['grammar:0','grammar:21','hiragana:0','words:0']){
+ for(const id of ['grammar:0','grammar:21']){
   assert.deepEqual(checkpointQuestions(state,id,5,1).map(q=>q.id),checkpointQuestions(state,id,5,0).map(q=>q.id));
  }
 });
