@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import {playSound} from "../../../shared/audio/index.js";
 import { markStudy, todayKey } from "../../../entities/study/index.js";
 import { HOME_QUESTION,useReadingPreferences } from "../../../entities/study/index.js";
 import { Card, Button, AudioRateControl } from "../../../shared/ui/index.jsx";
@@ -21,6 +22,7 @@ export default function DailyQuestion({ state, update, go, speak, level: guidedL
 
   function answer(index) {
     if (selected !== null) return;
+    playSound(index===question.answer?'correct':'incorrect');
     setSelected(index);
     update((next) => {
       const alreadyAnswered = Number.isInteger(next.dailyAnswers?.[key]);

@@ -90,6 +90,12 @@ export function Settings({ state, setState, toast, update, changeLevel, go, them
     <div className="space-y-6 w-full min-w-0">
       {section==='menu'&&<PageHeading title="Preferências" description="Seu ritmo, sua conta e os ajustes do aplicativo." icon="settings" iconBg="bg-raised" iconColor="text-ink-strong" />}
       {section==='menu'&&<button type="button" className="min-h-11 text-sm font-bold text-primary-strong" onClick={()=>go("home")}>← Voltar ao início</button>}
+      {section==='menu'&&cloud?.user&&['choose','conflict','receive','pending','error'].includes(cloud.status)&&
+        <div role="status" className="rounded-xl border border-line bg-accent-soft p-4 space-y-2">
+          <p className="text-sm font-bold text-ink-strong">Confira seu progresso na conta</p>
+          <p className="text-xs text-ink">Acesse Conta e backups para verificar a sincronização antes de continuar em outro aparelho.</p>
+          <Button variant="primary" className="w-full" onClick={()=>setSection('account')}>Ver conta e backups →</Button>
+        </div>}
       {section==='menu'?<nav aria-label="Seções de preferências" className="grid grid-cols-2 gap-3">
         <NavigationTile title="Estudo" description="Sua meta diária." icon="learn" onClick={()=>setSection('study')}/>
         <NavigationTile title="Áudio e leitura" description="Pronúncia, voz, velocidade e romaji." icon="sound" onClick={()=>setSection('audio')}/>
