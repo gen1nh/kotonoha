@@ -38,7 +38,7 @@ export function checkpointQuestions(state,topic,count=5,attempt=0){
        row.meaning!==answer&&row.example!==answer&&row.text!==answer
      ).flatMap(row=>[[row.meaning,row.title],[row.example,row.title],[row.text,row.title]])),
    });
-   const application=grammarApplication(unit);
+   const application=grammarApplication(unit,attempt);
    return [
      make(`${topic}:translation`,`Traduza: ${g.example}`,g.meaning,other.map(x=>x.meaning)),
      make(`${topic}:example`,`Qual frase corresponde a “${g.meaning}”?`,g.example,other.map(x=>x.example)),

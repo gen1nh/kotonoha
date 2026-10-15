@@ -38,7 +38,8 @@ Cinco etapas situacionais agora intercalam vocabulário e gramática. Exemplos d
 - [x] Checkpoint permite retornar à explicação depois de erro.
 - [x] Revisão, exposição e aprovação mantêm significados diferentes.
 - [x] Substituir a questão repetida de reconhecimento por aplicação em 21 unidades de gramática.
-- [ ] Revisar as demais questões e ampliar transferência para contextos novos; completar uma frase conhecida ainda não comprova produção independente.
+- [x] Introduzir alternativas de transferência em novas tentativas das quatro flexões verbais `grammar:14`–`grammar:17` (candidatas editoriais, sem alterar a primeira tentativa).
+- [ ] Revisar linguisticamente as novas frases e ampliar a transferência às demais unidades; completar uma frase conhecida ainda não comprova produção independente.
 - [ ] Validar recomendações por habilidade com dados de estudo reais.
 - [ ] Manter `audit:n5-release` fechado enquanto faltar a prova editorial exigida pelo projeto. Não contornar o gate para publicar 1.0.
 

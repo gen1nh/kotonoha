@@ -18,10 +18,26 @@ const rows=[
  [38,'飲みませんか',['飲みませんか','飲みました','飲みませんでした','飲まないでください']],
  [39,'行きたいです',['行きたいです','行きました','行きません','行かないでください']],
 ];
-export function grammarApplication(unit){
+// New contexts on retry assess transfer, not just recall of the lesson sentence.
+// Drafts remain tied to their attempt, and the original first-attempt item is unchanged.
+// These are formative editorial candidates, not certified exam questions.
+const transferRows=new Map([
+ [14,{sentence:'毎朝パンを食べます。',meaning:'Como pão todas as manhãs.',answer:'ます',options:verbs}],
+ [15,{sentence:'今日は学校へ行きません。',meaning:'Hoje não vou à escola.',answer:'ません',options:verbs}],
+ [16,{sentence:'昨日、友達と話しました。',meaning:'Ontem conversei com um amigo.',answer:'ました',options:verbs}],
+ [17,{sentence:'昨日はテレビを見ませんでした。',meaning:'Ontem não assisti à televisão.',answer:'ませんでした',options:verbs}],
+]);
+export function grammarApplication(unit,attempt=0){
  const row=rows.find(([index])=>index===unit.index);
  if(!row)return null;
  const [,answer,options]=row,g=unit.items[0];
+ const transfer=attempt>0?transferRows.get(unit.index):null;
+ if(transfer){
+  if(transfer.sentence.split(transfer.answer).length!==2)throw new Error(`Invalid transfer target in ${unit.id}`);
+  return {id:`${unit.id}:transfer-v1`,prompt:`Complete para expressar: “${transfer.meaning}”`,
+   text:transfer.sentence.replace(transfer.answer,'＿＿＿'),answer:transfer.answer,options:transfer.options,
+   explanation:`${g.text} Neste novo contexto, a frase é ${transfer.sentence} (${transfer.meaning}). Compare a marcação de tempo e a forma verbal.`};
+ }
  if(!g.example.includes(answer))throw new Error(`Missing application target in ${unit.id}`);
  return {id:`${unit.id}:application-v2`,prompt:`Complete para expressar: “${g.meaning}”`,text:g.example.replace(answer,'＿＿＿'),answer,options,explanation:`${g.text} A frase completa é ${g.example} (${g.meaning}). Compare a intenção e o tempo indicados na tradução com a forma escolhida.`};
 }

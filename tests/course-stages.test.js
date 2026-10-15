@@ -55,3 +55,29 @@ test('questões de aplicação reconstituem a frase e não reutilizam o ID da qu
  }
  assert.equal(count,21);
 });
+
+test('nova tentativa aplica gramática em frases diferentes sem alterar questões antigas',()=>{
+ const state=initialState();
+ for(const index of [14,15,16,17]){
+  const id=`grammar:${index}`;
+  const original=checkpointQuestions(state,id,5,0);
+  const retry=checkpointQuestions(state,id,5,1);
+  const originalApplication=original.find(q=>q.id.endsWith(':application-v2'));
+  const transfer=retry.find(q=>q.id.endsWith(':transfer-v1'));
+  assert.ok(originalApplication,`missing original application for ${id}`);
+  assert.ok(transfer,`missing transfer for ${id}`);
+  assert.notEqual(transfer.text,originalApplication.text);
+  assert.notEqual(transfer.prompt,originalApplication.prompt);
+  assert.equal(new Set(transfer.options).size,4);
+  assert.ok(transfer.options.includes(transfer.answer));
+  assert.ok(transfer.explanation.includes(transfer.text.replace('＿＿＿',transfer.answer)));
+  assert.ok(transfer.explanation.length>40);
+  assert.equal(original.length,4);
+  assert.equal(retry.length,4);
+  assert.equal(checkpointQuestions(state,id,5,0).find(q=>q.id.endsWith(':application-v2')).text,originalApplication.text);
+ }
+ // Outros tópicos e unidades continuam com os mesmos IDs.
+ for(const id of ['grammar:0','grammar:21']){
+  assert.deepEqual(checkpointQuestions(state,id,5,1).map(q=>q.id),checkpointQuestions(state,id,5,0).map(q=>q.id));
+ }
+});
