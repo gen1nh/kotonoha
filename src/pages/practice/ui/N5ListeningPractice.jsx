@@ -53,7 +53,7 @@ export default function N5ListeningPractice() {
             </select>
           </label>
           <label className="block space-y-1">Velocidade ({rate.toFixed(2)}×)
-            <input className="block w-full" type="range" min="0.65" max="1.15" step="0.05" value={rate} onChange={event => setRate(Number(event.target.value))} />
+            <input className="block w-full" type="range" min="0.5" max="1.15" step="0.05" value={rate} onChange={event => setRate(Number(event.target.value))} />
           </label>
           {!voices.length && <p>Se nenhuma voz japonesa aparecer, ative uma voz japonesa nas configurações de acessibilidade/idioma do seu dispositivo. Algumas vozes requerem download.</p>}
         </div>
