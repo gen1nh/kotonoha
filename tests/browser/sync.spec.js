@@ -37,6 +37,7 @@ test('first login requires choice, upload preserves backup and prevents local re
   await page.getByRole('button', { name: 'Usar este aparelho', exact: true }).click();
   await expect(page.getByText('Sincronizado', { exact: true })).toBeVisible();
   expect(writes[0].new_payload.stats.reviews).toBe(7);
+  await page.getByRole('button', { name: /Voltar às preferências/ }).click();
   await page.getByRole('button', { name: 'Mais opções' }).click();
   await page.getByText('Ajuda e gerenciamento', { exact: true }).click();
   await page.getByText('Reiniciar progresso', { exact: true }).click();
@@ -46,8 +47,10 @@ test('first login requires choice, upload preserves backup and prevents local re
   expect(audit.violations).toEqual([]);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.screenshot({ path: `test-results/sync-${test.info().project.name}.png`, fullPage: true });
-  await page.getByRole('button', { name: 'Estudo e sons' }).click();
+  await page.getByRole('button', { name: /Voltar às preferências/ }).click();
+  await page.getByRole('button', { name: 'Estudo' }).click();
   await page.getByRole('combobox', { name: 'Meta diária de atividades' }).selectOption('3');
+  await page.getByRole('button', { name: /Voltar às preferências/ }).click();
   await page.getByRole('button', { name: 'Conta e backups' }).click();
   await page.getByRole('button', { name: 'Sincronizar agora' }).click();
   await expect(page.getByText('Sincronizado', { exact: true })).toBeVisible();

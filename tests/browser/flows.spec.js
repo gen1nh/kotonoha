@@ -69,8 +69,10 @@ test('filtro N1 não desbloqueia laboratórios nem URLs',async({page})=>{
 
 test('tema escuro, configurações e backup',async({page})=>{
  await enter(page);await page.getByRole('button',{name:'Abrir preferências'}).click();
+ await page.getByRole('button',{name:'Aparência'}).click();
  await page.getByRole('combobox',{name:'Tema visual'}).selectOption('dark');
  await expect(page.locator('html')).toHaveAttribute('data-theme','dark');
+ await page.getByRole('button',{name:/Voltar às preferências/}).click();
  await page.getByRole('button',{name:'Conta e backups'}).click();
  const download=page.waitForEvent('download');await page.getByRole('button',{name:'Exportar backup JSON'}).click();
  expect((await download).suggestedFilename()).toContain('kotonoha-backup');
