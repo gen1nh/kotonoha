@@ -181,6 +181,7 @@ export function initialState() {
     userProfile: null,
     errorMemory: [],
     diagnosticHistory: [],
+    diagnosticDrafts: {},
     pedagogy: createPedagogyState(),
     n5Practice: {seed:0,answers:{},played:[],transcripts:[],history:[]},
   };
@@ -291,7 +292,7 @@ export function normalizeState(value) {
           m.score >= 0 &&
           m.score <= 100 &&
           typeof m.date === "string",
-      )
+      ).slice(0,200).map(m=>({level:m.level,score:m.score,date:m.date,source:typeof m.source==="string"?m.source.slice(0,120):""}))
     : [];
   base.createdAt = Number.isFinite(value.createdAt)
     ? value.createdAt
@@ -354,6 +355,16 @@ export function normalizeState(value) {
       r.total >= 1 && r.total <= 100 && r.correct >= 0 && r.correct <= r.total &&
       typeof r.date === 'string' && !Number.isNaN(Date.parse(r.date))
     ).slice(-30);
+  }
+  // Restore unfinished personal evaluations without marking them completed.
+  if(value.diagnosticDrafts && typeof value.diagnosticDrafts==='object' && !Array.isArray(value.diagnosticDrafts)){
+    base.diagnosticDrafts=Object.fromEntries(Object.entries(value.diagnosticDrafts).filter(([level,d])=>
+      ['N5','N4','N3','N2','N1'].includes(level)&&d&&typeof d==='object'&&!Array.isArray(d)&&
+      Number.isInteger(d.step)&&d.step>=0&&d.step<8&&d.answers&&typeof d.answers==='object'&&!Array.isArray(d.answers)&&
+      Object.keys(d.answers).length<=8&&Object.entries(d.answers).every(([id,choice])=>
+        typeof id==='string'&&id.length<=100&&Number.isInteger(choice)&&choice>=0&&choice<=4
+      )
+    ).map(([level,d])=>[level,{step:d.step,answers:{...d.answers}}]));
   }
   // Formative course review; never store it in the certification assessmentHistory.
   const practice=value.n5Practice;

@@ -3,16 +3,25 @@ import { diagnosticQuestions, gradeDiagnostic } from '../../../entities/study/in
 import { Button, Card } from '../../../shared/ui/index.jsx';
 
 /** Questão por vez, correção apenas após concluir; sem gabarito durante a escolha. */
-export default function DiagnosticPractice({ level, update }) {
+export default function DiagnosticPractice({ level, state, update }) {
   const questions = diagnosticQuestions(level);
-  const [answers, setAnswers] = useState({});
-  const [step, setStep] = useState(0);
+  const [answers, setAnswers] = useState(()=>state.diagnosticDrafts?.[level]?.answers||{});
+  const [step, setStep] = useState(()=>Math.min(questions.length-1,Math.max(0,state.diagnosticDrafts?.[level]?.step||0)));
+  const remember=(nextAnswers,nextStep)=>{
+    update(s=>{s.diagnosticDrafts||={};s.diagnosticDrafts[level]={answers:nextAnswers,step:nextStep};});
+  };
+  const choose=(id,choice)=>{
+    const next={...answers,[id]:choice};
+    setAnswers(next);remember(next,step);
+  };
+  const goStep=next=>{setStep(next);remember(answers,next);};
   const [submitted, setSubmitted] = useState(false);
   const result = gradeDiagnostic(level, answers);
   const item = questions[step];
   const finish = () => {
     if (result.answered !== result.total || !result.total) return;
     update(s => {
+      if(s.diagnosticDrafts)delete s.diagnosticDrafts[level];
       s.diagnosticHistory = [
         ...(s.diagnosticHistory || []),
         { ...result, date: new Date().toISOString() },
@@ -20,7 +29,7 @@ export default function DiagnosticPractice({ level, update }) {
     });
     setSubmitted(true);
   };
-  const retry = () => { setAnswers({}); setStep(0); setSubmitted(false); };
+  const retry = () => { setAnswers({}); setStep(0); setSubmitted(false); update(s=>{if(s.diagnosticDrafts)delete s.diagnosticDrafts[level];}); };
 
   if (!questions.length) return <Card><p className="text-sm text-muted">Ainda não há questões disponíveis neste nível.</p></Card>;
   return <Card className="space-y-4" aria-labelledby="diagnostic-practice-title">
@@ -55,14 +64,14 @@ export default function DiagnosticPractice({ level, update }) {
         <legend className="font-bold text-ink-strong">{item.prompt}</legend>
         {item.sentence&&<p lang="ja" className="font-jp text-xl rounded-xl bg-raised p-4">{item.sentence}</p>}
         {item.choices.map((choice,j)=><label key={j} className="min-h-12 flex items-center gap-3 cursor-pointer rounded-xl border border-line p-3 text-sm text-ink-strong">
-          <input type="radio" name={`diagnostic-${item.id}`} checked={answers[item.id]===j} onChange={()=>setAnswers(a=>({...a,[item.id]:j}))} />
+          <input type="radio" name={`diagnostic-${item.id}`} checked={answers[item.id]===j} onChange={()=>choose(item.id,j)} />
           <span>{choice}</span>
         </label>)}
       </fieldset>
       <div className="flex gap-3">
-        <Button variant="secondary" disabled={step===0} onClick={()=>setStep(i=>Math.max(0,i-1))}>Anterior</Button>
+        <Button variant="secondary" disabled={step===0} onClick={()=>goStep(Math.max(0,step-1))}>Anterior</Button>
         {step<questions.length-1
-          ? <Button variant="primary" className="flex-1" disabled={answers[item.id]===undefined} onClick={()=>setStep(i=>i+1)}>Próxima questão →</Button>
+          ? <Button variant="primary" className="flex-1" disabled={answers[item.id]===undefined} onClick={()=>goStep(Math.min(questions.length-1,step+1))}>Próxima questão →</Button>
           : <Button variant="primary" className="flex-1" disabled={result.answered!==questions.length} onClick={finish}>Finalizar e ver resultado</Button>}
       </div>
     </>}

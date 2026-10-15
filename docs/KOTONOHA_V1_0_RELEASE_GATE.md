@@ -51,7 +51,7 @@ npm ci && npm run build && npm run test:e2e
 
 - Continuidade no design gamificado existente; não adicionar uma segunda UI de trilha.
 - Banco editorial separado do estado de aprendizagem; aprovado apenas sob validação.
-- Guardar progresso local, sem login nem sincronização em nuvem nesta fase.
+- Manter o armazenamento local como base; login e sincronização Supabase são opcionais e nunca equivalem a certificação. Validar conflitos com múltiplos aparelhos.
 - Limites internos de 80% total e 60% por área são apenas hipóteses de trabalho; usar validação antes de alegar prontidão JLPT.
 - Bibliografia: JLPT (critérios do exame), JF Standard (competências), EDRDG/JMdict (vocabulário), KanjiVG (traços), Tatoeba (licenças por item). Importação restrita ao conteúdo permitido, nunca cópia automática das provas oficiais.
 

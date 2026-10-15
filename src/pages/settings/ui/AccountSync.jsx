@@ -1,4 +1,5 @@
 import React from 'react';
+import {listRecoverySnapshots,MAX_RECOVERY_SNAPSHOTS} from '../../../shared/lib/recoverySnapshots.js';
 import { Button, Card } from '../../../shared/ui/index.jsx';
 
 function download(value, name) {
@@ -12,7 +13,7 @@ export function AccountSync({ cloud, state }) {
   const { user, status, message, error, busy, remote, blocked } = cloud;
   const needsChoice = ['choose', 'conflict', 'receive'].includes(status);
   let recoveries = [];
-  try { recoveries = Object.keys(localStorage).filter(k => k.startsWith('kotonoha.sync.recovery.')).sort().reverse(); } catch { /* Storage blocked: the app displays its recovery warning. */ }
+  try { recoveries = listRecoverySnapshots(); } catch { /* Storage blocked: the app displays its recovery warning. */ }
   const downloadRecovery = (key, source) => {
     try {
       const data = JSON.parse(localStorage.getItem(key));
@@ -60,7 +61,7 @@ export function AccountSync({ cloud, state }) {
     {latestRecovery&&<section className="space-y-3 border-t border-line pt-4" aria-labelledby="sync-recovery-title">
       <div className="space-y-1">
         <h3 id="sync-recovery-title" className="text-sm font-bold text-ink-strong">Cópia de segurança mais recente</h3>
-        <p className="text-xs text-muted">Mantida neste aparelho antes de substituir o progresso. Baixe uma cópia para guardar em outro lugar.</p>
+        <p className="text-xs text-muted">Mantida somente neste navegador antes de substituir o progresso. O histórico guarda até {MAX_RECOVERY_SNAPSHOTS} cópias. Baixe uma cópia para guardar em outro lugar.</p>
       </div>
       <div className="flex flex-wrap gap-2">
         <Button variant="secondary" size="sm" onClick={()=>downloadRecovery(latestRecovery,'local')}>Baixar cópia do aparelho</Button>

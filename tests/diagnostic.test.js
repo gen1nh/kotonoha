@@ -18,3 +18,19 @@ test('diagnostic history survives backup normalization and discards invalid entr
  state.diagnosticHistory = [{ level: 'N5', correct: 1, total: 1, date: new Date().toISOString() }, {level:'N5',correct:200,total:1,date:'no'}];
  assert.equal(normalizeState(state).diagnosticHistory.length, 1);
 });
+
+test('draft diagnostic answers survive normalization without becoming a finished exam', () => {
+ const s=initialState();
+ s.diagnosticDrafts={N5:{step:2,answers:{'n5-1':0}},N3:{step:999,answers:{}}};
+ const restored=normalizeState(s);
+ assert.equal(restored.diagnosticDrafts.N5.step,2);
+ assert.equal(restored.diagnosticDrafts.N3,undefined);
+ assert.equal(restored.diagnosticHistory.length,0);
+});
+test('personal mock source survives backups without losing older entries', () => {
+ const s=initialState();
+ s.mocks=[{level:'N5',score:75,date:'2026-10-14',source:'Curso pessoal'},{level:'N5',score:55,date:'2026-10-01'}];
+ const restored=normalizeState(s);
+ assert.equal(restored.mocks[0].source,'Curso pessoal');
+ assert.equal(restored.mocks[1].source,'');
+});

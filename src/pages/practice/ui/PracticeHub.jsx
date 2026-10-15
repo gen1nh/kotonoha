@@ -1,4 +1,5 @@
-import React,{useState} from 'react';
+import React from 'react';
+import {useSubpageNavigation} from '../../../shared/lib/useSubpageNavigation.js';
 import {hasCompletedN5Basics,nextGuidedAction,courseLevel} from '../../../entities/study/index.js';
 import {Button,NavigationTile} from '../../../shared/ui/index.jsx';
 import N5ListeningPractice from './N5ListeningPractice.jsx';
@@ -10,7 +11,7 @@ const LABS=[
 ];
 
 export default function PracticeHub({state,go,openSpeedQuiz,openGuidedLesson,openCheckpoint}){
- const [screen,setScreen]=useState('menu');
+ const [screen,setScreen,backScreen]=useSubpageNavigation('practice','menu',['menu','listening','labs']);
  const unlocked=hasCompletedN5Basics(state);
  const next=nextGuidedAction(state),level=courseLevel(state);
  const goNext=()=>!next.lesson?go('path'):next.kind==='checkpoint'?openCheckpoint(next.lesson.id):openGuidedLesson(next.lesson.id,level);
@@ -20,7 +21,7 @@ export default function PracticeHub({state,go,openSpeedQuiz,openGuidedLesson,ope
      <h1 className="text-2xl font-black text-ink-strong">Praticar</h1>
      <p className="text-sm text-muted">{screen==='menu'?'Escolha uma habilidade. Cada atividade tem seu próprio espaço.':'Uma atividade por vez, no seu ritmo.'}</p>
    </header>
-   {screen!=='menu'&&<button type="button" className="min-h-11 font-bold text-sm text-primary-strong" onClick={()=>setScreen('menu')}>← Voltar para Praticar</button>}
+   {screen!=='menu'&&<button type="button" className="min-h-11 font-bold text-sm text-primary-strong" onClick={backScreen}>← Voltar para Praticar</button>}
    {screen==='menu'&&<>
      <section className="rounded-2xl border-2 border-primary bg-paper p-4 space-y-3">
        <h2 className="text-base font-black text-ink-strong">Sua revisão espaçada</h2>

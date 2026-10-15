@@ -275,6 +275,10 @@ export default function Drawing({ character, random, save }) {
         </div>
       </div>
 
+      <div className="sm:hidden rounded-xl border border-line bg-paper p-3 text-sm text-ink-strong flex items-start gap-2" role="note">
+        <span aria-hidden="true" className="font-bold text-primary-strong">{activeStep+1}/{totalStrokes||1}</span>
+        <span>{currentStepInfo?.hint || 'Siga o guia de traços e pratique no quadro abaixo.'}</span>
+      </div>
       {/* 3. Área Central da Lousa (Canvas Amplo e Guiado) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start w-full min-w-0">
         {/* Painel do Canvas de Caligrafia */}

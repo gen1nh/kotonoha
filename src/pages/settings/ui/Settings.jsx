@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import {useSubpageNavigation} from "../../../shared/lib/useSubpageNavigation.js";
 import { SoundSettings } from './SoundSettings.jsx';
 import { useReadingPreferences, setReadingPreferences, japaneseVoices, warmJapaneseVoices } from '../../../entities/study/index.js';
 import { AccountSync } from './AccountSync.jsx';
@@ -17,7 +18,7 @@ export function Settings({ state, setState, toast, update, changeLevel, go, them
   const [busy, setBusy] = useState(false);
   const readingPreferences = useReadingPreferences();
   const importInput = useRef(null);
-  const [section,setSection]=useState("menu");
+  const [section,setSection,backSection]=useSubpageNavigation("settings","menu",["menu","study","audio","appearance","account","advanced"]);
   const [voices,setVoices]=useState(()=>japaneseVoices());
   useEffect(()=>warmJapaneseVoices(setVoices),[]);
 
@@ -87,8 +88,14 @@ export function Settings({ state, setState, toast, update, changeLevel, go, them
 
   return (
     <div className="space-y-6 w-full min-w-0">
-      <PageHeading title="Preferências" description="Seu ritmo, sua conta e os ajustes do aplicativo." icon="settings" iconBg="bg-raised" iconColor="text-ink-strong" />
+      {section==='menu'&&<PageHeading title="Preferências" description="Seu ritmo, sua conta e os ajustes do aplicativo." icon="settings" iconBg="bg-raised" iconColor="text-ink-strong" />}
       {section==='menu'&&<button type="button" className="min-h-11 text-sm font-bold text-primary-strong" onClick={()=>go("home")}>← Voltar ao início</button>}
+      {section==='menu'&&cloud?.user&&['choose','conflict','receive','pending','error'].includes(cloud.status)&&
+        <div role="status" className="rounded-xl border border-line bg-accent-soft p-4 space-y-2">
+          <p className="text-sm font-bold text-ink-strong">Confira seu progresso na conta</p>
+          <p className="text-xs text-ink">Acesse Conta e backups para verificar a sincronização antes de continuar em outro aparelho.</p>
+          <Button variant="primary" className="w-full" onClick={()=>setSection('account')}>Resolver sincronização →</Button>
+        </div>}
       {section==='menu'?<nav aria-label="Seções de preferências" className="grid grid-cols-2 gap-3">
         <NavigationTile title="Estudo" description="Sua meta diária." icon="learn" onClick={()=>setSection('study')}/>
         <NavigationTile title="Áudio e leitura" description="Pronúncia, voz, velocidade e romaji." icon="sound" onClick={()=>setSection('audio')}/>
@@ -96,8 +103,8 @@ export function Settings({ state, setState, toast, update, changeLevel, go, them
         <NavigationTile title="Conta e backups" description="Login e cópias de segurança." icon="academic" onClick={()=>setSection('account')}/>
         <NavigationTile title="Mais opções" description="Assistente e gerenciamento." icon="puzzle" onClick={()=>setSection('advanced')}/>
       </nav>:<div className="space-y-2">
-        <button type="button" className="min-h-11 text-sm font-bold text-primary-strong" onClick={()=>setSection('menu')}>← Voltar às preferências</button>
-        <h2 className="text-xl font-black text-ink-strong">{({study:'Estudo',audio:'Áudio e leitura',appearance:'Aparência',account:'Conta e backups',advanced:'Mais opções'})[section]}</h2>
+        <button type="button" className="min-h-11 text-sm font-bold text-primary-strong" onClick={backSection}>← Voltar às preferências</button>
+        <h1 className="text-xl font-black text-ink-strong">{({study:'Estudo',audio:'Áudio e leitura',appearance:'Aparência',account:'Conta e backups',advanced:'Mais opções'})[section]}</h1>
       </div>}
       {section==="account"&&<AccountSync cloud={cloud} state={state} />}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 items-start">
@@ -117,7 +124,7 @@ export function Settings({ state, setState, toast, update, changeLevel, go, them
           <div className="border-t border-line pt-4 space-y-3">
             <h3 className="text-base font-bold text-ink-strong">Pronúncia japonesa</h3>
             <label className="flex items-center justify-between gap-3 min-h-11">
-              <span><span className="block font-bold text-sm text-ink-strong">Mostrar romaji</span><span className="block text-xs text-muted">Aparece após revelar o texto, nas frases que já têm leitura revisada.</span></span>
+              <span><span className="block font-bold text-sm text-ink-strong">Mostrar romaji</span><span className="block text-xs text-muted">Aparece somente onde há leitura revisada. Em questões avaliativas, apenas depois de responder.</span></span>
               <input type="checkbox" role="switch" aria-label="Mostrar romaji" checked={readingPreferences.showRomaji} onChange={e=>{if(!setReadingPreferences({showRomaji:e.target.checked}))toast?.('A opção foi aplicada nesta sessão, mas não pôde ser salva.');}} className="h-6 w-6 accent-primary" />
             </label>
             <label className="block text-sm font-bold text-ink-strong">Velocidade padrão do japonês
@@ -133,7 +140,7 @@ export function Settings({ state, setState, toast, update, changeLevel, go, them
                 {voices.map(voice=><option key={voice.voiceURI} value={voice.voiceURI}>{voice.name} ({voice.lang})</option>)}
               </select>
             </label>
-            <p className="text-xs text-muted">Estas opções são o padrão do aplicativo. Cada exercício com áudio pode escolher uma velocidade diferente sem mudar o padrão.</p>
+            <p className="text-xs text-muted">Estas opções ficam salvas neste aparelho. Cada atividade com áudio pode usar outra velocidade sem alterar o padrão.</p>
           </div>
           <SoundSettings toast={toast} />
         </Card>}

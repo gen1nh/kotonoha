@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import {useSubpageNavigation} from "../../../shared/lib/useSubpageNavigation.js";
 import Icon from "../../../shared/ui/Icon.jsx";
 import { Card, Button, NavigationTile, AudioRateControl } from "../../../shared/ui/index.jsx";
 import {speakJapanese,useReadingPreferences} from "../../../entities/study/index.js";
@@ -24,14 +25,21 @@ export function Learn({
   const readingPreferences=useReadingPreferences();
   const [speechRate,setSpeechRate]=useState(()=>readingPreferences.speechRate);
   const playJapanese=text=>speakJapanese(text,toast,{rate:speechRate});
-  const [showCategories,setShowCategories]=useState(learnTopic==="hiragana");
+  const [page,setPage,backCategory]=useSubpageNavigation('learn','menu',['menu','hiragana','katakana','kanji','vocabulary','grammar','web_resources','media_lab']);
+  const showCategories=page==='menu';
   useEffect(() => {
+    if(learnTopic!=='hiragana' && ['katakana','kanji','vocabulary','grammar','web_resources','media_lab'].includes(learnTopic))setPage(learnTopic);
     setTab(learnTopic);
-    setShowCategories(learnTopic==="hiragana");
     setCharacter(learnTopic === "katakana" ? "ア" : learnTopic === "kanji" ? N5_KANJI[0].glyph : "あ");
   }, [learnTopic]);
 
-  const [quiz, setQuiz] = useState(false);
+  useEffect(()=>{
+    if(page!=='menu' && page!==tab) {
+      setTab(page);
+      setCharacter(page==='katakana'?'ア':page==='kanji'?N5_KANJI[0].glyph:'あ');
+    }
+  },[page]);
+    const [quiz, setQuiz] = useState(false);
   const [answers, setAnswers] = useState({});
   const [character, setCharacter] = useState(
     learnTopic === "katakana" ? "ア" : learnTopic === "kanji" ? N5_KANJI[0].glyph : "あ",
@@ -60,7 +68,7 @@ export function Learn({
 
   function changeTab(next) {
     setTab(next);
-    setShowCategories(false);
+    setPage(next);
     setQuiz(false);
     setAnswers({});
     setCharacter(next === "katakana" ? "ア" : next === "kanji" ? N5_KANJI[0].glyph : "あ");
@@ -117,7 +125,7 @@ export function Learn({
         </details>
       </section>}
       {!showCategories&&<>
-        <button type="button" className="min-h-11 font-bold text-sm text-primary-strong" onClick={()=>setShowCategories(true)}>← Todas as categorias</button>
+        <button type="button" className="min-h-11 font-bold text-sm text-primary-strong" onClick={backCategory}>← Todas as categorias</button>
         <details className="rounded-xl border border-line bg-paper p-3">
           <summary className="min-h-11 cursor-pointer text-sm font-bold text-ink-strong">Ajustar áudio desta consulta</summary>
           <div className="pt-2"><AudioRateControl rate={speechRate} onChange={setSpeechRate} defaultRate={readingPreferences.speechRate}/></div>
@@ -314,7 +322,7 @@ export function Learn({
                     <span className="text-sm font-semibold text-ink">
                       {kana}{" "}
                       <span className="text-xs text-muted font-normal">
-                        ({romaji})
+                        {readingPreferences.showRomaji?`(${romaji})`:null}
                       </span>
                     </span>
                     <p className="text-xs text-muted truncate">{meaning}</p>

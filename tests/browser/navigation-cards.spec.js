@@ -64,3 +64,20 @@ test('Progresso e Preferências usam destinos claros e sem rolagem horizontal',a
     expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
   }
 });
+
+test('voltar e avançar do navegador restauram as subpáginas sem perder o menu',async({page})=>{
+  await enter(page,'practice');
+  await page.getByRole('button',{name:'Escuta'}).click();
+  await expect(page).toHaveURL(/sub_practice=listening/);
+  await page.goBack();
+  await expect(page.getByRole('button',{name:'Escuta'})).toBeVisible();
+  await page.goForward();
+  await expect(page.getByRole('heading',{name:'Prática de escuta'})).toBeVisible();
+  await page.goto('/?view=settings');
+  await page.getByRole('button',{name:'Aparência'}).click();
+  await expect(page).toHaveURL(/sub_settings=appearance/);
+  await page.reload();
+  await expect(page.getByRole('combobox',{name:'Tema visual'})).toBeVisible();
+  await page.goBack();
+  await expect(page.getByRole('button',{name:'Aparência'})).toBeVisible();
+});

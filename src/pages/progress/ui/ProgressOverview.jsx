@@ -1,4 +1,5 @@
-import React, {useState} from 'react';
+import React from 'react';
+import {useSubpageNavigation} from '../../../shared/lib/useSubpageNavigation.js';
 import { lessonsFor,isDone } from '../../../entities/study/index.js';
 import { dailyActivityCount,dailyGoal } from '../../../entities/study/index.js';
 import { todayKey } from '../../../entities/study/index.js';
@@ -10,7 +11,7 @@ import SimuladosHub from './SimuladosHub.jsx';
 import { courseLevel } from '../../../entities/study/index.js';
 import N5Readiness from './N5Readiness.jsx';
 export default function ProgressOverview({state,go,update,toast,changeLevel}) {
-  const [section,setSection]=useState('overview');
+  const [section,setSection,backSection]=useSubpageNavigation('progress','overview',['overview','preparation','exam']);
   const currentLevel=courseLevel(state);
   const lessons=lessonsFor(currentLevel);
   const completed=lessons.filter(l=>isDone(state,currentLevel,l)).length;
@@ -26,7 +27,7 @@ export default function ProgressOverview({state,go,update,toast,changeLevel}) {
     {section==='overview'?<nav aria-label="Seções do progresso" className="grid grid-cols-2 gap-3">
       <NavigationTile title="Preparação N5" icon="learn" description="Áreas estudadas e próximos passos." onClick={()=>setSection('preparation')}/>
       <NavigationTile title="Simulados" icon="review" description="Questões, provas e resultados." onClick={()=>setSection('exam')}/>
-    </nav>:<button type="button" className="min-h-11 text-sm font-bold text-primary-strong" onClick={()=>setSection('overview')}>← Voltar ao resumo</button>}
+    </nav>:<button type="button" className="min-h-11 text-sm font-bold text-primary-strong" onClick={backSection}>← Voltar ao resumo</button>}
     {section==="overview"&&<>
     <section className="rounded-2xl border border-line bg-paper p-5 space-y-4" aria-label="Resumo da aprendizagem">
       <h2 className="font-bold text-lg text-ink-strong">Competências {currentLevel}</h2>
@@ -50,7 +51,7 @@ export default function ProgressOverview({state,go,update,toast,changeLevel}) {
     <N5Readiness state={state} go={go} update={update}/>
     <section className="rounded-2xl border border-line bg-paper p-5 space-y-2"><h2 className="font-bold text-ink-strong">Próximos níveis</h2><p className="text-sm text-muted">{hasUnlockedN4(state) ? 'N5 validado internamente. O N4 introdutório está disponível; o currículo completo N4–N1 ainda está em construção.' : 'Checkpoints concluídos não equivalem à aprovação no N5. Continue estudando e acompanhe a preparação para a prova de passagem.'}</p></section>
     </>}
-    {section==="exam"&&<SimuladosHub state={state} update={update} toast={toast} changeLevel={changeLevel}/>}
+    {section==="exam"&&<SimuladosHub state={state} update={update} toast={toast}/>}
 
   </div>;
 }

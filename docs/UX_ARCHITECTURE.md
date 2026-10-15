@@ -40,7 +40,7 @@ Biblioteca: consulta; nível escolhido nesta área não é nível desbloqueado.
 - Checkpoints N5 legados aprovados equivalem à aprovação das microlições que substituíram os quatro blocos antigos, impedindo retrocesso do usuário.
 - Os rascunhos `drafts` e tentativas `attempts` sobrevivem a refresh e importação.
 - Qualquer migração deve ser testada com backups antigos e dados criados pelo Caderno, inclusive cartões nunca estudados.
-- Sincronização em nuvem **não será implementada nesta versão**. Transferência somente por backup manual.
+- Sincronização opcional Supabase e login Google já estão implementados, mediante configuração. Conflitos exigem escolha explícita e snapshots; backups manuais permanecem disponíveis.
 
 ### Nível de conteúdo real
 
@@ -56,3 +56,9 @@ Fundamentos N5 reestruturados em microlições. N4–N1 são conjuntos **introdu
 ### Regras de alteração
 
 Antes de alterar o fluxo, verificar **Home → Trilha → Lição → Revisão → Checkpoint → próximo passo**, navegação direta por URL, histórico, restauração, modo escuro, iOS e backup legado. Não adicionar um atalho que pule guardas, segunda meta ou segundo motor de progressão.
+
+## Subpáginas e retorno (outubro de 2026)
+
+As áreas Praticar, Biblioteca, Caderno, Progresso, Simulados e Preferências usam parâmetros `sub_<área>` na URL. A navegação por mini-cards registra histórico do navegador; retorno visual e voltar/avançar sincronizam a subpágina. Rotas diretas inválidas caem no menu inicial da área.
+
+Não expor informações editoriais internas ao aluno. A Trilha continua sendo o único currículo; níveis de Simulados são filtros locais e não alteram progresso nem nível global.

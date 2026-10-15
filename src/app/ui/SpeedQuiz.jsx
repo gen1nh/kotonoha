@@ -1,4 +1,5 @@
 import { playSound } from '../../shared/audio/index.js';
+import {useReadingPreferences} from '../../entities/study/index.js';
 import { useDialogFocus } from "../../shared/lib/index.js";
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { HIRAGANA, KATAKANA, VOCAB } from "../../entities/study/index.js";
@@ -15,6 +16,7 @@ export default function SpeedQuiz({ state, update, onClose }) {
   const [correctCount, setCorrectCount] = useState(0);
   const [wrongCount, setWrongCount] = useState(0);
   const [currentQ, setCurrentQ] = useState(null);
+  const readingPreferences=useReadingPreferences();
   const [feedback, setFeedback] = useState(null); // { choiceIndex, correct: boolean }
 
   const timerRef = useRef(null);
@@ -318,7 +320,7 @@ export default function SpeedQuiz({ state, update, onClose }) {
             {currentQ && (
               <div className="p-8 rounded-xl border border-line bg-paper text-center space-y-2">
                 <span className="text-xs font-semibold text-muted uppercase tracking-wider">
-                  {currentQ.hint}
+                  {currentQ.hint?.includes("(") && !readingPreferences.showRomaji && !feedback ? "Vocabulário" : currentQ.hint}
                 </span>
                 <div
                   className="font-jp text-5xl sm:text-6xl font-bold text-ink"
