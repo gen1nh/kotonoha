@@ -94,7 +94,7 @@ export function Settings({ state, setState, toast, update, changeLevel, go, them
         <div role="status" className="rounded-xl border border-line bg-accent-soft p-4 space-y-2">
           <p className="text-sm font-bold text-ink-strong">Confira seu progresso na conta</p>
           <p className="text-xs text-ink">Acesse Conta e backups para verificar a sincronização antes de continuar em outro aparelho.</p>
-          <Button variant="primary" className="w-full" onClick={()=>setSection('account')}>Ver conta e backups →</Button>
+          <Button variant="primary" className="w-full" onClick={()=>setSection('account')}>Resolver sincronização →</Button>
         </div>}
       {section==='menu'?<nav aria-label="Seções de preferências" className="grid grid-cols-2 gap-3">
         <NavigationTile title="Estudo" description="Sua meta diária." icon="learn" onClick={()=>setSection('study')}/>
