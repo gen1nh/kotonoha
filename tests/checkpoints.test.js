@@ -90,3 +90,18 @@ test('respostas de gramática não seguem uma posição fixa dentro do checkpoin
   }
  }
 });
+
+test('checkpoint de escuta restaura evidência de voz e rejeita IDs de áudio inválidos',()=>{
+ const state=initialState();
+ state.drafts['checkpoint:listening:0']={
+  answers:{},result:null,
+  audioPlayed:['n5-listening-01','n5-listening-01','not-a-listening-item',4],
+  transcripts:['n5-listening-02'],
+ };
+ const restored=normalizeState(JSON.parse(JSON.stringify(state)));
+ assert.deepEqual(restored.drafts['checkpoint:listening:0'].audioPlayed,['n5-listening-01']);
+ assert.deepEqual(restored.drafts['checkpoint:listening:0'].transcripts,['n5-listening-02']);
+ const previous=initialState();
+ previous.drafts['checkpoint:listening:0']={answers:{},result:null};
+ assert.deepEqual(normalizeState(previous).drafts['checkpoint:listening:0'].audioPlayed,[]);
+});

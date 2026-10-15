@@ -207,7 +207,7 @@ export function normalizeState(value) {
       draft.answers && typeof draft.answers==='object' && !Array.isArray(draft.answers) &&
       Object.keys(draft.answers).length<=30 && Object.values(draft.answers).every(a=>typeof a==='string'&&a.length<=1000 || Number.isInteger(a)&&a>=0&&a<=4) &&
       (draft.result===null || draft.result===undefined || Number.isInteger(draft.result)&&draft.result>=0&&draft.result<=100)
-    ).slice(0,60).map(([key,draft])=>[key,{answers:{...draft.answers},result:draft.result??null,...(key.startsWith('checkpoint:')?{transcripts:Array.isArray(draft.transcripts)?[...new Set(draft.transcripts.filter(id=>typeof id==='string'&&id.length<=100))].slice(0,10):[]}: {})}]));
+    ).slice(0,60).map(([key,draft])=>[key,{answers:{...draft.answers},result:draft.result??null,...(key.startsWith('checkpoint:')?{transcripts:Array.isArray(draft.transcripts)?[...new Set(draft.transcripts.filter(id=>typeof id==='string'&&id.length<=100))].slice(0,10):[]}: {}), ...(key.startsWith('checkpoint:listening:')?{audioPlayed:Array.isArray(draft.audioPlayed)?[...new Set(draft.audioPlayed.filter(id=>typeof id==='string'&&/^n5-listening-\d{2}$/.test(id)))].slice(0,10):[]}: {})}]));
   }
   if(value.attempts && typeof value.attempts==='object' && !Array.isArray(value.attempts)) {
     base.attempts=Object.fromEntries(Object.entries(value.attempts).filter(([key,n])=>

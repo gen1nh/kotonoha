@@ -186,8 +186,34 @@ test('escuta: revelar transcrição continua marcado após recarga e gera evidê
  await expect(page.locator('fieldset [lang="ja"]')).toBeVisible();
  for(const [i,q] of questions.entries()){
   await page.locator('fieldset').first().getByRole('radio',{name:q.answer,exact:true}).check();
+  if(i>0)await page.getByRole('button',{name:/mostrar texto/i}).click();
   if(i<questions.length-1)await page.getByRole('button',{name:'Próxima questão →'}).click();
  }
+ await page.getByRole('button',{name:'Finalizar e conferir respostas'}).click();
+ await expect(page.getByText('Checkpoint aprovado!',{exact:true})).toBeVisible();
+ await expect.poll(()=>page.evaluate(id=>JSON.parse(localStorage.getItem('kotonoha.v1')).checkpoints[id]?.modality,unit.id)).toBe('reading-fallback');
+});
+
+test('escuta não aprova alternativas sem áudio ou leitura e permite fallback honesto',async({page})=>{
+ const state=seeded(),unit=N5_UNITS.find(u=>u.kind==='listening');
+ for(const previous of N5_UNITS.slice(0,N5_UNITS.indexOf(unit)))state.checkpoints[previous.id]={score:100,date:'2026-10-15'};
+ state.lessons[unit.id]=true;
+ const qs=checkpointQuestions(state,unit.id);
+ await enter(page,state);
+ await page.goto(`/?view=checkpoint&topic=${encodeURIComponent(unit.id)}&level=N5`);
+ for(let i=0;i<qs.length;i++){
+  await page.locator('fieldset').getByRole('radio',{name:qs[i].answer,exact:true}).check();
+  if(i<qs.length-1)await expect(page.getByRole('button',{name:'Próxima questão →'})).toBeDisabled();
+  else await expect(page.getByRole('button',{name:'Finalizar e conferir respostas'})).toBeDisabled();
+  await page.getByRole('button',{name:/mostrar texto/i}).click();
+  if(i<qs.length-1)await page.getByRole('button',{name:'Próxima questão →'}).click();
+ }
+ await expect(page.getByRole('button',{name:'Finalizar e conferir respostas'})).toBeEnabled();
+ await page.reload();
+ // All answers and disclosed transcripts survive the reload; this branch starts navigation at question one.
+ await expect(page.locator('fieldset [lang="ja"]')).toBeVisible();
+ for(let i=1;i<qs.length;i++)await page.getByRole('button',{name:'Próxima questão →'}).click();
+ await expect(page.getByRole('button',{name:'Finalizar e conferir respostas'})).toBeEnabled();
  await page.getByRole('button',{name:'Finalizar e conferir respostas'}).click();
  await expect(page.getByText('Checkpoint aprovado!',{exact:true})).toBeVisible();
  await expect.poll(()=>page.evaluate(id=>JSON.parse(localStorage.getItem('kotonoha.v1')).checkpoints[id]?.modality,unit.id)).toBe('reading-fallback');
