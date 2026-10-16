@@ -103,6 +103,17 @@ Merge à `main`: `a57bd363922452f25b62b9175f421151298b7033`. CI final da branch 
 
 **Princípio:** revisão nunca ensina algo inédito; lição apresenta conteúdo e SRS reforça depois. Desafio opcional deve usar conteúdo visto ou aprovado e não interferir no desbloqueio N4 nem nas evidências de escuta.
 
+## QA móvel automatizado — reforço após teste físico de áudio
+
+- [x] Adicionar testes Playwright Chromium e WebKit móvel para largura/overflow em 320, 375, 390 e 430 px nas telas principais.
+- [x] Adicionar teste de canvas de Hiragana: desenho, desfazer, limpar e `touch-action: none`.
+- [x] Adicionar teste de retomada de checkpoint no WebKit após recarga.
+- [x] Corrigir lousa para descartar um traço cancelado pelo sistema e ignorar um segundo ponteiro (gestos multitouch).
+- [ ] Validar CI completo no SHA final do PR e na `main` após integração.
+- [ ] Homologação física restante: safe areas em orientação vertical/horizontal, desenho real com dedo, retomada após fechar a PWA e navegação por todas as áreas. O áudio/PWA offline já foram confirmados manualmente pelo usuário.
+
+**Importante:** emulação Playwright WebKit em tamanho de iPhone não substitui Safari rodando em hardware real. Não marcar testes físicos pendentes como concluídos só porque a CI passou.
+
 ## Pendências obrigatórias antes da 1.0
 
 - [ ] Revisão linguística japonesa **independente** de todas as 220 unidades e respectivos exemplos, feedback e distratores.
