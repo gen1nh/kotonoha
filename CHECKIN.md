@@ -107,7 +107,8 @@ Merge à `main`: `a57bd363922452f25b62b9175f421151298b7033`. CI final da branch 
 
 - [ ] Revisão linguística japonesa **independente** de todas as 220 unidades e respectivos exemplos, feedback e distratores.
 - [ ] Banco de avaliação final N5 aprovado com cobertura curricular, revisão independente e direitos de áudio verificados.
-- [ ] Homologação física em **iPhone/Safari** de áudio, instalação da PWA, offline, safe area, desenho e retomada.
+- [x] **Confirmação manual do usuário (15/10/2026):** áudio funcionando no computador e no iPhone; também testou a PWA instalada e o funcionamento offline no iPhone. Evidência relatada pelo usuário, não teste executado pela CI.
+- [ ] Homologação física **completa** no iPhone/Safari: ainda verificar/documentar safe area, desenho, retomada após fechamento, navegação e outras rotas. O teste confirmado de áudio/PWA offline não comprova esses itens.
 - [ ] Revisar licenças dos materiais incorporados e atribuições.
 - [ ] Confirmar deploy do commit de `main` na Vercel (não basta GitHub verde).
 - [ ] Executar testes com iniciantes reais, sem dicas do desenvolvedor: começar, continuar, errar, tentar de novo, revisar, consultar palavra e retomar após fechar.
