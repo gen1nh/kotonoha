@@ -41,6 +41,10 @@ export default function DailyQuestion({ state, update, go, speak, level: guidedL
   const complete = selected !== null;
   const correct = question&&selected === question.answer;
   if(!question)return <p className="text-sm text-muted">Seu desafio do dia aparece aqui depois de concluir sua primeira lição. Vamos começar pela Trilha!</p>;
+  const japanesePrompt=/^[\u3040-\u30ff\u3400-\u9fffー々〆ヵヶ。、！？\s]+$/.test(question.prompt);
+  const promptContent=japanesePrompt&&speak?
+    <button type="button" lang="ja" aria-label="Ouvir caractere em japonês" onClick={()=>speak(question.prompt,{rate:speechRate})}
+      className="flex min-h-11 items-center gap-2 text-left font-jp text-xl font-bold">{question.prompt}<Icon name="sound"/></button>:question.prompt;
 
   // Estado quando a pergunta já foi respondida hoje
   if (complete && !showReview) {
@@ -55,7 +59,7 @@ export default function DailyQuestion({ state, update, go, speak, level: guidedL
               Desafio do dia
             </span>
           </div>
-          <h3 className="mt-3 text-lg font-bold text-ink">{question.prompt}</h3>
+          <h3 className="mt-3 text-lg font-bold text-ink">{promptContent}</h3>
           {question.sentence&&<button type="button" lang="ja" disabled={!speak}
             className="mt-1 flex min-h-11 items-center gap-2 text-left font-jp text-lg text-ink-strong font-semibold disabled:cursor-default"
             onClick={()=>speak?.(question.sentence,{rate:speechRate})}
@@ -101,7 +105,7 @@ export default function DailyQuestion({ state, update, go, speak, level: guidedL
           tabIndex={-1}
           className="text-base font-bold text-ink"
         >
-          {question.prompt}
+          {promptContent}
         </h3>
         {question.sentence&&<button type="button" lang="ja" disabled={!speak}
           aria-label="Ouvir frase em japonês"
