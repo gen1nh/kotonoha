@@ -103,13 +103,16 @@ Merge à `main`: `a57bd363922452f25b62b9175f421151298b7033`. CI final da branch 
 
 **Princípio:** revisão nunca ensina algo inédito; lição apresenta conteúdo e SRS reforça depois. Desafio opcional deve usar conteúdo visto ou aprovado e não interferir no desbloqueio N4 nem nas evidências de escuta.
 
-## QA móvel automatizado — reforço após teste físico de áudio
+## QA móvel automatizado — PR #28 integrado à main
+
+Merge squash: `968a9d1a4b2633c89d61beb70dba58711f21fb2f`. CI do commit final do PR aprovado em Chromium e WebKit: https://github.com/gen1nh/kotonoha/actions/runs/38838500207 e https://github.com/gen1nh/kotonoha/actions/runs/38838494106.
 
 - [x] Adicionar testes Playwright Chromium e WebKit móvel para largura/overflow em 320, 375, 390 e 430 px nas telas principais.
 - [x] Adicionar teste de canvas de Hiragana: desenho, desfazer, limpar e `touch-action: none`.
 - [x] Adicionar teste de retomada de checkpoint no WebKit após recarga.
 - [x] Corrigir lousa para descartar um traço cancelado pelo sistema e ignorar um segundo ponteiro (gestos multitouch).
-- [ ] Validar CI completo no SHA final do PR e na `main` após integração.
+- [x] CI completo do SHA final do PR #28 aprovado em Chromium e WebKit, com auditorias e build.
+- [ ] Verificar o CI da `main` após o merge e a atualização deste documento.
 - [ ] Homologação física restante: safe areas em orientação vertical/horizontal, desenho real com dedo, retomada após fechar a PWA e navegação por todas as áreas. O áudio/PWA offline já foram confirmados manualmente pelo usuário.
 
 **Importante:** emulação Playwright WebKit em tamanho de iPhone não substitui Safari rodando em hardware real. Não marcar testes físicos pendentes como concluídos só porque a CI passou.
