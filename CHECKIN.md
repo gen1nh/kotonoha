@@ -83,7 +83,9 @@ Integrado por squash à `main`: `a83f9497518ce3b90cde5335f41540a8d7b9c46f`. CI c
 
 **Motivo:** a conta Hobby atingiu `build-rate-limit` após muitos commits. Evitar deploy Git por commit; o GitHub Actions valida os commits, mas **não publica**. O campo `Ignored Build Step` pode contar para a cota mesmo quando um build é cancelado; por isso preferimos desativar o gatilho de deploy Git, mantendo a Vercel para publicações autorizadas. Para reverter esta política, reabilitar `git.deploymentEnabled` explicitamente (e atualizar estas instruções). Consulte o README, seção "Ver as mudanças no navegador antes de publicar".
 
-## Ajustes de consistência e conteúdo por nível (PR em andamento)
+## Ajustes de consistência e conteúdo por nível (PR #27 · integrado)
+
+Merge à `main`: `a57bd363922452f25b62b9175f421151298b7033`. CI final da branch aprovada nas duas execuções [38835569573](https://github.com/gen1nh/kotonoha/actions/runs/38835569573) e [38835575626](https://github.com/gen1nh/kotonoha/actions/runs/38835575626).
 
 - [x] Template de largura única no `Shell` (`max-w-[52rem]`) e normalização do primeiro contêiner de cada rota; não deslocar telas com utilitários `max-w-2xl` ou `max-w-3xl` individuais.
 - [x] Alternativa selecionada em teste usa azul suave, não verde de acerto antes de ser corrigida.
@@ -94,7 +96,8 @@ Integrado por squash à `main`: `a83f9497518ce3b90cde5335f41540a8d7b9c46f`. CI c
 - [x] Desafio diário N5 deriva de checkpoints das unidades aprovadas (até 10 recentes, múltiplas questões por unidade) e gira diariamente; a pergunta respondida fica vinculada ao dia no backup para não mudar após avançar de lição.
 - [x] Prática extra de escuta usa sons/palavras que o aluno já viu e incorpora os exercícios autorais das unidades de escuta praticadas; ao esgotar o banco liberado, **não reinicia automaticamente** as mesmas seis questões.
 - [x] Mantém a política offline-first: o **banco de itens atual é local e versionado**, sem banco remoto nem necessidade de login. Não inventar frases ilimitadas com IA; ampliar só com conteúdo editorial revisado.
-- [ ] Validar CI Node, arquitetura, currículo, build e Playwright Chromium/WebKit no SHA final do PR antes de integrar.
+- [x] CI Node, arquitetura, currículo, build e Playwright Chromium/WebKit aprovado no SHA final do PR #27 (`dbb34fd5fb14f26cd1f60f35f457f52b67adac8a`).
+- [ ] Conferir CI do commit na `main` e prévia real após atualização do CHECKIN; publicação Vercel continua **manual**.
 - [ ] Testar visualmente todas as rotas e dispositivos reais: larguras, scroll, áudio de japonês e safe areas.
 - [ ] Fazer revisão editorial de novas questões antes de expandir a variedade além dos itens já aprovados.
 
