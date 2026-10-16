@@ -2,7 +2,7 @@ import { playSound } from '../../shared/audio/index.js';
 import {useReadingPreferences} from '../../entities/study/index.js';
 import { useDialogFocus } from "../../shared/lib/index.js";
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { HIRAGANA, KATAKANA, VOCAB } from "../../entities/study/index.js";
+import { speedPracticePool, speedPracticeQuestion } from "../../entities/study/model/practicePool.js";
 import Icon from "../../shared/ui/Icon.jsx";
 
 export default function SpeedQuiz({ state, update, onClose }) {
@@ -20,62 +20,25 @@ export default function SpeedQuiz({ state, update, onClose }) {
   const [feedback, setFeedback] = useState(null); // { choiceIndex, correct: boolean }
 
   const timerRef = useRef(null);
+  const usedIds=useRef([]);
   const resultRecorded = useRef(false);
 
-  // Pool de perguntas baseado no modo
-  const getPool = useCallback(() => {
-    const hiraItems = HIRAGANA.map(([char, romaji]) => ({
-      prompt: char,
-      answer: romaji,
-      hint: "Hiragana",
-    }));
-    const kataItems = KATAKANA.map(([char, romaji]) => ({
-      prompt: char,
-      answer: romaji,
-      hint: "Katakana",
-    }));
-    const vocabItems = VOCAB.map(([kanji, kana, romaji, meaning]) => ({
-      prompt: kanji,
-      answer: meaning,
-      hint: `${kana} (${romaji})`,
-    }));
-
-    if (mode === "hiragana") return hiraItems;
-    if (mode === "katakana") return kataItems;
-    if (mode === "vocab") return vocabItems;
-    return [...hiraItems, ...kataItems, ...vocabItems];
-  }, [mode]);
-
-  // Gera uma nova pergunta com 4 alternativas aleatórias
-  const nextQuestion = useCallback(() => {
-    const pool = getPool();
-    if (pool.length < 4) return;
-    const target = pool[Math.floor(Math.random() * pool.length)];
-
-    // Pega 3 alternativas erradas diferentes da correta
-    const distractors = [];
-    while (distractors.length < 3) {
-      const candidate = pool[Math.floor(Math.random() * pool.length)].answer;
-      if (candidate !== target.answer && !distractors.includes(candidate)) {
-        distractors.push(candidate);
-      }
-    }
-
-    // Embaralha as 4 opções
-    const choices = [target.answer, ...distractors].sort(
-      () => Math.random() - 0.5,
-    );
-    setCurrentQ({
-      prompt: target.prompt,
-      answer: target.answer,
-      hint: target.hint,
-      choices,
-    });
+  // Eligible questions grow with the lessons already studied. Never expose future kana.
+  const getPool=useCallback(()=>speedPracticePool(state,mode),[state.cards,mode]);
+  const nextQuestion=useCallback(()=>{
+    const pool=getPool();
+    if(pool.length<4){setCurrentQ(null);setFeedback(null);return;}
+    if(pool.every(item=>usedIds.current.includes(item.id)))usedIds.current=[];
+    const question=speedPracticeQuestion(pool,usedIds.current);
+    if(!question){setCurrentQ(null);setFeedback(null);return;}
+    usedIds.current=[...usedIds.current,question.id];
+    setCurrentQ(question);
     setFeedback(null);
-  }, [getPool]);
-
+  },[getPool]);
   // Inicia o Quiz
   const startGame = () => {
+    if(getPool().length<4)return;
+    usedIds.current=[...(state.speedRecords?.recentIds||[])];
     setScore(0);
     setCombo(0);
     setMaxCombo(0);
@@ -120,6 +83,7 @@ export default function SpeedQuiz({ state, update, onClose }) {
         if (!s.speedRecords)
           s.speedRecords = { highScore: 0, bestCombo: 0, totalGames: 0 };
         s.speedRecords.totalGames = (s.speedRecords.totalGames || 0) + 1;
+        s.speedRecords.recentIds=[...new Set([...(s.speedRecords.recentIds||[]),...usedIds.current])].slice(-50);
         if (isNewHigh) s.speedRecords.highScore = score;
         if (newMaxCombo > (s.speedRecords.bestCombo || 0))
           s.speedRecords.bestCombo = newMaxCombo;
@@ -199,7 +163,7 @@ export default function SpeedQuiz({ state, update, onClose }) {
                 Quiz Relâmpago 60s
               </h2>
               <small className="text-xs text-muted block">
-                Treino de velocidade & reconhecimento instantâneo
+                Somente caracteres e palavras que você já estudou
               </small>
             </div>
           </div>
@@ -215,7 +179,7 @@ export default function SpeedQuiz({ state, update, onClose }) {
         {phase === "idle" && (
           <div className="space-y-6">
             <p className="text-sm text-muted leading-relaxed">
-              Acerte o máximo de caracteres e palavras em 60 segundos. Construa
+              Revise os caracteres e palavras que já aprendeu em 60 segundos. Construa
               combos para multiplicar seus pontos!
             </p>
 

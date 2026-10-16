@@ -164,12 +164,13 @@ export function initialState() {
     streak: { last: "", days: 0 },
     stats: { reviews: 0, correct: 0 },
     dailyAnswers: {},
+    dailyQuestionIds: {},
     dailyActivityGoal: 2,
     activityLog: {},
     createdAt: Date.now(),
     mocks: [],
     selectedLevel: "N5",
-    speedRecords: { highScore: 0, bestCombo: 0, totalGames: 0 },
+    speedRecords: { highScore: 0, bestCombo: 0, totalGames: 0, recentIds: [] },
     notebook: {
       notes: [],
       kanban: [],
@@ -276,6 +277,9 @@ export function normalizeState(value) {
         answer <= 3,
     ),
   );
+  base.dailyQuestionIds=Object.fromEntries(Object.entries(value.dailyQuestionIds||{})
+    .filter(([key,id])=>/^\d{4}-\d{2}-\d{2}:N[1-5]$/.test(key)&&typeof id==='string'&&id.length<=100)
+    .slice(-120));
   base.dailyActivityGoal = [1, 2, 3].includes(value.dailyActivityGoal) ? value.dailyActivityGoal : 2;
   if (value.activityLog && typeof value.activityLog === 'object' && !Array.isArray(value.activityLog)) {
     base.activityLog = Object.fromEntries(Object.entries(value.activityLog).filter(([day, ids]) =>
@@ -304,6 +308,7 @@ export function normalizeState(value) {
       highScore: Number(value.speedRecords.highScore) || 0,
       bestCombo: Number(value.speedRecords.bestCombo) || 0,
       totalGames: Number(value.speedRecords.totalGames) || 0,
+      recentIds: Array.isArray(value.speedRecords.recentIds)?[...new Set(value.speedRecords.recentIds.filter(id=>typeof id==='string'&&id.length<=100))].slice(-50):[],
     };
   }
   if (value.notebook && typeof value.notebook === "object") {
@@ -405,20 +410,16 @@ export function cardMatchesLevel(card, level = "N5") {
   }
   return card.type === `Vocabulário ${level}`;
 }
-/** Bounded batches. Custom cards are always eligible without changing course level. */
+/** Review only cards already encountered in guided study or personal flashcards
+ * intentionally created by the learner. Never introduce unseen curriculum here.
+ * New curriculum cards belong to the lesson, not to the review selector. */
 export function selectReview(state,type,limit=10,now=Date.now()){
   const level=state.selectedLevel||'N5';
-  const cards=Object.values(state.cards||{}).filter(c=>type?c.type===type:cardMatchesLevel(c,level));
-  const due=cards.filter(c=>c.seen&&c.due<=now).sort((a,b)=>a.due-b.due);
-  if(due.length)return due.slice(0,limit).map(c=>c.id);
-  const fresh=cards.filter(c=>!c.seen);
-  if(type)return fresh.slice(0,Math.min(limit,type.startsWith('Vocabulário')?4:5)).map(c=>c.id);
-  // Personal flashcards don't wait for an N5 category to be exhausted.
-  const personal=fresh.filter(c=>c.type==='Caderno Pessoal');
-  const curricular=fresh.filter(c=>c.type!=='Caderno Pessoal');
-  const groups=[...new Set(curricular.map(c=>c.type))];
-  const primary=curricular.filter(c=>c.type===groups[0]);
-  return [...personal.slice(0,2),...primary.slice(0,Math.min(5,limit-2))].slice(0,limit).map(c=>c.id);
+  const candidates=Object.values(state.cards||{}).filter(c=>
+    (type?c.type===type:cardMatchesLevel(c,level)) && (c.seen===true||c.type==='Caderno Pessoal')
+  );
+  return candidates.filter(c=>c.due<=now).sort((a,b)=>a.due-b.due||a.id.localeCompare(b.id))
+    .slice(0,Math.max(0,limit)).map(c=>c.id);
 }
 export function rateCard(state, id, rating, now = Date.now()) {
   const card = state.cards[id];

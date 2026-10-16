@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { FORMATIVE_LISTENING_N5, gradeFormativeListening } from '../../../entities/study/index.js';
+import { gradeFormativeListening, listeningPracticePool } from '../../../entities/study/index.js';
 import { japaneseVoices, speakJapanese, stopSpeech, warmJapaneseVoices } from '../../../entities/study/index.js';
 import { Button,AudioRateControl } from '../../../shared/ui/index.jsx';
 import { useReadingPreferences, setReadingPreferences, reviewedRomaji } from '../../../entities/study/index.js';
 
 /** Small, optional, no-API listening practice. Scores never unlock N4. */
-export default function N5ListeningPractice() {
+export default function N5ListeningPractice({state,go}) {
   const [index, setIndex] = useState(0);
   const [answer, setAnswer] = useState(null);
   const [result, setResult] = useState(null);
@@ -16,7 +16,8 @@ export default function N5ListeningPractice() {
   const [voiceURI, setVoiceURI] = useState('');
   const readingPreferences = useReadingPreferences();
   const [rate,setRate]=useState(()=>readingPreferences.speechRate);
-  const question = FORMATIVE_LISTENING_N5[index];
+  const questions=listeningPracticePool(state);
+  const question=questions[index];
 
   useEffect(() => warmJapaneseVoices(setVoices), []);
   useEffect(() => () => stopSpeech(), []);
@@ -32,17 +33,23 @@ export default function N5ListeningPractice() {
   };
   const next = () => {
     stopSpeech();
-    setIndex(i => (i + 1) % FORMATIVE_LISTENING_N5.length);
+    setIndex(i => i + 1);
     setAnswer(null); setResult(null); setNotice(''); setHeardAudio(false); setShowTranscript(false);
   };
 
+  if(!question)return <section className="space-y-3 rounded-3xl border border-line bg-paper p-5" aria-labelledby="listening-title">
+    <h2 id="listening-title" className="text-lg font-black text-ink-strong">Prática de escuta</h2>
+    <p className="text-sm text-muted">{questions.length?'Você concluiu as práticas disponíveis sem repetir as mesmas questões. Novas atividades aparecerão ao avançar na Trilha.':'Os exercícios de escuta são liberados conforme você aprende os primeiros sons e palavras. Comece pela sua próxima lição.'}</p>
+    {questions.length>0&&<Button variant="secondary" onClick={()=>{setIndex(0);setAnswer(null);setResult(null);setHeardAudio(false);setShowTranscript(false);}}>Repetir esta prática</Button>}
+    <Button variant="primary" onClick={()=>go('home')}>Continuar minha jornada →</Button>
+   </section>;
   return <section className="space-y-4 rounded-3xl border border-line bg-paper p-4 sm:p-5" aria-labelledby="listening-title">
     <div className="space-y-1">
       <p className="text-xs font-black text-primary-strong">TREINO EXTRA · N5</p>
       <h2 id="listening-title" className="text-lg font-black text-ink-strong">Prática de escuta</h2>
       <p className="text-sm text-muted">Ouça a frase e escolha a resposta. A voz é do seu dispositivo: pode variar e nem sempre funciona offline. Esta prática não aprova o N5 nem substitui a escuta do JLPT.</p>
     </div>
-    <div className="text-xs text-muted">Questão {index + 1} de {FORMATIVE_LISTENING_N5.length}</div>
+    <div className="text-xs text-muted">Questão {index + 1} de {questions.length}</div>
     <div className="rounded-2xl bg-raised p-4 space-y-3">
       <Button variant="primary" onClick={play} className="w-full">▶ Ouvir frase em japonês</Button>
       <details className="text-xs text-muted">

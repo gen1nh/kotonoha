@@ -23,7 +23,7 @@ export function Review({ state, queue, update, go, speak, openGuidedCheckpoint, 
     const next = nextGuidedAction(state);
     return (
       <EmptyState
-        title="Sessão de revisão concluída!"
+        title={index===0?"Sem revisões pendentes":"Revisão concluída!"}
         icon={<Icon name="check" />}
         action={
           <Button variant="primary" onClick={() => next.kind === "checkpoint" ? openGuidedCheckpoint?.(next.lesson.id) : returnToLesson ? returnToLesson() : go("home")}>
@@ -31,7 +31,7 @@ export function Review({ state, queue, update, go, speak, openGuidedCheckpoint, 
           </Button>
         }
       >
-        Boa revisão! Quando estiver pronto, continue com a próxima atividade.
+        {index===0?"Você ainda não tem cartões para revisar. Aprenda uma lição na Trilha; depois os cartões aparecerão no momento certo.":"Boa revisão! Quando estiver pronto, continue com a próxima atividade."}
       </EmptyState>
     );
   }
@@ -64,9 +64,11 @@ export function Review({ state, queue, update, go, speak, openGuidedCheckpoint, 
       />
 
       <Card className="text-center py-6 sm:py-10 px-4 sm:px-8 min-h-[min(38dvh,320px)] flex flex-col justify-center items-center space-y-6 border-2 border-b-6 border-line bg-paper rounded-3xl shadow-xs">
-        <div className="font-jp text-6xl sm:text-7xl lg:text-8xl font-black text-ink-strong my-4 select-none">
-          {card.prompt}
-        </div>
+        <button type="button" lang="ja" aria-label="Ouvir cartão em japonês"
+          onClick={()=>speak(card.spoken||card.prompt,{rate:speechRate})}
+          className="flex min-h-20 items-center justify-center gap-4 font-jp text-5xl sm:text-7xl font-black text-ink-strong my-4 select-none">
+          {card.prompt}<Icon name="sound" className="h-6 w-6 shrink-0 text-blue"/>
+        </button>
         <p className="type-body font-bold text-muted">
           {card.type.startsWith("Vocabulário")
             ? "Qual a leitura e o significado em português?"
@@ -86,13 +88,6 @@ export function Review({ state, queue, update, go, speak, openGuidedCheckpoint, 
       </Card>
 
       <div className="flex flex-wrap items-center justify-center gap-3">
-        <Button
-          variant="secondary"
-          size="lg"
-          onClick={() => speak(card.spoken || card.prompt,{rate:speechRate})}
-        >
-          <Icon name="sound" /> Ouvir pronúncia
-        </Button>
         {!revealed ? (
           <Button
             variant="primary"

@@ -83,6 +83,23 @@ Integrado por squash à `main`: `a83f9497518ce3b90cde5335f41540a8d7b9c46f`. CI c
 
 **Motivo:** a conta Hobby atingiu `build-rate-limit` após muitos commits. Evitar deploy Git por commit; o GitHub Actions valida os commits, mas **não publica**. O campo `Ignored Build Step` pode contar para a cota mesmo quando um build é cancelado; por isso preferimos desativar o gatilho de deploy Git, mantendo a Vercel para publicações autorizadas. Para reverter esta política, reabilitar `git.deploymentEnabled` explicitamente (e atualizar estas instruções). Consulte o README, seção "Ver as mudanças no navegador antes de publicar".
 
+## Ajustes de consistência e conteúdo por nível (PR em andamento)
+
+- [x] Template de largura única no `Shell` (`max-w-[52rem]`) e normalização do primeiro contêiner de cada rota; não deslocar telas com utilitários `max-w-2xl` ou `max-w-3xl` individuais.
+- [x] Alternativa selecionada em teste usa azul suave, não verde de acerto antes de ser corrigida.
+- [x] Revisão automática mostra **somente cartões já encontrados e vencidos**; não usa kana ou vocabulário inédito para completar listas. Cartões pessoais criados pelo próprio aluno continuam elegíveis.
+- [x] Revisão vazia orienta a voltar à atividade recomendada em Hoje; não diz falsamente que uma sessão foi concluída.
+- [x] Caracteres isolados de kana/kanji e exemplos japoneses na lição, leitura, cartões, checkpoint e desafio diário podem ser tocados para ouvir via voz nativa ja-JP; se não houver voz disponível, respeitar o feedback já fornecido pelo mecanismo de áudio.
+- [x] Desafio rápido agora utiliza itens estudados e evita repetir perguntas até esgotar a seleção; registra IDs recentes localmente para evitar repetição imediata entre sessões.
+- [x] Desafio diário N5 deriva de checkpoints das unidades aprovadas (até 10 recentes, múltiplas questões por unidade) e gira diariamente; a pergunta respondida fica vinculada ao dia no backup para não mudar após avançar de lição.
+- [x] Prática extra de escuta usa sons/palavras que o aluno já viu e incorpora os exercícios autorais das unidades de escuta praticadas; ao esgotar o banco liberado, **não reinicia automaticamente** as mesmas seis questões.
+- [x] Mantém a política offline-first: o **banco de itens atual é local e versionado**, sem banco remoto nem necessidade de login. Não inventar frases ilimitadas com IA; ampliar só com conteúdo editorial revisado.
+- [ ] Validar CI Node, arquitetura, currículo, build e Playwright Chromium/WebKit no SHA final do PR antes de integrar.
+- [ ] Testar visualmente todas as rotas e dispositivos reais: larguras, scroll, áudio de japonês e safe areas.
+- [ ] Fazer revisão editorial de novas questões antes de expandir a variedade além dos itens já aprovados.
+
+**Princípio:** revisão nunca ensina algo inédito; lição apresenta conteúdo e SRS reforça depois. Desafio opcional deve usar conteúdo visto ou aprovado e não interferir no desbloqueio N4 nem nas evidências de escuta.
+
 ## Pendências obrigatórias antes da 1.0
 
 - [ ] Revisão linguística japonesa **independente** de todas as 220 unidades e respectivos exemplos, feedback e distratores.

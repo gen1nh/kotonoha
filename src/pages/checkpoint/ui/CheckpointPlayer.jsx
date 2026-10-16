@@ -112,8 +112,15 @@ export default function CheckpointPlayer({state,topic,update,go,openGuidedLesson
     <p className="text-xs text-muted">Uma pergunta por vez. Você verá o resultado no final.</p>
   </div>}
   {questions.length<4?<p role="alert">Esta avaliação não tem perguntas suficientes. Retorne à Trilha.</p>:
-   <section className="space-y-3" aria-label="Questões do checkpoint">{questions.map((q,i)=>i!==activeQuestion?null:<fieldset key={q.id} disabled={result!==null} className="rounded-2xl border border-line bg-paper p-4 space-y-3"><legend className="sr-only">Questão {i+1}</legend><p className="text-xs font-black text-primary-strong">QUESTÃO {i+1} DE {questions.length}</p><p className="font-bold text-ink-strong">{q.prompt}</p>
-    {q.text&&<p lang="ja" className="font-jp text-lg rounded-xl bg-raised p-3">{q.text}</p>}
+   <section className="space-y-3" aria-label="Questões do checkpoint">{questions.map((q,i)=>i!==activeQuestion?null:<fieldset key={q.id} disabled={result!==null} className="rounded-2xl border border-line bg-paper p-4 space-y-3"><legend className="sr-only">Questão {i+1}</legend><p className="text-xs font-black text-primary-strong">QUESTÃO {i+1} DE {questions.length}</p>{/^[\u3040-\u30ff\u3400-\u9fffー々〆ヵヶ。、！？\s]+$/.test(q.prompt)?
+      <button type="button" lang="ja" aria-label="Ouvir caractere em japonês" onClick={()=>speakJapanese(q.prompt,setAudioNotice,{rate:speechRate})}
+        className="flex min-h-11 items-center gap-2 text-left font-jp text-xl font-bold text-ink-strong">{q.prompt}<span aria-hidden="true">🔊</span></button>:
+      <p className="font-bold text-ink-strong">{q.prompt}</p>}
+    {q.text&&<button type="button" lang="ja" aria-label="Ouvir texto em japonês" disabled={q.text.includes('＿＿')}
+        onClick={()=>speakJapanese(q.text,setAudioNotice,{rate:speechRate})}
+        className="flex min-h-12 w-full items-center justify-between gap-3 rounded-xl bg-raised p-3 text-left font-jp text-lg text-ink-strong disabled:cursor-default">
+        <span>{q.text}</span>{!q.text.includes('＿＿')&&<span aria-hidden="true">🔊</span>}
+      </button>}
     {q.spokenText&&<div className="rounded-xl bg-raised p-3 space-y-2">
       <button type="button" disabled={result!==null} onClick={()=>speakJapanese(q.spokenText,setAudioNotice,{rate:speechRate,onStart:()=>markAudioPlayed(q.id)})} className="min-h-11 rounded-xl border border-line px-4 text-sm font-bold">▶ Ouvir frase</button>
       <AudioRateControl rate={speechRate} onChange={setSpeechRate} defaultRate={readingPreferences.speechRate}/>
@@ -121,7 +128,7 @@ export default function CheckpointPlayer({state,topic,update,go,openGuidedLesson
       {(revealed[q.id]||result!==null)&&<p lang="ja" className="font-jp text-lg">{q.spokenText}</p>}
       <p className="text-xs text-muted">Ouça a frase antes de responder. Se o áudio não funcionar, revele o texto. Nesse caso, a atividade conta como leitura.</p>
     </div>}
-    <div className="space-y-2">{q.options.map(opt=><label key={opt} className={`min-h-12 flex items-center gap-3 rounded-xl border-2 p-3 cursor-pointer ${answers[q.id]===opt?'border-primary bg-accent-soft':'border-line bg-surface'}`}><input type="radio" name={`q-${q.id}`} checked={answers[q.id]===opt} onChange={()=>answer(q.id,opt)}/><span className="text-sm text-ink-strong">{opt}</span></label>)}</div>{result!==null&&<div className="rounded-xl bg-raised p-3 space-y-2" role="status">
+    <div className="space-y-2">{q.options.map(opt=><label key={opt} className={`min-h-12 flex items-center gap-3 rounded-xl border-2 p-3 cursor-pointer ${answers[q.id]===opt?'border-blue/60 bg-blue-soft/50':'border-line bg-surface'}`}><input type="radio" name={`q-${q.id}`} checked={answers[q.id]===opt} onChange={()=>answer(q.id,opt)}/><span className="text-sm text-ink-strong">{opt}</span></label>)}</div>{result!==null&&<div className="rounded-xl bg-raised p-3 space-y-2" role="status">
        <p className="text-sm font-bold text-ink-strong">{answers[q.id]===q.answer?'✓ Você acertou esta questão.':'Resposta correta: '+q.answer}</p>
        <p className="text-sm text-muted">{explainCheckpointAnswer(q,answers[q.id])}</p>
      </div>}</fieldset>)}</section>}

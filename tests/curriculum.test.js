@@ -39,9 +39,12 @@ test("N4–N1 vocabulary joins spaced review and survives local backup normaliza
   const state = initialState();
   for (const level of ["N4", "N3", "N2", "N1"]) {
     assert.equal(VOCAB_BY_LEVEL[level].length, 16);
-    const queue = selectReview(state, `Vocabulário ${level}`);
-    assert.equal(queue.length, 4);
-    rateCard(state, queue[0], "good", 1_800_000_000_000);
+    const candidate = Object.keys(state.cards).find(id=>id.startsWith(`vocab:${level}:`));
+    assert.deepEqual(selectReview(state,`Vocabulário ${level}`),[]);
+    state.cards[candidate].seen = true;
+    state.cards[candidate].due = 0;
+    assert.deepEqual(selectReview(state,`Vocabulário ${level}`),[candidate]);
+    rateCard(state,candidate,"good",1_800_000_000_000);
   }
   state.selectedLevel = "N4";
   state.lessons[CURRICULUM.N4[0].id] = true;
