@@ -7,7 +7,10 @@ export function speedPracticePool(state,mode='all'){
    mode==='vocab'?['Vocabulário N5']:['Hiragana','Katakana','Vocabulário N5'];
  return Object.values(state?.cards||{}).filter(card=>card.seen===true&&types.includes(card.type)&&card.prompt&&card.answer)
    .map(card=>({id:card.id,prompt:card.prompt,answer:card.answer,hint:card.type,
-     spoken:card.spoken||card.reading||card.prompt}));
+     spoken:card.spoken||card.reading||card.prompt}))
+   // In mixed mode, kana from two alphabets can share a romaji answer.
+   // Keep one representative per answer so distractors remain distinct.
+   .filter((item,index,all)=>all.findIndex(other=>other.answer===item.answer)===index);
 }
 export function speedPracticeQuestion(pool,used=[],random=Math.random){
  const candidates=pool.filter(item=>pool.filter(row=>row.answer===item.answer).length===1);
