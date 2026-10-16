@@ -48,8 +48,9 @@ test("filtro de nível limita revisão vencida e nova sem bloquear prática expl
   state.selectedLevel = "N3";
   assert.deepEqual(selectReview(state), []);
   rateCard(state, "hira:あ", "again", 0);
-  rateCard(state, "vocab:N3:家族", "again", 0);
-  assert.deepEqual(selectReview(state), ["vocab:N3:家族"]);
+  const n3Card=Object.keys(state.cards).find(id=>id.startsWith('vocab:N3:'));
+  rateCard(state,n3Card,"again",0);
+  assert.deepEqual(selectReview(state),[n3Card]);
   assert.ok(
     selectReview(state, "Hiragana").every(
       (id) => state.cards[id].type === "Hiragana",
