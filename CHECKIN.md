@@ -117,12 +117,15 @@ Merge squash: `968a9d1a4b2633c89d61beb70dba58711f21fb2f`. CI do commit final do 
 
 **Importante:** emulação Playwright WebKit em tamanho de iPhone não substitui Safari rodando em hardware real. Não marcar testes físicos pendentes como concluídos só porque a CI passou.
 
-## QA móvel adicional (Playwright WebKit + Chromium)
+## QA móvel adicional (PR #29 · integrado)
+
+Merged em `main`: `d8b1c491ff3b155b8abe52f36d97135ce9303287`. CI completo do PR aprovado: https://github.com/gen1nh/kotonoha/actions/runs/38935816081 e https://github.com/gen1nh/kotonoha/actions/runs/38935791730.
 
 - [x] Adicionados testes de retorno do checkpoint depois de **fechar a aba e abrir outra no mesmo contexto**, preservando resposta e questão atual em armazenamento local.
 - [x] Cobertura de lousa **Kanji** na Biblioteca: desenho com eventos reais de ponteiro do Playwright, desfazer, limpar e `touch-action: none`. O teste anterior já cobria Kana.
 - [x] Cobertura de largura e rolagem horizontal em telas Hoje, Trilha, Meu espaço, Biblioteca, Treinos extras, Revisão e Preferências nas larguras 320, 375, 390 e 430 px.
-- [ ] Validar execução do SHA final nas pipelines Chromium/WebKit.
+- [x] Executado e aprovado no SHA final do PR #29 nas pipelines Chromium/WebKit.
+- [ ] Verificar CI após merge no SHA final de `main`; manter publicação Vercel manual.
 - [ ] Testar **toque real em iPhone físico** no canvas e no ciclo de segundo plano/reabertura da PWA. Teste automatizado do WebKit aproxima Safari, mas não demonstra comportamento de todos os modelos iOS.
 - [ ] Revisão editorial independente das 220 unidades ainda não foi feita. Auditoria estrutural automatizada não é comprovação linguística.
 
