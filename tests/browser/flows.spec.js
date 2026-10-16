@@ -32,8 +32,8 @@ test('microlição → cartões → checkpoint → próxima microlição, sem ab
   await page.getByRole('button',{name:'Revelar resposta'}).click();
   await page.getByRole('button',{name:/Bom/}).click();
  }
- await expect(page.getByRole('button',{name:/Fazer checkpoint/})).toBeVisible();
- await page.getByRole('button',{name:/Fazer checkpoint/}).click();
+ await expect(page.getByRole('button',{name:/Fazer (checkpoint|teste rápido)/})).toBeVisible();
+ await page.getByRole('button',{name:/Fazer (checkpoint|teste rápido)/}).click();
  for(const [index,q] of questions.entries()){
   await expect(page.locator('fieldset')).toHaveCount(1);
   await page.locator('fieldset').first().getByRole('radio',{name:q.answer,exact:true}).check();
@@ -53,7 +53,7 @@ test('microlição → cartões → checkpoint → próxima microlição, sem ab
 test('checkpoint retoma respostas após recarga e aprovação entra na meta diária',async({page})=>{
  const state=seeded(),first=N5_UNITS[0];for(const cid of cardIdsForUnit(first))state.cards[cid].seen=true;
  const question=checkpointQuestions(state,first.id)[0];await enter(page,state);
- await page.getByRole('button',{name:/Fazer checkpoint/}).first().click();
+ await page.getByRole('button',{name:/Fazer (checkpoint|teste rápido)/}).first().click();
  await page.locator('fieldset').first().getByRole('radio',{name:question.answer,exact:true}).check();
  await page.reload();
  const qs=checkpointQuestions(state,first.id);
@@ -104,7 +104,7 @@ test('gramática separa explicação de prática e permite consultar sem perder 
  await page.getByRole('button',{name:'Conferir resposta'}).click();
  await expect(page.getByText('Correto! Você reconheceu o significado.')).toBeVisible();
  await page.getByRole('button',{name:/Concluir prática/}).click();
- await expect(page.getByRole('button',{name:/Fazer checkpoint/})).toBeVisible();
+ await expect(page.getByRole('button',{name:/Fazer (checkpoint|teste rápido)/})).toBeVisible();
 });
 
 for(const kind of ['reading','listening'])test(`${kind}: um exemplo por vez antes de confirmar o estudo`,async({page})=>{
@@ -117,7 +117,7 @@ for(const kind of ['reading','listening'])test(`${kind}: um exemplo por vez ante
  for(let i=1;i<unit.items.length;i++)await page.getByRole('button',{name:/Próximo exemplo/}).click();
  await expect(page.getByText(`EXEMPLO ${unit.items.length} DE ${unit.items.length}`,{exact:true})).toBeVisible();
  await page.getByRole('button',{name:/Estudei os exemplos/}).click();
- await expect(page.getByRole('button',{name:/Fazer checkpoint/})).toBeVisible();
+ await expect(page.getByRole('button',{name:/Fazer (checkpoint|teste rápido)/})).toBeVisible();
 });
 
 test('filtro N1 não desbloqueia laboratórios nem URLs',async({page})=>{
@@ -261,7 +261,7 @@ test('rota carregada sob demanda mantém foco no título para teclado',async({pa
  await page.goto('/?view=practice');
  await page.getByRole('button',{name:/Biblioteca e Caderno/}).click();
  await page.getByRole('button',{name:'Biblioteca'}).click();
- await expect(page.getByRole('heading',{name:'Biblioteca & Alfabetos Kana',level:1})).toBeFocused();
+ await expect(page.getByRole('heading',{name:'Biblioteca',level:1})).toBeFocused();
 });
 
 
