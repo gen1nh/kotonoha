@@ -62,10 +62,10 @@ export default function ProgressOverview({state,go,update,toast,changeLevel}) {
       <div className="rounded-2xl border border-line bg-paper p-4"><p className="text-xs text-muted">Revisões vencidas</p><p className="font-black text-2xl text-ink-strong">{due}</p><p className="text-xs text-muted">Cartões aguardando prática</p></div>
       <div className="rounded-2xl border border-line bg-paper p-4"><p className="text-xs text-muted">Tempo ativo hoje</p><p className="font-black text-2xl text-ink-strong">{Math.floor(todaySeconds/60)} <span className="text-sm">min</span></p><p className="text-xs text-muted">Indicador complementar</p></div>
     </section>
-    <details className="rounded-2xl border border-line bg-paper p-4">
-      <summary className="min-h-11 flex cursor-pointer items-center font-bold text-ink-strong">Estatísticas detalhadas e tempo de estudo</summary>
-      <div className="pt-3"><JlptDiagnostic state={state} update={update} toast={toast}/></div>
-    </details>
+    <section className="border-t border-line pt-4 space-y-3" aria-label="Estatísticas detalhadas e tempo de estudo">
+      <h3 className="font-semibold text-ink-strong">Estatísticas detalhadas e tempo de estudo</h3>
+      <JlptDiagnostic state={state} update={update} toast={toast}/>
+    </section>
      </div>
     </details>
     </>}
