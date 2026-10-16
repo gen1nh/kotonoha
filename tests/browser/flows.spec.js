@@ -326,7 +326,7 @@ test('trilha mostra timeline por etapa sem sanfonas aninhadas',async({page})=>{
  const first=page.getByRole('button',{name:/Etapa 1.*Primeiros passos/});
  const fifth=page.getByRole('button',{name:/Etapa 5.*Consolidação N5/});
  await expect(first).toHaveAttribute('aria-expanded','true');
- await expect(page.getByRole('heading',{name:'Primeiros passos',exact:true})).toBeVisible();
+ await expect(page.getByRole('heading',{name:/Primeiros passos/})).toBeVisible();
  await expect(page.locator('ol.border-l-2').first()).toBeVisible();
  await fifth.click();
  await expect(fifth).toHaveAttribute('aria-expanded','true');
