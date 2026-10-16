@@ -343,7 +343,7 @@ test('telas usam a mesma largura no desktop, inclusive Biblioteca e Treinos',asy
   await page.goto(`/?view=${view}`);
   const root=page.locator(`#view-${view}`);
   await expect(root).toBeVisible();
-  await expect(root.locator('> :first-child')).toBeVisible();
+  await expect(root.locator(':scope > :first-child')).toBeVisible();
   const {outer,inner}=await root.evaluate(el=>({
    outer:Math.round(el.getBoundingClientRect().width),
    inner:Math.round(el.firstElementChild.getBoundingClientRect().width),
