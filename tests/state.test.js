@@ -18,15 +18,19 @@ test("inicia cartões do N5 expandido e preserva progresso de backups antigos", 
   assert.equal(restored.cards["hira:あ"].due, 1000 + 2 * 86400000);
   assert.throws(() => normalizeState({ cards: {}, lessons: null }));
 });
-test("revisão respeita categoria e limite de novos cartões", () => {
-  const state = initialState();
-  assert.equal(selectReview(state, "Katakana").length, 5);
-  assert.ok(
-    selectReview(state, "Katakana").every((id) => id.startsWith("kata:")),
-  );
-  assert.equal(selectReview(state, "Vocabulário N5").length, 4);
-  rateCard(state, "hira:あ", "again", 0);
-  assert.deepEqual(selectReview(state), ["hira:あ"]);
+test("revisão só mostra cartões vistos e vencidos, inclusive com filtro",()=>{
+  const state=initialState();
+  assert.deepEqual(selectReview(state),[]);
+  assert.deepEqual(selectReview(state,"Katakana"),[]);
+  assert.deepEqual(selectReview(state,"Vocabulário N5"),[]);
+  state.cards["hira:あ"].seen=true;
+  state.cards["hira:あ"].due=100;
+  state.cards["kata:ア"].seen=true;
+  state.cards["kata:ア"].due=200;
+  assert.deepEqual(selectReview(state,undefined,10,150),["hira:あ"]);
+  assert.deepEqual(selectReview(state,"Katakana",10,150),[]);
+  assert.deepEqual(selectReview(state,"Katakana",10,250),["kata:ア"]);
+  assert.deepEqual(selectReview(state,undefined,10,250),["hira:あ","kata:ア"]);
 });
 test("erro agenda dez minutos e sequência conta uma vez por dia", () => {
   const state = initialState();
@@ -42,12 +46,10 @@ test("erro agenda dez minutos e sequência conta uma vez por dia", () => {
 test("filtro de nível limita revisão vencida e nova sem bloquear prática explícita de kana", () => {
   const state = initialState();
   state.selectedLevel = "N3";
-  const newCards = selectReview(state);
-  assert.ok(newCards.length > 0);
-  assert.ok(newCards.every((id) => state.cards[id].type === "Vocabulário N3"));
+  assert.deepEqual(selectReview(state), []);
   rateCard(state, "hira:あ", "again", 0);
-  rateCard(state, newCards[0], "again", 0);
-  assert.deepEqual(selectReview(state), [newCards[0]]);
+  rateCard(state, "vocab:N3:家族", "again", 0);
+  assert.deepEqual(selectReview(state), ["vocab:N3:家族"]);
   assert.ok(
     selectReview(state, "Hiragana").every(
       (id) => state.cards[id].type === "Hiragana",
