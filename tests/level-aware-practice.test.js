@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {initialState,normalizeState,selectReview,dailyChallenge,
- speedPracticePool,speedPracticeQuestion,N5_UNITS} from '../src/entities/study/index.js';
+ speedPracticePool,speedPracticeQuestion,listeningPracticePool,N5_UNITS} from '../src/entities/study/index.js';
 
 test('iniciante não recebe conteúdo novo na revisão nem no desafio',()=>{
  const state=initialState();
@@ -54,4 +54,21 @@ test('desafio diário evolui com lições aprovadas, sem entregar futuras liçõ
  const restored=normalizeState(JSON.parse(JSON.stringify(state)));
  assert.equal(dailyChallenge(restored,'N5',new Date(2026,9,16)).id,chosen.id);
  assert.deepEqual(restored.dailyQuestionIds,{[key]:chosen.id});
+});
+
+test('escuta opcional só contém caracteres já vistos ou situações de lições praticadas',()=>{
+ const state=initialState();
+ assert.deepEqual(listeningPracticePool(state),[]);
+ for(const key of ['hira:あ','hira:い','hira:う','hira:え','hira:お'])state.cards[key].seen=true;
+ const beginner=listeningPracticePool(state);
+ assert.equal(beginner.length,5);
+ assert.ok(beginner.every(q=>q.id.startsWith('heard:hira:')));
+ assert.ok(beginner.every(q=>q.choices.length===4&&q.choices[q.answerIndex]));
+ const first=N5_UNITS.find(unit=>unit.kind==='listening');
+ const second=N5_UNITS.filter(unit=>unit.kind==='listening')[1];
+ state.lessons[first.id]=true;
+ const advanced=listeningPracticePool(state);
+ assert.equal(advanced.length,beginner.length+first.items.length);
+ assert.ok(first.items.every(q=>advanced.some(item=>item.id===q.id)));
+ assert.ok(!advanced.some(q=>second.items.some(item=>item.id===q.id)));
 });
