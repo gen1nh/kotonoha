@@ -139,14 +139,16 @@ export default function Drawing({ character, random, save }) {
 
   const onPointerDown = (e) => {
     e.preventDefault();
+    if (isDrawing.current) return; // Ignore a second finger while drawing.
     isDrawing.current = true;
+    activePointerId.current = e.pointerId;
     e.currentTarget.setPointerCapture(e.pointerId);
     const p = getCanvasCoords(e);
     currentStroke.current = [p];
   };
 
   const onPointerMove = (e) => {
-    if (!isDrawing.current) return;
+    if (!isDrawing.current || e.pointerId !== activePointerId.current) return;
     const p = getCanvasCoords(e);
     currentStroke.current.push(p);
 
@@ -169,9 +171,12 @@ export default function Drawing({ character, random, save }) {
     }
   };
 
+  const activePointerId = useRef(null);
   const onPointerUp = (e) => {
-    if (!isDrawing.current) return;
+    if (!isDrawing.current || e.pointerId !== activePointerId.current) return;
     isDrawing.current = false;
+    activePointerId.current = null;
+    if (e.currentTarget.hasPointerCapture(e.pointerId)) e.currentTarget.releasePointerCapture(e.pointerId);
     if (currentStroke.current.length > 1) {
       strokesHistory.current.push({
         points: [...currentStroke.current],
@@ -181,6 +186,14 @@ export default function Drawing({ character, random, save }) {
       setHasDrawn(true);
     }
     currentStroke.current = [];
+  };
+  const onPointerCancel = (e) => {
+    if (e.pointerId !== activePointerId.current) return;
+    isDrawing.current = false;
+    activePointerId.current = null;
+    currentStroke.current = [];
+    if (e.currentTarget.hasPointerCapture(e.pointerId)) e.currentTarget.releasePointerCapture(e.pointerId);
+    redrawAll(); // A canceled gesture must not become a saved kanji stroke.
   };
 
   return (
@@ -366,7 +379,7 @@ export default function Drawing({ character, random, save }) {
               onPointerDown={onPointerDown}
               onPointerMove={onPointerMove}
               onPointerUp={onPointerUp}
-              onPointerCancel={onPointerUp}
+              onPointerCancel={onPointerCancel}
             />
           </div>
 
