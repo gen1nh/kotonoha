@@ -25,14 +25,15 @@ export default function Home({state,update,go,speak,openGuidedLesson,openCheckpo
  const description=recommendReview?`${due} cartões precisam de revisão. Depois, você continua suas lições.`:
   action.lesson?.detail||
   (action.kind==='assessment-pending'?'Continue revisando enquanto a avaliação final é preparada.':'Você pode reforçar o que aprendeu quando quiser.');
+ const currentStep=recommendReview?'review':action.kind==='checkpoint'?'check':'learn';
  const label=recommendReview?'Começar revisão':action.kind==='checkpoint'?'Fazer teste rápido':action.lesson?'Continuar aprendendo':action.kind==='assessment-pending'?'Ver minha evolução':'Ver minha trilha';
  return <div className="mx-auto max-w-3xl space-y-5 pb-6">
   <header className="pt-1 space-y-1">
    <p className="text-xs font-semibold text-muted">Seu japonês · {level}</p>
    <h1 className="text-2xl sm:text-3xl font-black text-ink-strong">Seu próximo passo</h1>
-   <p className="text-sm text-muted">Preparamos a próxima atividade para você.</p>
+   <p className="text-sm text-muted">Continue de onde parou. Nós indicamos a próxima atividade.</p>
   </header>
-  <section className="rounded-2xl border border-line bg-paper p-5 sm:p-6 space-y-4" aria-labelledby="next-step-title">
+  <section className="rounded-2xl border border-line bg-accent-soft/45 p-5 sm:p-6 space-y-4" aria-labelledby="next-step-title">
    <div className="flex items-center justify-between gap-3 text-sm">
     <span className="font-semibold text-ink-strong">Sua jornada {level}</span>
     <span className="text-muted">{completed} de {lessons.length} lições</span>
@@ -41,12 +42,21 @@ export default function Home({state,update,go,speak,openGuidedLesson,openCheckpo
     <div className="h-full bg-primary" style={{width:`${100*completed/Math.max(1,lessons.length)}%`}}/>
    </div>
    <div className="space-y-2">
+    <p className="text-xs font-semibold text-primary-strong">Recomendado para agora</p>
     <h2 id="next-step-title" className="text-xl font-black text-ink-strong">{title}</h2>
     <p className="text-sm text-muted">{description}</p>
    </div>
    <Button variant="primary" size="lg" className="w-full" onClick={continueLearning}>{label} →</Button>
+   <div className="border-t border-line/70 pt-4">
+    <p className="text-xs font-semibold text-muted mb-2">Como funciona seu estudo</p>
+    <ol className="grid grid-cols-3 gap-2 text-center">
+     <li className={`rounded-xl px-2 py-3 text-xs font-semibold ${currentStep==='learn'?'bg-paper text-ink-strong':'text-muted'}`}>1. Aprender</li>
+     <li className={`rounded-xl px-2 py-3 text-xs font-semibold ${currentStep==='review'?'bg-paper text-ink-strong':'text-muted'}`}>2. Revisar</li>
+     <li className={`rounded-xl px-2 py-3 text-xs font-semibold ${currentStep==='check'?'bg-paper text-ink-strong':'text-muted'}`}>3. Conferir</li>
+    </ol>
+   </div>
   </section>
-  <section className="rounded-2xl border border-line bg-paper p-4 sm:p-5 space-y-3" aria-labelledby="daily-title">
+  <section className="rounded-2xl border border-line bg-blue-soft/30 p-4 sm:p-5 space-y-3" aria-labelledby="daily-title">
    <div className="flex items-center justify-between gap-2">
     <h2 id="daily-title" className="font-bold text-ink-strong">Sua meta de hoje</h2>
     <span className="text-sm font-bold text-ink-strong">{Math.min(activities,goal)} de {goal}</span>
