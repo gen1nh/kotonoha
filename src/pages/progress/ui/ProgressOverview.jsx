@@ -26,29 +26,32 @@ export default function ProgressOverview({state,go,update,toast,changeLevel}) {
     <header className="space-y-1"><p className="text-sm text-muted font-semibold">Sua jornada e suas ferramentas</p><h1 className="text-2xl font-black text-ink-strong">Meu espaço</h1><p className="text-sm text-muted">Veja o que aprendeu e encontre ajuda quando precisar.</p></header>
     {section!=='overview'&&<button type="button" className="min-h-11 text-sm font-semibold text-ink-strong" onClick={backSection}>← Voltar ao meu espaço</button>}
     {section==="overview"&&<>
-    <section className="rounded-2xl border border-line bg-paper p-5 space-y-4" aria-label="Resumo da aprendizagem">
+    <section className="rounded-2xl border border-line bg-accent-soft/40 p-5 space-y-4" aria-label="Resumo da aprendizagem">
       <h2 className="font-bold text-lg text-ink-strong">Seu progresso no {currentLevel}</h2>
       <div className="flex items-center justify-between"><p className="text-sm text-ink">{completed} de {lessons.length} lições concluídas</p><strong className="text-primary-strong">{Math.round(100*completed/Math.max(1,lessons.length))}%</strong></div>
       <div role="progressbar" aria-label="Etapas validadas" aria-valuemin={0} aria-valuemax={lessons.length} aria-valuenow={completed} className="h-3 overflow-hidden bg-raised rounded-full"><div className="bg-primary h-full rounded-full" style={{width:`${100*completed/Math.max(1,lessons.length)}%`}} /></div>
-      <p className="text-sm text-muted">A próxima lição já está preparada em Hoje.</p>
+      <p className="text-sm text-muted">Sua próxima atividade está em Hoje.</p>
       <button onClick={()=>go('path')} className="min-h-11 text-sm text-ink-strong underline font-semibold">Ver minha trilha</button>
     </section>
     <section aria-labelledby="my-tools-heading" className="space-y-3">
-      <h2 id="my-tools-heading" className="text-lg font-bold text-ink-strong">Quando precisar</h2>
+      <div className="space-y-1">
+       <h2 id="my-tools-heading" className="text-lg font-bold text-ink-strong">Para continuar estudando</h2>
+       <p className="text-sm text-muted">Se precisar de ajuda ou quiser reforçar algum assunto.</p>
+      </div>
       <nav aria-label="Ferramentas e recursos" className="grid grid-cols-2 gap-3">
-       <NavigationTile title="Revisar" icon="review" description="Relembrar o que aprendeu." onClick={()=>go('review')}/>
-       <NavigationTile title="Biblioteca" icon="learn" description="Consultar palavras e caracteres." onClick={()=>go('learn')}/>
-       <NavigationTile title="Caderno" icon="academic" description="Suas notas e dúvidas." onClick={()=>go('notebook')}/>
+       <NavigationTile tone="sky" title="Revisar" icon="review" description="Relembrar palavras." onClick={()=>go('review')}/>
+       <NavigationTile tone="sage" title="Biblioteca" icon="learn" description="Consultar o japonês." onClick={()=>go('learn')}/>
+       <NavigationTile tone="peach" title="Caderno" icon="academic" description="Notas, dúvidas e erros." onClick={()=>go('notebook')}/>
+       <NavigationTile tone="lilac" title="Treinos extras" icon="bolt" description="Escuta e escrita." onClick={()=>go('practice')}/>
       </nav>
-      <details className="rounded-2xl border border-line bg-paper p-4">
-       <summary className="min-h-11 cursor-pointer text-sm font-semibold text-ink-strong">Mais recursos</summary>
-       <nav aria-label="Recursos extras" className="grid grid-cols-2 gap-3 mt-3">
-        <NavigationTile title="Mais exercícios" icon="bolt" description="Escuta, escrita e outros treinos." onClick={()=>go('practice')}/>
-        <NavigationTile title="Preparação N5" icon="learn" description="Acompanhar a preparação." onClick={()=>setSection('preparation')}/>
-        <NavigationTile title="Simulados" icon="review" description="Praticar com questões." onClick={()=>setSection('exam')}/>
-        <NavigationTile title="Preferências" icon="settings" description="Áudio, conta e aparência." onClick={()=>go('settings')}/>
-       </nav>
-      </details>
+    </section>
+    <section className="space-y-3" aria-label="Avaliações e configurações">
+     <h2 className="text-lg font-bold text-ink-strong">Sua preparação e ajustes</h2>
+     <div className="overflow-hidden rounded-2xl border border-line bg-paper divide-y divide-line">
+      <button type="button" className="flex min-h-14 w-full items-center justify-between px-4 text-sm font-semibold text-ink-strong" onClick={()=>setSection('preparation')}>Preparação N5 <span aria-hidden="true">→</span></button>
+      <button type="button" className="flex min-h-14 w-full items-center justify-between px-4 text-sm font-semibold text-ink-strong" onClick={()=>setSection('exam')}>Simulados <span aria-hidden="true">→</span></button>
+      <button type="button" className="flex min-h-14 w-full items-center justify-between px-4 text-sm font-semibold text-ink-strong" onClick={()=>go('settings')}>Preferências <span aria-hidden="true">→</span></button>
+     </div>
     </section>
     <details className="rounded-2xl border border-line bg-paper p-4">
      <summary className="min-h-11 cursor-pointer font-semibold text-ink-strong">Ver mais números</summary>
