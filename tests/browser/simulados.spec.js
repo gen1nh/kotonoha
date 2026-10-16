@@ -7,7 +7,6 @@ test.use({viewport:{width:390,height:844}});
 test('Simulados separa tarefas e exibe apenas uma questão por vez', async ({page}) => {
   await page.addInitScript(state=>{if(!localStorage.getItem('kotonoha.v1'))localStorage.setItem('kotonoha.v1',JSON.stringify(state));},initial());
   await page.goto('/?view=progress');
-  await page.getByText('Mais recursos',{exact:true}).click();
   await page.getByRole('button',{name:'Simulados'}).click();
   await expect(page.getByRole('heading',{name:'Simulados e prática'})).toBeVisible();
   await expect(page.getByRole('heading',{name:/Autoavaliação N5/})).toHaveCount(0);
@@ -46,7 +45,6 @@ test('Progresso mantém estatísticas recolhidas e simulados sem listas longas',
   await page.getByText('Ver mais números',{exact:true}).click();
   await expect(page.getByText('Estatísticas detalhadas e tempo de estudo')).toBeVisible();
   await expect(page.getByRole('heading',{name:'Quanto você já estudou'})).not.toBeVisible();
-  await page.getByText('Mais recursos',{exact:true}).click();
   await page.getByRole('button',{name:'Simulados'}).click();
   await expect(page.getByRole('heading',{name:'Quanto você já estudou'})).toHaveCount(0);
 });
