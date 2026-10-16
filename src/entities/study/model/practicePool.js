@@ -14,13 +14,10 @@ export function speedPracticeQuestion(pool,used=[],random=Math.random){
  const remaining=candidates.filter(item=>!used.includes(item.id));
  const available=remaining.length?remaining:candidates;
  const target=available[Math.floor(random()*available.length)];
- const others=candidates.filter(item=>item.id!==target.id&&item.answer!==target.answer);
- const picked=[];
- while(picked.length<3){
-  const candidate=others[Math.floor(random()*others.length)].answer;
-  if(!picked.includes(candidate))picked.push(candidate);
- }
- const choices=[target.answer,...picked];
+ const others=candidates.filter(item=>item.id!==target.id&&item.answer!==target.answer).map(item=>item.answer);
+ // Fisher-Yates: guaranteed termination and distinct distractors.
+ for(let i=others.length-1;i>0;i--){const j=Math.floor(random()*(i+1));[others[i],others[j]]=[others[j],others[i]];}
+ const choices=[target.answer,...others.slice(0,3)];
  for(let i=choices.length-1;i>0;i--){const j=Math.floor(random()*(i+1));[choices[i],choices[j]]=[choices[j],choices[i]];}
  return {...target,choices};
 }
