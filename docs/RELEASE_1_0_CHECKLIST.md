@@ -47,6 +47,8 @@ Cinco etapas situacionais agora intercalam vocabulário e gramática. Exemplos d
 
 - [ ] Executar gates na candidata final: instalação limpa, testes, arquitetura, auditoria N5, build e navegador.
 - [ ] Testar no iPhone real: fala japonesa, sons, teclado, instalação PWA, retorno do segundo plano e offline.
+  - Confirmação manual do usuário: áudio no computador e iPhone, PWA instalada e offline no iPhone; **não substitui** inspeção de segundo plano, teclado, desenho/gestos e safe areas.
+  - Playwright Chromium + WebKit: PR #29 aprovado com kanji na lousa, nova aba retomando checkpoint e overflow nas telas principais (320–430 px). O teste WebKit simulado não é homologação do dispositivo físico.
 - [ ] Testar conta real em dois aparelhos: envio, recebimento e conflito, mantendo backups.
 - [ ] Confirmar URLs de retorno do login no endereço publicado.
 
