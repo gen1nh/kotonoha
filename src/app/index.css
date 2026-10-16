@@ -309,6 +309,14 @@
 /* Avoid bottom navigation covering scroll targets on iOS */
 canvas {overscroll-behavior:contain;}
 
+/* One width template for the first level of every routed screen.
+   Individual lesson widgets may still be intentionally narrower inside. */
+#main-content > section[id^="view-"] > :first-child {
+  width: 100%;
+  max-width: 100%;
+  margin-inline: auto;
+}
+
 /* Mobile study surfaces: keep controls separate from touch input and bottom navigation. */
 @media (max-width: 639px) {
   #main-content { min-width: 0; }
