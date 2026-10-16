@@ -22,15 +22,11 @@ test('lousa de kanji usa ponteiro de toque, desfazer e limpar sem arrastar a pá
  const clear=page.getByRole('button',{name:/Limpar lousa/});
  await expect(undo).toBeDisabled();
  const box=await canvas.boundingBox();
- const startX=box.x+box.width*.25,startY=box.y+box.height*.25;
- // Pointer events with touch semantics are supported by mobile WebKit and Chromium.
- await page.evaluate(({x,y})=>{
-  const c=document.querySelector('canvas[data-drawing-surface]');
-  const rect=c.getBoundingClientRect();
-  for(const [type,dx,dy] of [['pointerdown',0,0],['pointermove',45,45],['pointerup',65,65]]){
-   c.dispatchEvent(new PointerEvent(type,{bubbles:true,cancelable:true,pointerId:19,pointerType:'touch',isPrimary:true,buttons:type==='pointerup'?0:1,clientX:rect.left+20+dx,clientY:rect.top+20+dy}));
-  }
- },{x:startX,y:startY});
+ // Real pointer sequence through Playwright (shared with mobile WebKit emulation).
+ await page.mouse.move(box.x+box.width*.25,box.y+box.height*.25);
+ await page.mouse.down();
+ await page.mouse.move(box.x+box.width*.65,box.y+box.height*.65,{steps:8});
+ await page.mouse.up();
  await expect(undo).toBeEnabled();
  await undo.click();
  await expect(undo).toBeDisabled();
