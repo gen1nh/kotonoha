@@ -39,11 +39,16 @@ export default function ProgressOverview({state,go,update,toast,changeLevel}) {
        <NavigationTile title="Revisar" icon="review" description="Relembrar o que aprendeu." onClick={()=>go('review')}/>
        <NavigationTile title="Biblioteca" icon="learn" description="Consultar palavras e caracteres." onClick={()=>go('learn')}/>
        <NavigationTile title="Caderno" icon="academic" description="Suas notas e dúvidas." onClick={()=>go('notebook')}/>
-       <NavigationTile title="Mais exercícios" icon="bolt" description="Escuta, escrita e outros treinos." onClick={()=>go('practice')}/>
-       <NavigationTile title="Preparação N5" icon="learn" description="Acompanhar a preparação." onClick={()=>setSection('preparation')}/>
-       <NavigationTile title="Simulados" icon="review" description="Praticar com questões." onClick={()=>setSection('exam')}/>
-       <NavigationTile title="Preferências" icon="settings" description="Áudio, conta e aparência." onClick={()=>go('settings')}/>
       </nav>
+      <details className="rounded-2xl border border-line bg-paper p-4">
+       <summary className="min-h-11 cursor-pointer text-sm font-semibold text-ink-strong">Mais recursos</summary>
+       <nav aria-label="Recursos extras" className="grid grid-cols-2 gap-3 mt-3">
+        <NavigationTile title="Mais exercícios" icon="bolt" description="Escuta, escrita e outros treinos." onClick={()=>go('practice')}/>
+        <NavigationTile title="Preparação N5" icon="learn" description="Acompanhar a preparação." onClick={()=>setSection('preparation')}/>
+        <NavigationTile title="Simulados" icon="review" description="Praticar com questões." onClick={()=>setSection('exam')}/>
+        <NavigationTile title="Preferências" icon="settings" description="Áudio, conta e aparência." onClick={()=>go('settings')}/>
+       </nav>
+      </details>
     </section>
     <details className="rounded-2xl border border-line bg-paper p-4">
      <summary className="min-h-11 cursor-pointer font-semibold text-ink-strong">Ver mais números</summary>
