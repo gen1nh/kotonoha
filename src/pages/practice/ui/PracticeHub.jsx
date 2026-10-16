@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useSubpageNavigation } from '../../../shared/lib/useSubpageNavigation.js';
-import { hasCompletedN5Basics, N5_UNITS, unitAccessible, guidedSamples } from '../../../entities/study/index.js';
+import { hasCompletedN5Basics, N5_UNITS, unitAccessible, guidedSamples, selectReview, courseLevel } from '../../../entities/study/index.js';
 import { Button, NavigationTile } from '../../../shared/ui/index.jsx';
 import N5ListeningPractice from './N5ListeningPractice.jsx';
 import KanaTypingPractice from './KanaTypingPractice.jsx';
@@ -14,6 +14,7 @@ const LABS = [
 export default function PracticeHub({ state, go, openSpeedQuiz }) {
   const [screen, setScreen, backScreen] = useSubpageNavigation('practice', 'menu', ['menu', 'listening', 'labs', 'typing', 'resources']);
   const unlocked = hasCompletedN5Basics(state);
+  const dueReviews=selectReview({...state,selectedLevel:courseLevel(state)}).length;
   const typingUnits = N5_UNITS.filter(unit => ['kana', 'vocabulary', 'kanji'].includes(unit.kind) && unitAccessible(state, unit.id));
   const [typingId, setTypingId] = useState('');
   const typingUnit = typingUnits.find(unit => unit.id === typingId) || typingUnits.at(-1);
@@ -27,9 +28,10 @@ export default function PracticeHub({ state, go, openSpeedQuiz }) {
     {screen !== 'menu' && <button type="button" className="min-h-11 font-bold text-sm text-primary-strong" onClick={backScreen}>← Voltar aos treinos</button>}
     {screen === 'menu' && <>
       <section className="rounded-2xl border border-line bg-paper p-4 space-y-3">
-        <h2 className="text-base font-black text-ink-strong">Relembrar o que aprendi</h2>
-        <p className="text-sm text-muted">Reveja palavras e caracteres no seu ritmo.</p>
-        <Button variant="primary" className="w-full" onClick={() => go('review')}>Começar revisão →</Button>
+        <h2 className="text-base font-black text-ink-strong">{dueReviews?'Relembrar o que aprendi':'Revisões em dia'}</h2>
+        <p className="text-sm text-muted">{dueReviews?`${dueReviews} cartões já estudados estão prontos para revisar.`:'Quando chegar a hora de revisar o que você estudou, os cartões aparecerão aqui.'}</p>
+        {dueReviews>0?<Button variant="primary" className="w-full" onClick={() => go('review')}>Começar revisão →</Button>:
+          <Button variant="secondary" className="w-full" onClick={() => go('home')}>Ver minha próxima lição →</Button>}
       </section>
       <details className="rounded-2xl border border-line bg-paper p-4"><summary className="min-h-11 cursor-pointer text-sm font-semibold text-ink-strong">Outros exercícios</summary>
       <div className="grid grid-cols-2 gap-3 mt-3" aria-label="Escolher prática">
