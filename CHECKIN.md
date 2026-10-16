@@ -55,6 +55,21 @@ Os itens concluídos abaixo fazem parte da `main` após o PR #24. Isso **não si
 - [x] PR #24 integrado à `main` após CI verde (merge `e191c5947d12a0dcc0b2e37d6512742508473d1c`).
 - [ ] Confirmar CI da `main` após mesclagem e validar o deploy real da Vercel.
 
+## Ajustes de UX motivados pelo uso real (PR #25)
+
+- [x] A Trilha voltou a exibir uma timeline real; **só as cinco etapas** são expansíveis. Capítulos não exigem outro clique.
+- [x] Status das lições em texto simples, sem pílulas verdes/azuis. Removido o componente não utilizado `LearningStatus.jsx`.
+- [x] O botão **Voltar à Trilha** fica acima do conteúdo de um teste e na tela de resultado.
+- [x] A correção depois do teste é apresentada diretamente no resumo, apenas com os erros, respostas corretas e explicações (não há botão “Ver correção”).
+- [x] Hoje apresenta a atividade recomendada, o momento do ciclo Aprender/Revisar/Conferir e cores de fundo discretas.
+- [x] Meu espaço tem quatro recursos de estudo em cards pastéis e links diretos para preparação, simulados e preferências.
+- [x] Testes de navegador adaptados para os novos fluxos sem sanfonas aninhadas.
+- [ ] Verificar CI de Chromium/WebKit, build, arquitetura e currículo no **SHA final do PR #25** antes de mesclar.
+- [ ] Validar contraste, responsividade, dark mode e toque em iPhone real; documentar ajustes após teste com usuários.
+- [ ] Após merge, validar CI na `main` e implantação real na Vercel.
+
+**Regra de design:** cores pastéis diferenciam grupos de ferramentas e superfícies, *não* status pedagógicos. Não reintroduzir tags de estado nem esconder lições atrás de capítulos expansíveis. O aluno deve acessar uma lição após **no máximo um clique para abrir sua etapa**. A correção só aparece **depois** de uma avaliação finalizada.
+
 ## Pendências obrigatórias antes da 1.0
 
 - [ ] Revisão linguística japonesa **independente** de todas as 220 unidades e respectivos exemplos, feedback e distratores.
