@@ -11,7 +11,9 @@ function CheckpointResult({unit,questions,answers,score,passed,next,onNext,onRet
  const correct=questions.filter(q=>answers[q.id]===q.answer).length;
  const mistakes=questions.length-correct;
  const approved=score>=PASS_PERCENT;
+ const incorrect=questions.map((question,index)=>({question,index})).filter(({question})=>answers[question.id]!==question.answer);
  return <div className="mx-auto max-w-2xl space-y-4 pb-8">
+  <button type="button" onClick={onPath} className="min-h-11 text-sm font-semibold text-ink-strong">← Voltar à Trilha</button>
   <section role="status" aria-label="Resultado do checkpoint" className="rounded-3xl border border-line bg-paper p-5 sm:p-7 space-y-5">
    <div className="space-y-2 text-center">
     <p className="text-xs font-black uppercase tracking-wide text-primary-strong">Resultado · N5</p>
@@ -36,24 +38,24 @@ function CheckpointResult({unit,questions,answers,score,passed,next,onNext,onRet
     {!approved&&<Button variant="secondary" className="w-full" onClick={onReviewLesson}>Rever explicação desta lição</Button>}
    </div>
   </section>
-  <details className="rounded-2xl border border-line bg-paper p-4 sm:p-5 space-y-3">
-   <summary className="min-h-11 flex items-center font-bold text-ink-strong cursor-pointer">Ver correção das {questions.length} questões</summary>
-   <ol className="space-y-3 pt-3">
-    {questions.map((q,i)=>{
-      const correctAnswer=answers[q.id]===q.answer;
-      return <li key={q.id} className="rounded-xl border border-line p-4 space-y-2">
-       <p className="text-xs font-bold text-muted">Questão {i+1} · {correctAnswer?'Correta':'Precisa revisar'}</p>
-       <p className="text-sm font-semibold text-ink-strong">{q.prompt}</p>
-       {q.text&&<p lang="ja" className="font-jp text-base">{q.text}</p>}
-       {q.spokenText&&<p lang="ja" className="font-jp text-base">{q.spokenText}</p>}
-       <p className="text-sm text-muted">Sua resposta: {answers[q.id]??'Não respondida'}</p>
-       {!correctAnswer&&<p className="text-sm font-semibold text-ink-strong">Resposta correta: {q.answer}</p>}
-       <p className="text-sm text-muted">{explainCheckpointAnswer(q,answers[q.id])}</p>
-      </li>;
-    })}
+  {incorrect.length>0&&<section className="rounded-2xl border border-line bg-paper p-4 sm:p-5 space-y-3" aria-labelledby="correction-title">
+   <div className="space-y-1">
+    <h2 id="correction-title" className="text-lg font-bold text-ink-strong">O que você pode melhorar</h2>
+    <p className="text-sm text-muted">Veja as questões em que você errou e a resposta correta.</p>
+   </div>
+   <ol className="space-y-3">
+    {incorrect.map(({question:q,index})=><li key={q.id} className="rounded-xl border border-line bg-raised/40 p-4 space-y-2">
+     <p className="text-xs font-semibold text-amber-ink">Questão {index+1} · Para revisar</p>
+     <p className="font-semibold text-ink-strong">{q.prompt}</p>
+     {q.text&&<p lang="ja" className="font-jp text-base">{q.text}</p>}
+     {q.spokenText&&<p lang="ja" className="font-jp text-base">{q.spokenText}</p>}
+     <p className="text-sm text-muted">Você respondeu: {answers[q.id]??'Sem resposta'}</p>
+     <p className="text-sm font-bold text-ink-strong">Resposta correta: {q.answer}</p>
+     <p className="text-sm text-muted">{explainCheckpointAnswer(q,answers[q.id])}</p>
+    </li>)}
    </ol>
-  </details>
-  <button type="button" onClick={onPath} className="min-h-11 text-primary-strong font-bold">← Voltar à Trilha</button>
+  </section>}
+  {incorrect.length===0&&<p className="rounded-xl bg-accent-soft/60 p-4 text-sm text-ink-strong">Você acertou todas as questões. Pode seguir para a próxima lição!</p>}
  </div>;
 }
 
@@ -102,6 +104,7 @@ export default function CheckpointPlayer({state,topic,update,go,openGuidedLesson
  if(!unit)return <p role="alert">Checkpoint indisponível. <button onClick={()=>go('path')}>Voltar à Trilha</button></p>;
  if(result!==null)return <CheckpointResult unit={unit} questions={questions} answers={answers} score={result} passed={passed} next={next} onNext={()=>next?openGuidedLesson(next.id,'N5'):go('path')} onRetry={retry} onReviewLesson={()=>openGuidedLesson(topic,'N5')} onPath={()=>go('path')}/>;
  return <div className="mx-auto max-w-2xl space-y-4 pb-8">
+  <button type="button" onClick={()=>go('path')} className="min-h-11 text-sm font-semibold text-ink-strong">← Voltar à Trilha</button>
   <header className="rounded-3xl border border-line bg-paper p-5 space-y-2"><p className="font-black text-xs text-primary-strong">TESTE RÁPIDO · N5</p><h1 className="text-2xl font-black text-ink-strong">{unit.title}</h1><p className="text-sm text-muted">Responda às perguntas e confira o resultado no final. Você precisa acertar pelo menos {PASS_PERCENT}% para continuar.</p></header>
   {questions.length>=4&&<div className="rounded-2xl border border-line bg-paper p-4 space-y-3" aria-label="Progresso do checkpoint">
     <div className="flex items-center justify-between gap-3"><span className="text-sm font-bold text-ink-strong">Questão {activeQuestion+1} de {questions.length}</span><span className="text-xs text-muted">{questions.filter(q=>answers[q.id]!==undefined).length} respondidas</span></div>
@@ -129,6 +132,5 @@ export default function CheckpointPlayer({state,topic,update,go,openGuidedLesson
   {audioNotice&&<p role="alert" className="text-sm text-muted">{audioNotice}</p>}
   <Button variant="primary" size="lg" className="w-full" disabled={!ready||questions.length<4||activeQuestion!==questions.length-1} onClick={grade}>Finalizar e ver resultado</Button>
   {passed&&result===null&&<p className="text-xs text-muted">Você já concluiu esta lição. Uma nova tentativa não apaga sua conquista.</p>}
-  <button type="button" onClick={()=>go('path')} className="min-h-11 text-primary-strong font-bold">← Voltar à Trilha</button>
  </div>;
 }
