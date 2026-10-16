@@ -6,7 +6,7 @@
 
 - **Repositório:** https://github.com/gen1nh/kotonoha
 - **Branch principal:** `main`
-- **PR da refatoração UX:** https://github.com/gen1nh/kotonoha/pull/24 · branch `feat/guided-ux-consolidation-20261015` (mesclar apenas com CI aprovado)
+- **Refatoração UX/UI:** [PR #24](https://github.com/gen1nh/kotonoha/pull/24), integrado à `main` em `e191c5947d12a0dcc0b2e37d6512742508473d1c`; CI do commit do PR aprovado: https://github.com/gen1nh/kotonoha/actions/runs/38827954953
 - **Produto:** aplicativo PWA de japonês, uso pessoal, curso N5 guiado, SRS, Biblioteca, Caderno, escuta e avaliação.
 - **Versão do pacote:** confirmar `package.json` antes de citar; **não chamar de 1.0** sem fechar os gates.
 - **Documentos canônicos:** `docs/RELEASE_1_0_CHECKLIST.md`, `docs/UX_ARCHITECTURE.md`, `docs/N5_CURRICULUM_MAP.md`, `docs/TEACHING_FLOW_AUDIT.md`. Relatórios antigos em `docs/history/` são históricos, não novos requisitos.
@@ -34,9 +34,9 @@ Contrato de produto:
 - [x] Carregamento sob demanda de telas opcionais, com cobertura PWA offline e acessibilidade de foco (PR #21).
 - [x] Checks automatizados de arquitetura, currículo e fluxo de navegador no GitHub Actions.
 
-## Refatoração de UX/UI — branch atual
+## Refatoração de UX/UI — integrada à main
 
-Estas tarefas marcadas **implementadas no código da branch**, não equivalem a CI aprovado ou deploy. Conferir GitHub Actions e estado da PR:
+Os itens concluídos abaixo fazem parte da `main` após o PR #24. Isso **não significa que o deploy da Vercel ou o lançamento 1.0 estejam homologados**:
 - [x] Navegação principal com **Hoje / Trilha / Meu espaço** (rotas antigas `practice` e `progress` continuam aceitas).
 - [x] Home enxuta com um próximo passo, meta compacta e revisão contextual (sem segundo motor curricular).
 - [x] Meu espaço reúne Progresso, Revisar, Biblioteca, Caderno, exercícios opcionais e Preferências.
@@ -49,9 +49,10 @@ Estas tarefas marcadas **implementadas no código da branch**, não equivalem a 
 - [x] Recolher planejamento avançado do Caderno e recursos extras de Meu espaço; preservar seus dados.
 - [ ] Revisar os textos longos restantes de Simulados, Preferências, lições específicas de leitura/escuta e alertas.
 - [x] Atualizar e adicionar cenários E2E de três destinos, primeiro acesso, Biblioteca/Caderno, treinos recolhidos, Simulados e navegação existente.
-- [ ] Confirmar esses E2E aprovados no SHA final (Chromium e WebKit), inclusive mobile, histórico, offline e dark mode.
+- [x] E2E Chromium/WebKit e verificações de currículo/arquitetura aprovados no SHA final da branch (`b0e9bed5bb7f8ee1528cc3605012038ff1db807e`) via GitHub Actions.
+- [ ] Homologar o mesmo fluxo em dispositivos físicos e confirmar contrastes/uso real de teclado.
 - [ ] Verificar acessibilidade WCAG, foco, target touch e contrastes; testar Safari físico.
-- [ ] Confirmar CI verde do commit final e mesclar a PR.
+- [x] PR #24 integrado à `main` após CI verde (merge `e191c5947d12a0dcc0b2e37d6512742508473d1c`).
 - [ ] Confirmar CI da `main` após mesclagem e validar o deploy real da Vercel.
 
 ## Pendências obrigatórias antes da 1.0
@@ -103,7 +104,7 @@ Verifique também os workflows GitHub Actions do **SHA final da branch** e da `m
 
 ## Próxima ação ao retomar
 
-1. Abrir o **PR #24**: https://github.com/gen1nh/kotonoha/pull/24 (branch `feat/guided-ux-consolidation-20261015`).
-2. Ler seus checks e logs do GitHub Actions, corrigir qualquer falha E2E ou de acessibilidade **antes** do merge.
-3. Concluir os itens não marcados acima sem começar outra auditoria genérica.
-4. Atualizar este CHECKIN com SHAs, evidências verificadas e pendências reais.
+1. Confirmar o GitHub Actions da `main` após o merge do PR #24 e verificar que a Vercel realmente publicou o commit atual.
+2. Fazer testes com aprendizes iniciantes e aparelhos reais; observar pontos de confusão antes de alterar os fluxos novamente.
+3. Concluir as caixas pendentes deste arquivo e do `docs/RELEASE_1_0_CHECKLIST.md`, sem começar outra auditoria genérica.
+4. Atualizar este CHECKIN sempre que mudar código, resultado de testes ou condição de lançamento.
