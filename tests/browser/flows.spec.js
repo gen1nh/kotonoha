@@ -334,3 +334,30 @@ test('trilha mostra timeline por etapa sem sanfonas aninhadas',async({page})=>{
  await expect(page.getByText('Ver outras lições desta etapa')).toHaveCount(0);
  await expect(page.getByText('Pronto para testar')).toHaveCount(0);
 });
+
+test('telas usam a mesma largura no desktop, inclusive Biblioteca e Treinos',async({page})=>{
+ await page.setViewportSize({width:1440,height:900});
+ await enter(page);
+ const widths=[];
+ for(const view of ['home','path','progress','practice','learn']){
+  await page.goto(`/?view=${view}`);
+  const root=page.locator(`#view-${view}`);
+  await expect(root).toBeVisible();
+  await expect(root.locator('> :first-child')).toBeVisible();
+  const {outer,inner}=await root.evaluate(el=>({
+   outer:Math.round(el.getBoundingClientRect().width),
+   inner:Math.round(el.firstElementChild.getBoundingClientRect().width),
+  }));
+  widths.push([view,outer,inner]);
+ }
+ for(const [view,outer,inner] of widths){
+  expect(outer,`template ${view}`).toBe(832);
+  expect(inner,`conteúdo ${view}`).toBe(832);
+ }
+});
+test('iniciante não encontra kana novos ao entrar diretamente em Revisar',async({page})=>{
+ await enter(page);
+ await page.goto('/?view=review');
+ await expect(page.getByText('Sem revisões pendentes')).toBeVisible();
+ await expect(page.getByRole('button',{name:'Revelar resposta'})).toHaveCount(0);
+});
