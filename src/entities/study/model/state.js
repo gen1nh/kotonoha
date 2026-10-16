@@ -164,6 +164,7 @@ export function initialState() {
     streak: { last: "", days: 0 },
     stats: { reviews: 0, correct: 0 },
     dailyAnswers: {},
+    dailyQuestionIds: {},
     dailyActivityGoal: 2,
     activityLog: {},
     createdAt: Date.now(),
@@ -276,6 +277,9 @@ export function normalizeState(value) {
         answer <= 3,
     ),
   );
+  base.dailyQuestionIds=Object.fromEntries(Object.entries(value.dailyQuestionIds||{})
+    .filter(([key,id])=>/^\d{4}-\d{2}-\d{2}:N[1-5]$/.test(key)&&typeof id==='string'&&id.length<=100)
+    .slice(-120));
   base.dailyActivityGoal = [1, 2, 3].includes(value.dailyActivityGoal) ? value.dailyActivityGoal : 2;
   if (value.activityLog && typeof value.activityLog === 'object' && !Array.isArray(value.activityLog)) {
     base.activityLog = Object.fromEntries(Object.entries(value.activityLog).filter(([day, ids]) =>
