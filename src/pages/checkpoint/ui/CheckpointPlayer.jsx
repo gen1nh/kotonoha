@@ -128,7 +128,7 @@ export default function CheckpointPlayer({state,topic,update,go,openGuidedLesson
       {(revealed[q.id]||result!==null)&&<p lang="ja" className="font-jp text-lg">{q.spokenText}</p>}
       <p className="text-xs text-muted">Ouça a frase antes de responder. Se o áudio não funcionar, revele o texto. Nesse caso, a atividade conta como leitura.</p>
     </div>}
-    <div className="space-y-2">{q.options.map(opt=><label key={opt} className={`min-h-12 flex items-center gap-3 rounded-xl border-2 p-3 cursor-pointer ${answers[q.id]===opt?'border-primary bg-accent-soft':'border-line bg-surface'}`}><input type="radio" name={`q-${q.id}`} checked={answers[q.id]===opt} onChange={()=>answer(q.id,opt)}/><span className="text-sm text-ink-strong">{opt}</span></label>)}</div>{result!==null&&<div className="rounded-xl bg-raised p-3 space-y-2" role="status">
+    <div className="space-y-2">{q.options.map(opt=><label key={opt} className={`min-h-12 flex items-center gap-3 rounded-xl border-2 p-3 cursor-pointer ${answers[q.id]===opt?'border-blue/60 bg-blue-soft/50':'border-line bg-surface'}`}><input type="radio" name={`q-${q.id}`} checked={answers[q.id]===opt} onChange={()=>answer(q.id,opt)}/><span className="text-sm text-ink-strong">{opt}</span></label>)}</div>{result!==null&&<div className="rounded-xl bg-raised p-3 space-y-2" role="status">
        <p className="text-sm font-bold text-ink-strong">{answers[q.id]===q.answer?'✓ Você acertou esta questão.':'Resposta correta: '+q.answer}</p>
        <p className="text-sm text-muted">{explainCheckpointAnswer(q,answers[q.id])}</p>
      </div>}</fieldset>)}</section>}
