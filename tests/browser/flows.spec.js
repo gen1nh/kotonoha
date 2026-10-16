@@ -44,8 +44,8 @@ test('microlição → cartões → checkpoint → próxima microlição, sem ab
  await expect(page.getByRole('heading',{name:'Checkpoint aprovado!'})).toBeVisible();
  await expect(page.getByText(`Você acertou ${questions.length} de ${questions.length} questões`)).toBeVisible();
  await expect(page.locator('fieldset')).toHaveCount(0);
- await page.getByText(`Ver correção das ${questions.length} questões`).click();
- await expect(page.getByText('Sua resposta:')).toHaveCount(questions.length);
+ await expect(page.getByText('O que você pode melhorar')).toHaveCount(0);
+ await expect(page.getByText('Você acertou todas as questões. Pode seguir para a próxima lição!')).toBeVisible();
  await page.getByRole('button',{name:/Próxima microlição/}).click();
  await expect(page.getByRole('heading',{name:N5_UNITS[1].title})).toBeVisible();
 });
@@ -74,8 +74,8 @@ test('checkpoint retoma respostas após recarga e aprovação entra na meta diá
 
 test('trilha destaca etapa atual e digitação só aparece como treino opcional',async({page})=>{
  await enter(page);await tab(page,'Trilha').click();
- const stage=page.locator('details').filter({has:page.getByRole('heading',{name:'Primeiros passos',exact:true})}).first();
- await expect(stage).toHaveAttribute('open','');
+ const stage=page.getByRole('button',{name:/Etapa 1.*Primeiros passos/});
+ await expect(stage).toHaveAttribute('aria-expanded','true');
  await expect(page.getByText('Ler hiragana básico e reconhecer cumprimentos e frases de apresentação.',{exact:false})).toBeVisible();
  await page.goto('/?view=practice');
  await expect(page.getByRole('heading',{name:'Digite em japonês'})).toBeHidden();
@@ -284,8 +284,9 @@ test('resultado de checkpoint com erros mostra resumo e novo início de tentativ
  await expect(page.getByRole('button',{name:'Tentar novamente'})).toBeVisible();
  await page.reload();
  await expect(page.getByRole('heading',{name:'Vamos praticar mais um pouco'})).toBeVisible();
- await page.getByText(`Ver correção das ${questions.length} questões`).click();
+ await expect(page.getByRole('heading',{name:'O que você pode melhorar'})).toBeVisible();
  await expect(page.getByText('Resposta correta:',{exact:false})).toHaveCount(questions.length-1);
+ await expect(page.getByText('Ver correção',{exact:false})).toHaveCount(0);
  await page.getByRole('button',{name:'Tentar novamente'}).click();
  await expect(page.getByText(`QUESTÃO 1 DE ${questions.length}`,{exact:true})).toBeVisible();
  await expect(page.locator('fieldset').getByRole('radio',{checked:true})).toHaveCount(0);
@@ -301,9 +302,8 @@ test('aluno encontra a lição guiada e recursos de apoio sem escolher um currí
  await nav.getByRole('button',{name:'Meu espaço'}).click();
  await expect(page.getByRole('heading',{name:'Meu espaço'})).toBeVisible();
  await expect(page.getByRole('button',{name:'Biblioteca',exact:false})).toBeVisible();
- await page.getByText('Mais recursos',{exact:true}).click();
- await expect(page.getByRole('button',{name:'Mais exercícios',exact:false})).toBeVisible();
- await page.getByRole('button',{name:'Mais exercícios',exact:false}).click();
+ await expect(page.getByRole('button',{name:'Treinos extras',exact:true})).toBeVisible();
+ await page.getByRole('button',{name:'Treinos extras',exact:true}).click();
  await expect(page.getByRole('heading',{name:'Treinos extras'})).toBeVisible();
  await expect(page.getByText('Outros exercícios',{exact:true})).toBeVisible();
  await nav.getByRole('button',{name:'Hoje'}).click();
@@ -318,4 +318,19 @@ test('primeiro acesso orienta sem exigir definir meta diária',async({page})=>{
  await page.getByRole('button',{name:'Começar a aprender →'}).click();
  await expect(page.getByRole('heading',{name:'Seu próximo passo'})).toBeVisible();
  await expect(page.getByRole('dialog')).toHaveCount(0);
+});
+
+test('trilha mostra timeline por etapa sem sanfonas aninhadas',async({page})=>{
+ await enter(page);
+ await tab(page,'Trilha').click();
+ const first=page.getByRole('button',{name:/Etapa 1.*Primeiros passos/});
+ const fifth=page.getByRole('button',{name:/Etapa 5.*Consolidação N5/});
+ await expect(first).toHaveAttribute('aria-expanded','true');
+ await expect(page.getByRole('heading',{name:/Primeiros passos/})).toBeVisible();
+ await expect(page.locator('ol.border-l-2').first()).toBeVisible();
+ await fifth.click();
+ await expect(fifth).toHaveAttribute('aria-expanded','true');
+ await expect(page.getByRole('heading',{name:'Leitura em japonês'})).toBeVisible();
+ await expect(page.getByText('Ver outras lições desta etapa')).toHaveCount(0);
+ await expect(page.getByText('Pronto para testar')).toHaveCount(0);
 });

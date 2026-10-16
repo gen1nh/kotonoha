@@ -50,11 +50,9 @@ test('Biblioteca e Caderno mantêm categorias separadas da ferramenta aberta',as
 
 test('Progresso e Preferências usam destinos claros e sem rolagem horizontal',async({page})=>{
   await enter(page,'progress');
-  await page.getByText('Mais recursos',{exact:true}).click();
   await page.getByRole('button',{name:'Preparação N5'}).click();
   await expect(page.getByRole('heading',{name:'Preparação N5'})).toBeVisible();
   await page.getByRole('button',{name:/Voltar ao meu espaço/}).click();
-  await page.getByText('Mais recursos',{exact:true}).click();
   await page.getByRole('button',{name:'Simulados'}).click();
   await expect(page.getByRole('heading',{name:'Simulados e prática'})).toBeVisible();
   await page.goto('/?view=settings');
