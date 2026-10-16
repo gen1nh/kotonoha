@@ -300,6 +300,7 @@ test('aluno encontra a lição guiada e recursos de apoio sem escolher um currí
  await nav.getByRole('button',{name:'Meu espaço'}).click();
  await expect(page.getByRole('heading',{name:'Meu espaço'})).toBeVisible();
  await expect(page.getByRole('button',{name:'Biblioteca',exact:false})).toBeVisible();
+ await page.getByText('Mais recursos',{exact:true}).click();
  await expect(page.getByRole('button',{name:'Mais exercícios',exact:false})).toBeVisible();
  await page.getByRole('button',{name:'Mais exercícios',exact:false}).click();
  await expect(page.getByRole('heading',{name:'Treinos extras'})).toBeVisible();
