@@ -26,12 +26,12 @@ export function Review({ state, queue, update, go, speak, openGuidedCheckpoint, 
         title="Sessão de revisão concluída!"
         icon={<Icon name="check" />}
         action={
-          <Button variant="primary" onClick={() => next.kind === "checkpoint" ? openGuidedCheckpoint?.(next.lesson.id) : returnToLesson ? returnToLesson() : go("path")}>
-            {next.kind === "checkpoint" ? "Fazer checkpoint →" : returnToLesson ? "Continuar minha lição →" : "Continuar minha trilha →"}
+          <Button variant="primary" onClick={() => next.kind === "checkpoint" ? openGuidedCheckpoint?.(next.lesson.id) : returnToLesson ? returnToLesson() : go("home")}>
+            {next.kind === "checkpoint" ? "Fazer teste rápido →" : returnToLesson ? "Continuar minha lição →" : "Ver meu próximo passo →"}
           </Button>
         }
       >
-        Você praticou os cartões desta sessão. Isso registra sua revisão; a verificação da lição acontece no checkpoint.
+        Boa revisão! Quando estiver pronto, continue com a próxima atividade.
       </EmptyState>
     );
   }
@@ -41,12 +41,12 @@ export function Review({ state, queue, update, go, speak, openGuidedCheckpoint, 
       {/* Cabeçalho de Revisão SRS */}
       <PageHeading
         title={returnToLesson ? "Prática da lição" : "Revisão de cartões"}
-        description="Tente responder de memória antes de revelar. Depois, compare com a resposta e escolha como foi lembrar. Não precisa digitar."
+        description="Tente lembrar antes de revelar a resposta. Depois, diga como foi."
         icon="review"
         iconBg="bg-blue-soft"
         iconColor="text-blue"
       >
-        <span className="type-caption text-primary bg-accent-soft px-3 py-1.5 rounded-xl border border-primary/20">
+        <span className="type-caption text-muted bg-raised px-3 py-1.5 rounded-xl border border-line">
           {card.type}
         </span>
       </PageHeading>
