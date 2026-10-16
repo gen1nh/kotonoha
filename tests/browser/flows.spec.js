@@ -122,7 +122,8 @@ for(const kind of ['reading','listening'])test(`${kind}: um exemplo por vez ante
 
 test('filtro N1 não desbloqueia laboratórios nem URLs',async({page})=>{
  const state=seeded();state.selectedLevel='N1';await enter(page,state);
- await page.goto('/?view=line');await expect(page.getByRole('heading',{name:'Praticar'})).toBeVisible();
+ await page.goto('/?view=line');await expect(page.getByRole('heading',{name:'Treinos extras'})).toBeVisible();
+ await page.getByText('Outros exercícios',{exact:true}).click();
  await page.getByRole('button',{name:'Laboratórios'}).click();
  await expect(page.getByRole('button',{name:'Conversação'})).toBeDisabled();
  await expect(page.getByRole('button',{name:'Pronúncia'})).toBeDisabled();
