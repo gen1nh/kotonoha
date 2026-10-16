@@ -59,7 +59,7 @@ export default function LessonPlayer({state,level='N5',topic,update,go,studyUnit
   const listening=unit.kind==='listening';
   return <div className="mx-auto max-w-2xl space-y-4 pb-8">
    <header className="rounded-3xl border-2 border-line bg-paper p-5 space-y-2">
-    <p className="text-xs font-black text-primary-strong">MICROLIÇÃO · N5 · {listening?'ESCUTA':'LEITURA'}</p>
+    <p className="text-xs font-black text-primary-strong">LIÇÃO · N5 · {listening?'ESCUTA':'LEITURA'}</p>
     <h1 className="text-2xl font-black text-ink-strong">{unit.title}</h1>
     <p className="text-sm text-muted">{unit.detail}</p>
     {listening&&<details className="rounded-xl border border-line bg-paper p-3 text-xs text-muted">
@@ -83,9 +83,9 @@ export default function LessonPlayer({state,level='N5',topic,update,go,studyUnit
    <div className="flex flex-wrap gap-3"><Button variant="secondary" disabled={exampleIndex===0} onClick={()=>setExampleIndex(i=>i-1)}>Exemplo anterior</Button>{exampleIndex<unit.items.length-1&&<Button variant="primary" onClick={()=>setExampleIndex(i=>i+1)}>Próximo exemplo →</Button>}</div>
    {(exampleIndex===unit.items.length-1||ready||passed)&&<section className="rounded-3xl border-2 border-primary bg-paper p-5 space-y-3">
     <h2 className="text-lg font-black text-ink-strong">Próxima etapa</h2>
-    <p className="text-sm text-muted">{passed?'Avaliação concluída.':ready?'Os exemplos foram estudados. Resolva o checkpoint.':'Estude os cinco exemplos e confirme quando estiver preparado para responder às questões.'}</p>
+    <p className="text-sm text-muted">{passed?'Avaliação concluída.':ready?'Você já viu os exemplos. Vamos conferir o que aprendeu.':'Estude os cinco exemplos e confirme quando estiver preparado para responder às questões.'}</p>
     {passed?<Button variant="primary" className="w-full" onClick={()=>next?openGuidedLesson(next.id,'N5'):go('path')}>{next?'Próxima microlição →':'Ver trilha →'}</Button>:
-      ready?<Button variant="primary" className="w-full" onClick={()=>openCheckpoint(topic)}>Fazer checkpoint →</Button>:
+      ready?<Button variant="primary" className="w-full" onClick={()=>openCheckpoint(topic)}>Fazer teste rápido →</Button>:
       <Button variant="primary" className="w-full" onClick={()=>update(st=>{st.lessons[topic]=true;})}>Estudei os exemplos · continuar →</Button>}
    </section>}
    <button type="button" className="min-h-11 text-sm font-bold text-primary-strong" onClick={()=>go('path')}>← Voltar à Trilha</button>
@@ -93,7 +93,7 @@ export default function LessonPlayer({state,level='N5',topic,update,go,studyUnit
  }
  return <div className="mx-auto max-w-2xl space-y-4 pb-8">
   <header className="rounded-3xl border-2 border-line bg-paper p-5 space-y-3">
-   <p className="text-xs font-black text-primary-strong">{level==='N5'?'MICROLIÇÃO':'PRÉVIA INTRODUTÓRIA'} · {level}</p>
+   <p className="text-xs font-black text-primary-strong">{level==='N5'?'LIÇÃO':'PRÉVIA INTRODUTÓRIA'} · {level}</p>
    <h1 className="text-2xl font-black text-ink-strong">{lesson.title}</h1>
    <p className="text-sm text-muted">{lesson.detail||lesson.explanation||lesson.focus}</p>
    {unit&&<><div className="flex justify-between text-xs font-bold text-muted"><span>{progress.studied} de {progress.total} itens praticados</span><span>{passed?'Aprovada':ready?'Pronta para avaliar':'Estudando'}</span></div>
@@ -102,20 +102,20 @@ export default function LessonPlayer({state,level='N5',topic,update,go,studyUnit
   {level!=='N5'?<section className="rounded-3xl border border-line bg-paper p-5 space-y-4">
    <h2 className="font-black text-ink-strong">Leia e responda</h2><p className="text-sm text-ink">{lesson.explanation}</p>
    {lesson.example&&<div className="rounded-2xl bg-raised p-4"><p className="font-jp text-xl text-ink-strong" lang="ja">{lesson.example}</p><p className="text-sm text-muted">{lesson.translation}</p><button className="min-h-11 text-primary-strong font-bold" type="button" onClick={()=>playJapanese(lesson.example)}>Ouvir exemplo <Icon name="sound"/></button></div>}
-   <p className="text-xs text-muted">Conteúdo autoral introdutório. Não cobre integralmente o exame JLPT.</p>
+   <p className="text-xs text-muted">Esta é uma introdução ao conteúdo. Ela não substitui o estudo completo para o JLPT.</p>
    {lesson.questions.map((q,i)=><fieldset key={q.id} className="rounded-2xl border border-line p-3 space-y-2" disabled={result!==null||Boolean(state.lessons?.[topic])}><legend className="font-bold text-ink-strong">{i+1}. {q.prompt}</legend>{q.sentence&&<p lang="ja" className="font-jp">{q.sentence}</p>}{q.choices.map((c,j)=><label key={j} className="min-h-12 flex items-center gap-3 rounded-xl border border-line p-2"><input type="radio" name={`advanced-${q.id}`} checked={answers[q.id]===j} onChange={()=>updateAnswer(q.id,j)}/>{c}</label>)}{result!==null&&<p className="text-xs text-muted">{q.explanation}</p>}</fieldset>)}
    {result!==null&&<p role="status" className="font-bold">{result}% · {result>=80?'Aprovada':'Revise os exemplos e tente novamente'}</p>}
    {state.lessons?.[topic]||result>=80?<Button variant="primary" className="w-full" onClick={()=>next?openGuidedLesson(next.id,level):go('path')}>{next?'Próxima lição →':'Voltar à trilha →'}</Button>:<Button variant="primary" className="w-full" disabled={questionScore===null} onClick={completeAdvanced}>Corrigir exercícios · mínimo 80%</Button>}
    {result!==null&&result<80&&<Button variant="secondary" className="w-full" onClick={()=>{update(s=>{delete s.drafts?.[draftKey];});setResult(null);}}>Tentar novamente</Button>}
   </section>:<>
-   <p className="text-sm text-muted">Seu percurso: conhecer → praticar → verificar no checkpoint. Ouvir ajuda a associar escrita e som; não é preciso digitar para concluir a lição.</p>
+   <p className="text-sm text-muted">Ouça os exemplos se quiser. Depois vamos praticar juntos.</p>
    {phase==='learn'&&<section className="rounded-3xl border border-line bg-paper p-4 sm:p-5 space-y-4">
     <h2 ref={stageHeading} tabIndex={-1} className="text-lg font-black text-ink-strong">{quiz?'1. Entenda a regra':unit.kind==='kanji'?'1. Reconheça o kanji na palavra':'1. Conheça o conteúdo'}</h2>
     <p className="text-sm text-muted">{quiz?'Leia a explicação e compare a frase com a tradução. Depois você vai identificar o significado do exemplo.':unit.kind==='kana'?'Observe cada sinal e sua leitura. Toque para ouvir e tente repetir. Nesta etapa, consulte as respostas à vontade.':'Leia a palavra, sua leitura e o significado. Toque para ouvir. Depois você vai tentar lembrar sem consultar a resposta.'}</p>
     {quiz?<div className="rounded-2xl bg-raised p-4 space-y-3"><h3 className="font-bold text-ink-strong">{g.title}</h3><p className="text-sm text-ink">{g.text}</p><p className="font-jp text-2xl" lang="ja">{g.example}</p><p className="text-sm text-muted">{g.meaning}</p><Button variant="secondary" onClick={()=>playJapanese(g.example)}>Ouvir frase <Icon name="sound"/></Button></div>:
     <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">{samples.map(sample=><button type="button" key={sample.glyph} onClick={()=>playJapanese(sample.spoken||sample.kana||sample.glyph)} className="min-h-32 rounded-2xl border-2 border-line bg-surface p-3 flex flex-col items-center justify-center gap-1 text-center focus-visible:outline-2 focus-visible:outline-primary"><span className="font-jp text-3xl font-black" lang="ja">{sample.glyph}</span><span className="text-sm font-bold">{sample.reading}</span><span className="text-xs text-muted">{sample.meaning}</span>{sample.example&&<span className="text-xs font-jp text-muted">{sample.example} · {sample.exampleReading}</span>}<span className="text-xs text-primary-strong">Ouvir <Icon name="sound"/></span></button>)}</div>}
    {unit.kind==='kana'&&unit.index>=8&&<p className="rounded-2xl bg-raised p-4 text-xs text-muted">Combinações com sons sonoros e yōon (ゃ・ゅ・ょ). Lembre-se: っ/ッ indica uma pausa/consoante dupla, enquanto ー alonga uma vogal no katakana. {KANA_PRONUNCIATION_NOTES[3].detail}</p>}
-    <Button variant="primary" className="w-full" onClick={()=>setPhase('practice')}>{passed||ready?'Ver próxima etapa →':'Entendi · começar a prática →'}</Button>
+    <Button variant="primary" className="w-full" onClick={()=>setPhase('practice')}>{passed||ready?'Continuar →':'Entendi · começar a prática →'}</Button>
    </section>}
    {phase==='practice'&&<div className="space-y-4">
    <h2 ref={stageHeading} tabIndex={-1} className="text-lg font-black text-ink-strong">{passed?'Lição concluída':ready?'3. Verifique o aprendizado':'2. Tente lembrar'}</h2>
@@ -123,8 +123,8 @@ export default function LessonPlayer({state,level='N5',topic,update,go,studyUnit
    {quiz&&!ready&&<section className="rounded-3xl border border-line p-5 bg-paper space-y-3"><h2 className="font-black">Confira a compreensão</h2><p className="text-sm">Leia a frase e escolha o significado. A resposta só será conferida quando você tocar em “Conferir resposta”.</p><p lang="ja" className="font-jp text-2xl">{g.example}</p><div className="space-y-2">{grammarChoices.map(c=><label key={c} className="min-h-12 flex items-center gap-3 rounded-xl border-2 border-line p-3"><input type="radio" name="grammar-practice" checked={chosen===c} onChange={()=>{setPracticeChecked(false);updateAnswer('practice',c);}}/><span className="text-sm">{c}</span></label>)}</div>{chosen&&!practiceChecked&&<Button variant="secondary" className="w-full" onClick={()=>{setPracticeChecked(true);playSound(chosen===g.meaning?'correct':'incorrect');}}>Conferir resposta</Button>}
     {chosen&&practiceChecked&&<div role="status" className="rounded-xl border border-line bg-raised p-3 space-y-2"><p className="text-sm font-bold text-ink-strong">{chosen===g.meaning?'Correto! Você reconheceu o significado.':'Ainda não. Compare a frase com a explicação e tente novamente.'}</p>{chosen!==g.meaning&&<p className="text-sm text-muted">Dica: {g.text}</p>}<p className="text-xs text-muted">Esta prática prepara para o checkpoint; é nele que você verifica o aprendizado.</p></div>}
     <Button variant="primary" className="w-full" disabled={!practiceChecked||chosen!==g.meaning} onClick={()=>update(s=>{s.lessons[topic]=true;delete s.drafts?.[draftKey];})}>Concluir prática →</Button></section>}
-   {(!quiz||ready)&&<section className="rounded-3xl border-2 border-primary bg-paper p-5 space-y-3"><p className="text-xs font-black text-primary-strong">PRÓXIMA ETAPA</p><h2 className="text-lg font-black text-ink-strong">{passed?'Microlição validada!':ready?'Faça o checkpoint':'Pratique os cartões desta microlição'}</h2><p className="text-sm text-muted">{passed?'Você pode avançar. A revisão espaçada continuará cuidando da memorização.':ready?'Mostre o que aprendeu para desbloquear a próxima microlição.':quiz?'Responda a prática acima antes da avaliação.':'Você verá um item por vez desta lição. Tente lembrar a leitura ou o significado, revele a resposta e indique como foi. Errar ajuda a decidir o que revisar; não bloqueia seu estudo.'}</p>
-    {passed?<Button variant="primary" className="w-full" onClick={()=>next?openGuidedLesson(next.id,'N5'):go('path')}>{next?'Próxima microlição →':'Ver Trilha →'}</Button>:ready?<Button variant="primary" className="w-full" onClick={()=>openCheckpoint(topic)}>Fazer checkpoint →</Button>:!quiz?<Button variant="primary" className="w-full" onClick={()=>studyUnit(topic)}>Praticar {progress.total} cartões →</Button>:null}
+   {(!quiz||ready)&&<section className="rounded-3xl border-2 border-primary bg-paper p-5 space-y-3"><p className="text-xs font-black text-primary-strong">PRÓXIMA ETAPA</p><h2 className="text-lg font-black text-ink-strong">{passed?'Lição concluída!':ready?'Faça o checkpoint':'Pratique os cartões desta microlição'}</h2><p className="text-sm text-muted">{passed?'Você pode avançar. A revisão espaçada continuará cuidando da memorização.':ready?'Mostre o que aprendeu para desbloquear a próxima microlição.':quiz?'Responda a prática acima antes da avaliação.':'Você verá um item por vez desta lição. Tente lembrar a leitura ou o significado, revele a resposta e indique como foi. Errar ajuda a decidir o que revisar; não bloqueia seu estudo.'}</p>
+    {passed?<Button variant="primary" className="w-full" onClick={()=>next?openGuidedLesson(next.id,'N5'):go('path')}>{next?'Próxima microlição →':'Ver Trilha →'}</Button>:ready?<Button variant="primary" className="w-full" onClick={()=>openCheckpoint(topic)}>Fazer teste rápido →</Button>:!quiz?<Button variant="primary" className="w-full" onClick={()=>studyUnit(topic)}>Praticar {progress.total} cartões →</Button>:null}
    </section>}
    </div>}
   </>}
