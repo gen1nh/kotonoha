@@ -44,7 +44,7 @@ test('Progresso mantém estatísticas recolhidas e simulados sem listas longas',
   await expect(page.getByText('Ver mais números',{exact:true})).toBeVisible();
   await page.getByText('Ver mais números',{exact:true}).click();
   await expect(page.getByText('Estatísticas detalhadas e tempo de estudo')).toBeVisible();
-  await expect(page.getByRole('heading',{name:'Quanto você já estudou'})).not.toBeVisible();
+  await expect(page.getByRole('heading',{name:'Quanto você já estudou'})).toBeVisible();
   await page.getByRole('button',{name:'Simulados'}).click();
   await expect(page.getByRole('heading',{name:'Quanto você já estudou'})).toHaveCount(0);
 });
