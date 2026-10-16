@@ -72,3 +72,12 @@ test('escuta opcional só contém caracteres já vistos ou situações de liçõ
  assert.ok(first.items.every(q=>advanced.some(item=>item.id===q.id)));
  assert.ok(!advanced.some(q=>second.items.some(item=>item.id===q.id)));
 });
+
+test('modo misto não gera alternativas ambíguas para o mesmo som em dois alfabetos',()=>{
+ const state=initialState();
+ for(const id of ['hira:か','kata:カ','hira:あ','hira:い','hira:う'])state.cards[id].seen=true;
+ const mixed=speedPracticePool(state);
+ assert.equal(new Set(mixed.map(item=>item.answer)).size,mixed.length);
+ assert.equal(mixed.filter(item=>item.answer==='ka').length,1);
+ assert.equal(speedPracticePool(state,'katakana').filter(item=>item.answer==='ka').length,1);
+});
