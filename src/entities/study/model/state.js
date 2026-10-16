@@ -170,7 +170,7 @@ export function initialState() {
     createdAt: Date.now(),
     mocks: [],
     selectedLevel: "N5",
-    speedRecords: { highScore: 0, bestCombo: 0, totalGames: 0 },
+    speedRecords: { highScore: 0, bestCombo: 0, totalGames: 0, recentIds: [] },
     notebook: {
       notes: [],
       kanban: [],
@@ -308,6 +308,7 @@ export function normalizeState(value) {
       highScore: Number(value.speedRecords.highScore) || 0,
       bestCombo: Number(value.speedRecords.bestCombo) || 0,
       totalGames: Number(value.speedRecords.totalGames) || 0,
+      recentIds: Array.isArray(value.speedRecords.recentIds)?[...new Set(value.speedRecords.recentIds.filter(id=>typeof id==='string'&&id.length<=100))].slice(-50):[],
     };
   }
   if (value.notebook && typeof value.notebook === "object") {
