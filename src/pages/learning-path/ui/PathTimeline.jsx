@@ -3,6 +3,7 @@ import {lessonsFor,isDone,courseLevel} from '../../../entities/study/index.js';
 import {N5_STAGES,stageProgress,unitAccessible,unitPracticed} from '../../../entities/study/index.js';
 import {isAccessibleLesson} from '../../../entities/study/index.js';
 import Icon from '../../../shared/ui/Icon.jsx';
+import LearningStatus from '../../../shared/ui/LearningStatus.jsx';
 import {Button} from '../../../shared/ui/index.jsx';
 const chapters=units=>units.reduce((groups,unit)=>{
  const previous=groups.at(-1);
@@ -23,7 +24,7 @@ export default function PathTimeline({state,openGuidedLesson,openCheckpoint,go,s
   return <li key={unit.id} className="relative pl-8 pb-3">
    <span aria-hidden="true" className={`absolute -left-[13px] top-4 h-7 w-7 flex items-center justify-center rounded-full border-2 border-paper ${done?'bg-primary text-white':locked?'bg-raised text-muted':'bg-blue text-white'}`}><Icon name={done?'check':locked?'lock':'learn'} className="w-4 h-4"/></span>
    <article className={`rounded-2xl border p-4 space-y-2 ${locked?'border-line bg-raised':'border-line bg-paper'}`}>
-    <div className="flex gap-3 items-center justify-between"><p className="font-black text-ink-strong">{unit.title}</p><span className="shrink-0 text-xs font-bold text-muted">{done?'✓ Aprovada':locked?'Bloqueada':ready?'Avaliar':'Aprender'}</span></div>
+    <div className="flex gap-3 items-center justify-between"><p className="font-black text-ink-strong">{unit.title}</p><LearningStatus kind={done?'completed':locked?'locked':'current'} label={done?'Concluída':locked?'Mais adiante':ready?'Pronto para testar':'Em andamento'}/></div>
     {(!done&&!locked)&&<p className="text-xs sm:text-sm text-muted">{unit.detail||unit.focus||unit.explanation}</p>}
     {locked?null:<Button variant={done?'secondary':'primary'} className="w-full sm:w-auto" onClick={()=>ready?openCheckpoint(unit.id):openGuidedLesson(unit.id,level)}>{done?'Rever':ready?'Fazer teste rápido →':'Continuar lição →'}</Button>}
    </article>
