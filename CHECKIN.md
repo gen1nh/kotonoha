@@ -88,7 +88,7 @@ Integrado por squash à `main`: `a83f9497518ce3b90cde5335f41540a8d7b9c46f`. CI c
 - [x] Template de largura única no `Shell` (`max-w-[52rem]`) e normalização do primeiro contêiner de cada rota; não deslocar telas com utilitários `max-w-2xl` ou `max-w-3xl` individuais.
 - [x] Revisão automática mostra **somente cartões já encontrados e vencidos**; não usa kana ou vocabulário inédito para completar listas. Cartões pessoais criados pelo próprio aluno continuam elegíveis.
 - [x] Revisão vazia orienta a voltar à atividade recomendada em Hoje; não diz falsamente que uma sessão foi concluída.
-- [x] Exemplos japoneses na lição, leitura, cartões, checkpoint e desafio diário podem ser tocados para ouvir via voz nativa ja-JP; se não houver voz disponível, respeitar o feedback já fornecido pelo mecanismo de áudio.
+- [x] Caracteres isolados de kana/kanji e exemplos japoneses na lição, leitura, cartões, checkpoint e desafio diário podem ser tocados para ouvir via voz nativa ja-JP; se não houver voz disponível, respeitar o feedback já fornecido pelo mecanismo de áudio.
 - [x] Desafio rápido agora utiliza itens estudados e evita repetir perguntas até esgotar a seleção; registra IDs recentes localmente para evitar repetição imediata entre sessões.
 - [x] Desafio diário N5 deriva de checkpoints das unidades aprovadas (até 10 recentes, múltiplas questões por unidade) e gira diariamente; a pergunta respondida fica vinculada ao dia no backup para não mudar após avançar de lição.
 - [x] Prática extra de escuta usa sons/palavras que o aluno já viu e incorpora os exercícios autorais das unidades de escuta praticadas; ao esgotar o banco liberado, **não reinicia automaticamente** as mesmas seis questões.
