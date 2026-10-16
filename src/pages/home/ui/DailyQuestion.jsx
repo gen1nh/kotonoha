@@ -28,6 +28,8 @@ export default function DailyQuestion({ state, update, go, speak, level: guidedL
       const alreadyAnswered = Number.isInteger(next.dailyAnswers?.[key]);
       next.dailyAnswers ||= {};
       next.dailyAnswers[key] = index;
+      next.dailyQuestionIds ||= {};
+      next.dailyQuestionIds[key] = question.id;
       if (!alreadyAnswered) {
         // Daily questions are practice, not spaced-repetition card reviews.
         // Keep SRS accuracy and review totals tied to actual card reviews.
