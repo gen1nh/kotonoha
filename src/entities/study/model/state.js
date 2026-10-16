@@ -415,7 +415,7 @@ export function cardMatchesLevel(card, level = "N5") {
 export function selectReview(state,type,limit=10,now=Date.now()){
   const level=state.selectedLevel||'N5';
   const candidates=Object.values(state.cards||{}).filter(c=>
-    (type?c.type===type:cardMatchesLevel(c,level)) && c.seen===true
+    (type?c.type===type:cardMatchesLevel(c,level)) && (c.seen===true||c.type==='Caderno Pessoal')
   );
   return candidates.filter(c=>c.due<=now).sort((a,b)=>a.due-b.due||a.id.localeCompare(b.id))
     .slice(0,Math.max(0,limit)).map(c=>c.id);
