@@ -43,7 +43,7 @@ export default function PracticeHub({ state, go, openSpeedQuiz }) {
       </details>
       <button type="button" className="min-h-11 text-sm font-semibold text-ink-strong underline" onClick={()=>setScreen('resources')}>Biblioteca e Caderno</button>
     </>}
-    {screen === 'listening' && <N5ListeningPractice />}
+    {screen === 'listening' && <N5ListeningPractice state={state} go={go}/>}
     {screen === 'labs' && <section className="space-y-3" aria-label="Mais atividades">
       <h2 className="text-lg font-black text-ink-strong">Laboratórios opcionais</h2>
       <div className="grid grid-cols-2 gap-3">
