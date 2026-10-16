@@ -112,7 +112,10 @@ export default function CheckpointPlayer({state,topic,update,go,openGuidedLesson
     <p className="text-xs text-muted">Uma pergunta por vez. Você verá o resultado no final.</p>
   </div>}
   {questions.length<4?<p role="alert">Esta avaliação não tem perguntas suficientes. Retorne à Trilha.</p>:
-   <section className="space-y-3" aria-label="Questões do checkpoint">{questions.map((q,i)=>i!==activeQuestion?null:<fieldset key={q.id} disabled={result!==null} className="rounded-2xl border border-line bg-paper p-4 space-y-3"><legend className="sr-only">Questão {i+1}</legend><p className="text-xs font-black text-primary-strong">QUESTÃO {i+1} DE {questions.length}</p><p className="font-bold text-ink-strong">{q.prompt}</p>
+   <section className="space-y-3" aria-label="Questões do checkpoint">{questions.map((q,i)=>i!==activeQuestion?null:<fieldset key={q.id} disabled={result!==null} className="rounded-2xl border border-line bg-paper p-4 space-y-3"><legend className="sr-only">Questão {i+1}</legend><p className="text-xs font-black text-primary-strong">QUESTÃO {i+1} DE {questions.length}</p>{/^[\u3040-\u30ff\u3400-\u9fffー々〆ヵヶ。、！？\s]+$/.test(q.prompt)?
+      <button type="button" lang="ja" aria-label="Ouvir caractere em japonês" onClick={()=>speakJapanese(q.prompt,setAudioNotice,{rate:speechRate})}
+        className="flex min-h-11 items-center gap-2 text-left font-jp text-xl font-bold text-ink-strong">{q.prompt}<span aria-hidden="true">🔊</span></button>:
+      <p className="font-bold text-ink-strong">{q.prompt}</p>}
     {q.text&&<button type="button" lang="ja" aria-label="Ouvir texto em japonês" disabled={q.text.includes('＿＿')}
         onClick={()=>speakJapanese(q.text,setAudioNotice,{rate:speechRate})}
         className="flex min-h-12 w-full items-center justify-between gap-3 rounded-xl bg-raised p-3 text-left font-jp text-lg text-ink-strong disabled:cursor-default">
