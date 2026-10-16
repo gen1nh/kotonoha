@@ -27,9 +27,10 @@ export default function SpeedQuiz({ state, update, onClose }) {
   const getPool=useCallback(()=>speedPracticePool(state,mode),[state.cards,mode]);
   const nextQuestion=useCallback(()=>{
     const pool=getPool();
+    if(pool.length<4){setCurrentQ(null);setFeedback(null);return;}
+    if(pool.every(item=>usedIds.current.includes(item.id)))usedIds.current=[];
     const question=speedPracticeQuestion(pool,usedIds.current);
     if(!question){setCurrentQ(null);setFeedback(null);return;}
-    if(usedIds.current.length>=pool.length)usedIds.current=[];
     usedIds.current=[...usedIds.current,question.id];
     setCurrentQ(question);
     setFeedback(null);
@@ -37,7 +38,7 @@ export default function SpeedQuiz({ state, update, onClose }) {
   // Inicia o Quiz
   const startGame = () => {
     if(getPool().length<4)return;
-    usedIds.current=[];
+    usedIds.current=[...(state.speedRecords?.recentIds||[])];
     setScore(0);
     setCombo(0);
     setMaxCombo(0);
@@ -82,6 +83,7 @@ export default function SpeedQuiz({ state, update, onClose }) {
         if (!s.speedRecords)
           s.speedRecords = { highScore: 0, bestCombo: 0, totalGames: 0 };
         s.speedRecords.totalGames = (s.speedRecords.totalGames || 0) + 1;
+        s.speedRecords.recentIds=[...new Set([...(s.speedRecords.recentIds||[]),...usedIds.current])].slice(-50);
         if (isNewHigh) s.speedRecords.highScore = score;
         if (newMaxCombo > (s.speedRecords.bestCombo || 0))
           s.speedRecords.bestCombo = newMaxCombo;
