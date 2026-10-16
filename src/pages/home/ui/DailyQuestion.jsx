@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import {playSound} from "../../../shared/audio/index.js";
 import { markStudy, todayKey } from "../../../entities/study/index.js";
-import { HOME_QUESTION,useReadingPreferences } from "../../../entities/study/index.js";
+import { dailyChallenge,useReadingPreferences } from "../../../entities/study/index.js";
 import { Card, Button, AudioRateControl } from "../../../shared/ui/index.jsx";
 import Icon from "../../../shared/ui/Icon.jsx";
 
 export default function DailyQuestion({ state, update, go, speak, level: guidedLevel }) {
   const level = guidedLevel || state.selectedLevel || "N5";
-  const question = HOME_QUESTION[level];
+  const question = dailyChallenge(state,level);
   const key = `${todayKey()}:${level}`;
   const [selected, setSelected] = useState(
     () => state.dailyAnswers?.[key] ?? null,
@@ -37,7 +37,8 @@ export default function DailyQuestion({ state, update, go, speak, level: guidedL
   }
 
   const complete = selected !== null;
-  const correct = selected === question.answer;
+  const correct = question&&selected === question.answer;
+  if(!question)return <p className="text-sm text-muted">Seu desafio do dia aparece aqui depois de concluir sua primeira lição. Vamos começar pela Trilha!</p>;
 
   // Estado quando a pergunta já foi respondida hoje
   if (complete && !showReview) {
@@ -49,16 +50,16 @@ export default function DailyQuestion({ state, update, go, speak, level: guidedL
               <Icon name="check" /> {correct ? "Acertou hoje" : "Praticou hoje"}
             </span>
             <span className="text-xs font-semibold text-muted">
-              Desafio Diário
+              Desafio do dia
             </span>
           </div>
           <h3 className="mt-3 text-lg font-bold text-ink">{question.prompt}</h3>
-          <p
-            className="mt-1 font-jp text-lg text-primary-strong font-medium"
-            lang="ja"
-          >
-            {question.sentence}
-          </p>
+          {question.sentence&&<button type="button" lang="ja" disabled={!speak}
+            className="mt-1 flex min-h-11 items-center gap-2 text-left font-jp text-lg text-ink-strong font-semibold disabled:cursor-default"
+            onClick={()=>speak?.(question.sentence,{rate:speechRate})}
+            aria-label="Ouvir frase em japonês">
+            {question.sentence} {speak&&<Icon name="sound"/>}
+          </button>}
           <p className="mt-2 text-sm text-ink/80 bg-surface/80 rounded-lg p-3 border border-line">
             <strong>{correct ? "Correto!" : "Atenção:"}</strong>{" "}
             {question.explanation}
@@ -100,24 +101,13 @@ export default function DailyQuestion({ state, update, go, speak, level: guidedL
         >
           {question.prompt}
         </h3>
-        <div className="mt-3 flex items-center justify-between gap-3 rounded-lg bg-paper p-3 border border-line">
-          <p
-            className="font-jp text-xl font-bold text-primary-strong"
-            lang="ja"
-          >
-            {question.sentence}
-          </p>
-          {speak && (
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={() => speak(question.sentence,{rate:speechRate})}
-              title="Ouvir pronúncia"
-            >
-              <Icon name="sound" /> Ouvir
-            </Button>
-          )}
-        </div>
+        {question.sentence&&<button type="button" lang="ja" disabled={!speak}
+          aria-label="Ouvir frase em japonês"
+          onClick={()=>speak?.(question.sentence,{rate:speechRate})}
+          className="mt-3 flex min-h-12 w-full items-center justify-between gap-3 rounded-lg bg-paper p-3 border border-line text-left disabled:cursor-default">
+          <span className="font-jp text-xl font-bold text-ink-strong">{question.sentence}</span>
+          {speak&&<Icon name="sound"/>}
+        </button>}
         {speak&&<details className="mt-2 rounded-xl border border-line bg-paper p-3">
           <summary className="min-h-11 cursor-pointer text-xs font-bold text-ink-strong">Velocidade desta pergunta</summary>
           <div className="pt-2"><AudioRateControl rate={speechRate} onChange={setSpeechRate} defaultRate={readingPreferences.speechRate}/></div>
