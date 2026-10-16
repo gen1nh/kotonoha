@@ -57,10 +57,14 @@ test('lousa de kana aceita traço, desfazer e limpar sem scroll do canvas',async
  await expect(clear).toBeEnabled();
  await undo.click();
  await expect(undo).toBeDisabled();
- await page.mouse.move(box.x+box.width*.2,box.y+box.height*.4);
+ // Clicking the toolbar scrolls the document: reposition before a second canvas stroke.
+ await canvas.scrollIntoViewIfNeeded();
+ const nextBox=await canvas.boundingBox();
+ await page.mouse.move(nextBox.x+nextBox.width*.2,nextBox.y+nextBox.height*.4);
  await page.mouse.down();
- await page.mouse.move(box.x+box.width*.7,box.y+box.height*.5,{steps:5});
+ await page.mouse.move(nextBox.x+nextBox.width*.7,nextBox.y+nextBox.height*.5,{steps:5});
  await page.mouse.up();
+ await expect(clear).toBeEnabled();
  await clear.click();
  await expect(clear).toBeDisabled();
 });
