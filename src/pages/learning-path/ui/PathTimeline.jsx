@@ -1,69 +1,93 @@
 import React from 'react';
-import {lessonsFor,isDone,courseLevel} from '../../../entities/study/index.js';
-import {N5_STAGES,stageProgress,unitAccessible,unitPracticed} from '../../../entities/study/index.js';
-import {isAccessibleLesson} from '../../../entities/study/index.js';
+import {lessonsFor,isDone,courseLevel,N5_STAGES,stageProgress,unitAccessible,unitPracticed,isAccessibleLesson} from '../../../entities/study/index.js';
 import Icon from '../../../shared/ui/Icon.jsx';
-import LearningStatus from '../../../shared/ui/LearningStatus.jsx';
 import {Button} from '../../../shared/ui/index.jsx';
+
 const chapters=units=>units.reduce((groups,unit)=>{
  const previous=groups.at(-1);
  if(previous?.name===unit.chapter)previous.units.push(unit);
  else groups.push({name:unit.chapter,key:unit.id,units:[unit]});
  return groups;
 },[]);
-export default function PathTimeline({state,openGuidedLesson,openCheckpoint,go,speak}){
+
+/** Only the five stages expand. Chapters are headings on a single continuous timeline. */
+export default function PathTimeline({state,openGuidedLesson,openCheckpoint,go}){
  const level=courseLevel(state);
  const lessons=lessonsFor(level);
- const completed=lessons.filter(l=>isDone(state,level,l)).length;
- const current=lessons.findIndex(l=>!isDone(state,level,l));
- const currentUnit=lessons[current];
- const renderStep=(unit,i)=>{
+ const completed=lessons.filter(unit=>isDone(state,level,unit)).length;
+ const currentUnit=lessons.find(unit=>!isDone(state,level,unit));
+ const [openedStage,setOpenedStage]=React.useState(()=>{
+  if(level!=='N5')return null;
+  return N5_STAGES.find(stage=>stage.units.some(unit=>unit.id===currentUnit?.id))?.id||N5_STAGES.at(-1)?.id;
+ });
+ const chooseUnit=unit=>unitPracticed(state,unit.id)&&level==='N5'?openCheckpoint(unit.id):openGuidedLesson(unit.id,level);
+ const renderStep=unit=>{
   const done=isDone(state,level,unit);
   const locked=level==='N5'?!unitAccessible(state,unit.id):!isAccessibleLesson(state,unit.id,level);
+  const current=unit.id===currentUnit?.id;
   const ready=level==='N5'&&!done&&!locked&&unitPracticed(state,unit.id);
+  const label=done?'Concluída':locked?'Bloqueada':ready?'Pronta para o teste':'Para aprender';
   return <li key={unit.id} className="relative pl-8 pb-3">
-   <span aria-hidden="true" className={`absolute -left-[13px] top-4 h-7 w-7 flex items-center justify-center rounded-full border-2 border-paper ${done?'bg-primary text-white':locked?'bg-raised text-muted':'bg-blue text-white'}`}><Icon name={done?'check':locked?'lock':'learn'} className="w-4 h-4"/></span>
-   <article className={`rounded-2xl border p-4 space-y-2 ${locked?'border-line bg-raised':'border-line bg-paper'}`}>
-    <div className="flex gap-3 items-center justify-between"><p className="font-black text-ink-strong">{unit.title}</p><LearningStatus kind={done?'completed':locked?'locked':'current'} label={done?'Concluída':locked?'Mais adiante':ready?'Pronto para testar':'Em andamento'}/></div>
-    {(!done&&!locked)&&<p className="text-xs sm:text-sm text-muted">{unit.detail||unit.focus||unit.explanation}</p>}
-    {locked?null:<Button variant={done?'secondary':'primary'} className="w-full sm:w-auto" onClick={()=>ready?openCheckpoint(unit.id):openGuidedLesson(unit.id,level)}>{done?'Rever':ready?'Fazer teste rápido →':'Continuar lição →'}</Button>}
+   <span aria-hidden="true" className={`absolute -left-[13px] top-3 flex h-7 w-7 items-center justify-center rounded-full border-2 border-paper ${done?'bg-primary text-white':locked?'bg-raised text-muted':current?'bg-blue text-white':'bg-surface text-ink-strong border-line'}`}>
+    <Icon name={done?'check':locked?'lock':'learn'} className="h-4 w-4"/>
+   </span>
+   <article className={`rounded-2xl border p-3 sm:p-4 ${current?'border-primary/30 bg-accent-soft/50':locked?'border-line bg-raised/60':'border-line bg-paper'}`}>
+    <div className="flex items-start justify-between gap-3">
+     <div className="min-w-0 space-y-1">
+      <p className={`text-sm sm:text-base font-bold ${locked?'text-muted':'text-ink-strong'}`}>{unit.title}</p>
+      <p className="text-xs text-muted">{current?'Você está aqui':label}</p>
+     </div>
+     {!locked&&!current&&<button type="button" onClick={()=>chooseUnit(unit)} className="min-h-11 shrink-0 px-2 text-sm font-semibold text-ink-strong underline">{done?'Rever':'Abrir'}</button>}
+    </div>
+    {current&&<>
+     <p className="mt-2 text-sm text-ink-strong">{unit.detail||unit.focus||unit.explanation}</p>
+     <Button variant="primary" className="mt-3 w-full sm:w-auto" onClick={()=>chooseUnit(unit)}>{ready?'Fazer teste rápido →':'Continuar lição →'}</Button>
+    </>}
    </article>
   </li>;
  };
- return <div className="mx-auto max-w-2xl space-y-5 pb-6">
-  <header className="rounded-3xl border border-line bg-paper p-5 space-y-3"><p className="text-xs font-black text-primary-strong">SEU CAMINHO · {level}</p><h1 className="text-2xl font-black text-ink-strong">Trilha de aprendizagem</h1><p className="text-sm text-muted">Uma lição de cada vez. Vamos mostrar o que vem a seguir.</p><div className="flex justify-between text-xs text-muted font-bold"><span>Lições concluídas</span><span>{completed}/{lessons.length}</span></div><div className="h-3 bg-raised rounded-full overflow-hidden" role="progressbar" aria-label="Microlições aprovadas" aria-valuemin={0} aria-valuemax={lessons.length} aria-valuenow={completed}><div className="h-full bg-primary" style={{width:`${100*completed/Math.max(1,lessons.length)}%`}}/></div></header>
-  {level==='N5'?N5_STAGES.map((stage,index)=>{
-   const progress=stageProgress(state,stage);
-   const example=stage.units.find(unit=>unit.kind==='grammar')?.items[0];
-   const status=progress.status==='completed'?'Concluída':progress.status==='current'?'Você está aqui':'Em breve';
-   return <details key={stage.id} className="rounded-3xl border border-line bg-paper p-4 sm:p-5" open={progress.status==='current'}>
-    <summary className="cursor-pointer min-h-11 space-y-2">
-     <span className="text-xs font-bold text-primary-strong">ETAPA {index+1} · {status}</span>
-     <h2 className="text-lg font-black text-ink-strong inline ml-2">{stage.title}</h2>
-     <span className="block text-sm text-muted">{progress.completed} de {progress.total} microlições aprovadas</span>
-    </summary>
-    <div className="mt-4 space-y-4">
-     <p className="text-sm text-ink"><strong>Objetivo:</strong> {stage.goal}</p>
-     
-     {example&&<details className="rounded-xl bg-raised p-3"><summary className="min-h-11 cursor-pointer font-bold">Uma frase que você vai entender</summary><p lang="ja" className="font-jp text-xl mt-3">{example.example}</p><p className="text-sm text-ink mt-2">{example.meaning}</p><p className="text-sm text-muted mt-2">{example.text}</p><Button variant="secondary" className="mt-3" onClick={()=>speak(example.example)}>Ouvir exemplo</Button></details>}
-     
-     {progress.status==='current'&&currentUnit&&stage.units.some(unit=>unit.id===currentUnit.id)&&<section className="rounded-2xl border border-line p-3 space-y-2" aria-label="Sua lição atual">
-       <h3 className="text-sm font-bold text-ink-strong">Sua próxima lição</h3>
-       <ol className="ml-4 border-l-2 border-line">{renderStep(currentUnit,lessons.indexOf(currentUnit))}</ol>
-      </section>}
-     <details className="rounded-2xl border border-line p-3">
-      <summary className="cursor-pointer min-h-11 text-sm font-semibold text-ink-strong">Ver outras lições desta etapa</summary>
-      <div className="mt-3 space-y-2">
-       {chapters(stage.units).map(chapter=><details key={chapter.key} className="rounded-xl border border-line p-3">
-        <summary className="cursor-pointer min-h-11 text-sm font-semibold text-ink-strong">{chapter.name} · {chapter.units.filter(unit=>isDone(state,'N5',unit)).length}/{chapter.units.length}</summary>
-        <ol className="ml-4 mt-3 border-l-2 border-line">{chapter.units.filter(unit=>unit.id!==currentUnit?.id).map(unit=>renderStep(unit,lessons.indexOf(unit)))}</ol>
-       </details>)}
-      </div>
-     </details>
+ const stages=level==='N5'?N5_STAGES.map((stage,index)=>{
+  const progress=stageProgress(state,stage);
+  const open=openedStage===stage.id;
+  const status=progress.status==='completed'?'Concluída':progress.status==='current'?'Você está aqui':'Mais adiante';
+  return <section key={stage.id} className="overflow-hidden rounded-2xl border border-line bg-paper">
+   <h2>
+    <button type="button" aria-expanded={open} aria-controls={`stage-${stage.id}`} onClick={()=>setOpenedStage(open?null:stage.id)}
+      className="flex min-h-20 w-full items-center gap-3 px-4 py-4 text-left sm:px-5">
+     <span aria-hidden="true" className="text-muted text-sm">{open?'▾':'▸'}</span>
+     <span className="min-w-0 flex-1">
+      <span className="block text-xs font-semibold text-muted">Etapa {index+1} · {status}</span>
+      <span className="block text-lg font-black text-ink-strong">{stage.title}</span>
+      <span className="block mt-1 text-xs text-muted">{progress.completed} de {progress.total} lições concluídas</span>
+     </span>
+    </button>
+   </h2>
+   {open&&<div id={`stage-${stage.id}`} className="border-t border-line px-4 pb-5 pt-4 sm:px-5">
+    <p className="mb-4 text-sm text-muted">{stage.goal}</p>
+    <div className="space-y-5">
+     {chapters(stage.units).map(chapter=><section key={chapter.key} aria-label={chapter.name}>
+      <h3 className="mb-3 text-sm font-bold text-ink-strong">{chapter.name}</h3>
+      <ol className="ml-3 border-l-2 border-line">{chapter.units.map(renderStep)}</ol>
+     </section>)}
     </div>
-   </details>;
-  }):<section className="space-y-3"><p className="text-xs rounded-2xl bg-raised p-3 text-muted">Prévia introdutória do {level}. O curso completo N4–N1 ainda está em construção.</p><ol className="ml-4 border-l-2 border-line">{lessons.map(renderStep)}</ol></section>}
-  {level==='N5'&&lessons.every(l=>isDone(state,'N5',l)) && <section className="rounded-2xl border border-line bg-paper p-5 space-y-2"><h2 className="font-black text-ink-strong">Fundamentos N5 concluídos</h2><p className="text-sm text-muted">Você concluiu todas as microlições da Trilha N5. Isso é a conclusão do curso pessoal, não uma certificação JLPT. A avaliação certificadora adicional continua pendente de questões e áudio revisados.</p><Button variant="secondary" className="w-full" onClick={()=>go('progress')}>Ver preparação para a prova →</Button></section>}
-  
+   </div>}
+  </section>;
+ }):null;
+ return <div className="mx-auto max-w-2xl space-y-4 pb-6">
+  <header className="rounded-2xl border border-line bg-paper p-5 space-y-3">
+   <p className="text-xs font-semibold text-muted">Sua jornada · {level}</p>
+   <h1 className="text-2xl font-black text-ink-strong">Trilha de aprendizagem</h1>
+   <p className="text-sm text-muted">Siga os passos na ordem. A etapa atual já está aberta.</p>
+   <div className="flex items-center justify-between text-xs font-semibold text-muted"><span>Lições concluídas</span><span>{completed}/{lessons.length}</span></div>
+   <div className="h-2 overflow-hidden rounded-full bg-raised" role="progressbar" aria-label="Lições concluídas" aria-valuemin={0} aria-valuemax={lessons.length} aria-valuenow={completed}>
+    <div className="h-full bg-primary" style={{width:`${100*completed/Math.max(1,lessons.length)}%`}}/>
+   </div>
+  </header>
+  {stages||<section className="space-y-3"><p className="rounded-2xl bg-raised p-3 text-sm text-muted">{level} ainda tem apenas lições introdutórias.</p><ol className="ml-4 border-l-2 border-line">{lessons.map(renderStep)}</ol></section>}
+  {level==='N5'&&lessons.every(unit=>isDone(state,'N5',unit))&&<section className="rounded-2xl border border-line bg-paper p-5 space-y-2">
+   <h2 className="font-bold text-ink-strong">Você terminou as lições N5!</h2>
+   <p className="text-sm text-muted">Isso não é uma certificação JLPT. A avaliação final ainda depende de questões e áudio revisados.</p>
+   <Button variant="secondary" onClick={()=>go('progress')}>Minha preparação</Button>
+  </section>}
  </div>;
 }
