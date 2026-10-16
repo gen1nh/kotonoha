@@ -11,8 +11,8 @@ async function enter(page,state=seeded()){
 const tab=(page,label)=>page.getByRole('navigation',{name:'Navegação móvel'}).getByRole('button',{name:label});
 test.use({viewport:{width:390,height:844}});
 
-test('quatro destinos, uma transição por toque, retorno do navegador',async({page})=>{
- await enter(page);await expect(page.getByRole('navigation',{name:'Navegação móvel'}).getByRole('button')).toHaveCount(4);
+test('três destinos, uma transição por toque, retorno do navegador',async({page})=>{
+ await enter(page);await expect(page.getByRole('navigation',{name:'Navegação móvel'}).getByRole('button')).toHaveCount(3);
  const before=await page.evaluate(()=>history.length);
  await tab(page,'Trilha').click();await expect(page.getByRole('heading',{name:'Trilha de aprendizagem'})).toBeVisible();
  expect(await page.evaluate(()=>history.length)).toBe(before+1);
@@ -77,8 +77,9 @@ test('trilha destaca etapa atual e digitação só aparece como treino opcional'
  const stage=page.locator('details').filter({has:page.getByRole('heading',{name:'Primeiros passos',exact:true})}).first();
  await expect(stage).toHaveAttribute('open','');
  await expect(page.getByText('Ler hiragana básico e reconhecer cumprimentos e frases de apresentação.',{exact:false})).toBeVisible();
- await tab(page,'Praticar').click();
+ await page.goto('/?view=practice');
  await expect(page.getByRole('heading',{name:'Digite em japonês'})).toBeHidden();
+ await page.getByText('Outros exercícios',{exact:true}).click();
  await page.getByRole('button',{name:'Digitação japonesa'}).click();
  await expect(page.getByRole('heading',{name:'Digite em japonês'})).toBeVisible();
  await expect(page.getByRole('combobox',{name:'Conteúdo já disponível na sua Trilha'}).locator('option')).toHaveCount(1);
@@ -139,8 +140,8 @@ test('tema escuro, configurações e backup',async({page})=>{
 });
 
 test('caligrafia recebe toque no canvas sem interceptação',async({page})=>{
- await enter(page);await tab(page,'Praticar').click();
- await page.getByRole('button',{name:/Consultar Biblioteca e Caderno/}).click();
+ await enter(page);await page.goto('/?view=practice');
+ await page.getByRole('button',{name:/Biblioteca e Caderno/}).click();
  await page.getByRole('button',{name:'Biblioteca'}).click();
  await page.getByRole('button',{name:'Hiragana'}).click();
  const canvas=page.locator('canvas[data-drawing-surface]').first();await canvas.scrollIntoViewIfNeeded();
@@ -249,16 +250,16 @@ test('PWA mantém tela opcional em cache depois da divisão do bundle',async({pa
  await page.reload();
  await page.waitForFunction(()=>Boolean(navigator.serviceWorker.controller));
  await context.setOffline(true);
- await tab(page,'Praticar').click();
- await page.getByRole('button',{name:/Consultar Biblioteca e Caderno/}).click();
+ await page.goto('/?view=practice');
+ await page.getByRole('button',{name:/Biblioteca e Caderno/}).click();
  await page.getByRole('button',{name:'Biblioteca'}).click();
  await expect(page.getByRole('button',{name:'Hiragana'})).toBeVisible();
 });
 
 test('rota carregada sob demanda mantém foco no título para teclado',async({page})=>{
  await enter(page);
- await tab(page,'Praticar').click();
- await page.getByRole('button',{name:/Consultar Biblioteca e Caderno/}).click();
+ await page.goto('/?view=practice');
+ await page.getByRole('button',{name:/Biblioteca e Caderno/}).click();
  await page.getByRole('button',{name:'Biblioteca'}).click();
  await expect(page.getByRole('heading',{name:'Biblioteca & Alfabetos Kana',level:1})).toBeFocused();
 });
@@ -288,4 +289,31 @@ test('resultado de checkpoint com erros mostra resumo e novo início de tentativ
  await expect(page.getByText(`QUESTÃO 1 DE ${questions.length}`,{exact:true})).toBeVisible();
  await expect(page.locator('fieldset').getByRole('radio',{checked:true})).toHaveCount(0);
  await expect.poll(()=>page.evaluate(key=>JSON.parse(localStorage.getItem('kotonoha.v1')).attempts[key],`checkpoint:${unit.id}`)).toBe(1);
+});
+
+test('aluno encontra a lição guiada e recursos de apoio sem escolher um currículo paralelo',async({page})=>{
+ await enter(page);
+ const nav=page.getByRole('navigation',{name:'Navegação móvel'});
+ await expect(nav.getByRole('button')).toHaveCount(3);
+ await expect(nav.getByRole('button',{name:'Hoje'})).toHaveAttribute('aria-current','page');
+ await expect(page.getByRole('button',{name:/Continuar aprendendo/})).toHaveCount(1);
+ await nav.getByRole('button',{name:'Meu espaço'}).click();
+ await expect(page.getByRole('heading',{name:'Meu espaço'})).toBeVisible();
+ await expect(page.getByRole('button',{name:'Biblioteca',exact:false})).toBeVisible();
+ await expect(page.getByRole('button',{name:'Mais exercícios',exact:false})).toBeVisible();
+ await page.getByRole('button',{name:'Mais exercícios',exact:false}).click();
+ await expect(page.getByRole('heading',{name:'Treinos extras'})).toBeVisible();
+ await expect(page.getByText('Outros exercícios',{exact:true})).toBeVisible();
+ await nav.getByRole('button',{name:'Hoje'}).click();
+ await expect(page.getByRole('heading',{name:'Seu próximo passo'})).toBeVisible();
+});
+
+test('primeiro acesso orienta sem exigir definir meta diária',async({page})=>{
+ const state=seeded();state.onboardingCompleted=false;
+ await enter(page,state);
+ await expect(page.getByRole('dialog')).toBeVisible();
+ await expect(page.getByRole('radiogroup',{name:'Atividades diárias'})).toHaveCount(0);
+ await page.getByRole('button',{name:'Começar a aprender →'}).click();
+ await expect(page.getByRole('heading',{name:'Seu próximo passo'})).toBeVisible();
+ await expect(page.getByRole('dialog')).toHaveCount(0);
 });
