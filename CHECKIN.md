@@ -91,6 +91,7 @@ Integrado por squash à `main`: `a83f9497518ce3b90cde5335f41540a8d7b9c46f`. CI c
 - [x] Exemplos japoneses na lição, leitura, cartões, checkpoint e desafio diário podem ser tocados para ouvir via voz nativa ja-JP; se não houver voz disponível, respeitar o feedback já fornecido pelo mecanismo de áudio.
 - [x] Desafio rápido agora utiliza itens estudados e evita repetir perguntas até esgotar a seleção; registra IDs recentes localmente para evitar repetição imediata entre sessões.
 - [x] Desafio diário N5 deriva de checkpoints das unidades aprovadas (até 10 recentes, múltiplas questões por unidade) e gira diariamente; a pergunta respondida fica vinculada ao dia no backup para não mudar após avançar de lição.
+- [x] Prática extra de escuta usa sons/palavras que o aluno já viu e incorpora os exercícios autorais das unidades de escuta praticadas; ao esgotar o banco liberado, **não reinicia automaticamente** as mesmas seis questões.
 - [x] Mantém a política offline-first: o **banco de itens atual é local e versionado**, sem banco remoto nem necessidade de login. Não inventar frases ilimitadas com IA; ampliar só com conteúdo editorial revisado.
 - [ ] Validar CI Node, arquitetura, currículo, build e Playwright Chromium/WebKit no SHA final do PR antes de integrar.
 - [ ] Testar visualmente todas as rotas e dispositivos reais: larguras, scroll, áudio de japonês e safe areas.
