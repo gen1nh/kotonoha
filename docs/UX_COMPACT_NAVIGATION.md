@@ -1,3 +1,5 @@
+> **Nota de atualização:** este documento descreve uma iteração anterior (quatro destinos e Praticar como área principal). A direção vigente de três destinos Hoje / Trilha / Meu espaço e o checklist de continuidade estão em [`CHECKIN.md`](../CHECKIN.md). Não implementar a navegação antiga novamente.
+
 # Compact navigation cards — UX pattern
 
 ## Purpose

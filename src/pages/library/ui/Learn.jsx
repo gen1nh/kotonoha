@@ -101,15 +101,15 @@ export function Learn({
     <div className="space-y-6">
       {/* Cabeçalho da Biblioteca */}
       <PageHeading
-        title="Biblioteca & Alfabetos Kana"
-        description="Consulte caracteres, frases e significados; a Trilha controla a progressão."
+        title="Biblioteca"
+        description="Procure letras, palavras e exemplos sempre que precisar."
         icon="learn"
         iconBg="bg-blue-soft"
         iconColor="text-blue"
       />
 
       {showCategories&&<section className="space-y-3" aria-label="Categorias da Biblioteca">
-        <button type="button" className="min-h-11 text-sm font-bold text-primary-strong" onClick={()=>go("practice")}>← Voltar a Praticar</button>
+        <button type="button" className="min-h-11 text-sm font-bold text-primary-strong" onClick={()=>go("progress")}>← Voltar ao meu espaço</button>
         <h2 className="text-base font-bold text-ink-strong">O que você quer consultar?</h2>
         <div className="grid grid-cols-2 gap-3">
           {LEARN_TABS.map(item=><NavigationTile key={item.id} symbol={item.glyph} title={item.label}
@@ -131,13 +131,13 @@ export function Learn({
           <div className="pt-2"><AudioRateControl rate={speechRate} onChange={setSpeechRate} defaultRate={readingPreferences.speechRate}/></div>
         </details>
       <div className="rounded-2xl border border-line bg-paper p-4 space-y-2" aria-label="Orientação de estudo">
-        <p className="font-bold text-ink-strong">Estude sem se perder</p>
+        <p className="font-bold text-ink-strong">Sua consulta</p>
         <p className="text-sm text-muted">Leia os exemplos, ouça a pronúncia e pratique. Para avançar, retorne à lição guiada na Trilha. As fontes e mídias abaixo são materiais opcionais.</p>
         <div className="flex flex-wrap gap-3 items-center">
           <button type="button" onClick={() => go('path')} className="text-sm font-bold text-primary underline underline-offset-4">← Voltar para minha trilha</button>
-          <button type="button" onClick={() => go('practice')} className="rounded-xl border-2 border-primary px-3 py-2 text-sm font-bold text-primary-strong">Prática livre →</button>
+          <button type="button" onClick={() => go('practice')} className="rounded-xl border border-line px-3 py-2 text-sm font-semibold text-ink-strong">Treinar mais →</button>
         </div>
-        <p className="text-xs text-muted">Esta área é de consulta. Para conquistar competências, use a Trilha.</p>
+        <p className="text-xs text-muted">Para aprender algo novo, volte à sua Trilha.</p>
         <label className="flex flex-wrap items-center gap-2 text-sm font-bold text-ink-strong">Nível de referência <select className="min-h-11 rounded-xl border border-line bg-paper px-3 text-ink-strong" value={selectedLevel} onChange={e=>changeLevel(e.target.value)}>{['N5','N4','N3','N2','N1'].map(level=><option key={level} value={level}>{level}</option>)}</select></label>
       </div>
       <details className="rounded-xl border border-line bg-paper p-3">
@@ -270,7 +270,7 @@ export function Learn({
               <div>
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-black text-flame-ink uppercase tracking-wider">JLPT {selectedLevel}</span>
-                  <span className="text-xs text-muted">Memorização contextual</span>
+                  <span className="text-xs text-muted">Palavras para lembrar</span>
                 </div>
                 <h2 className="text-xl font-bold text-ink mt-1">
                   Palavras essenciais para o seu nível

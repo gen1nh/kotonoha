@@ -12,13 +12,15 @@ async function enter(page, view) {
 
 test('Praticar organiza atividades em cards e abre apenas a escolhida',async({page})=>{
   await enter(page,'practice');
+  await page.getByText('Outros exercícios',{exact:true}).click();
   await expect(page.getByRole('button',{name:'Escuta'})).toBeVisible();
   await expect(page.getByRole('heading',{name:'Prática de escuta'})).toHaveCount(0);
   await page.getByRole('button',{name:'Escuta'}).click();
   await expect(page.getByRole('heading',{name:'Prática de escuta'})).toBeVisible();
-  await expect(page.getByRole('button',{name:/Consultar Biblioteca e Caderno/})).toHaveCount(0);
-  await page.getByRole('button',{name:/Voltar para Praticar/}).click();
-  await expect(page.getByRole('button',{name:/Consultar Biblioteca e Caderno/})).toBeVisible();
+  await expect(page.getByRole('button',{name:/Biblioteca e Caderno/})).toHaveCount(0);
+  await page.getByRole('button',{name:/Voltar aos treinos/}).click();
+  await expect(page.getByRole('button',{name:/Biblioteca e Caderno/})).toBeVisible();
+  await page.getByText('Outros exercícios',{exact:true}).click();
   await page.getByRole('button',{name:'Laboratórios'}).click();
   await expect(page.getByRole('button',{name:'Conversação'})).toBeDisabled();
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
@@ -26,7 +28,7 @@ test('Praticar organiza atividades em cards e abre apenas a escolhida',async({pa
 
 test('Biblioteca e Caderno mantêm categorias separadas da ferramenta aberta',async({page})=>{
   await enter(page,'practice');
-  await page.getByRole('button',{name:/Consultar Biblioteca e Caderno/}).click();
+  await page.getByRole('button',{name:/Biblioteca e Caderno/}).click();
   await page.getByRole('button',{name:'Biblioteca'}).click();
   await expect(page.getByRole('button',{name:'Hiragana'})).toBeVisible();
   await expect(page.getByRole('button',{name:'Katakana'})).toBeVisible();
@@ -48,9 +50,11 @@ test('Biblioteca e Caderno mantêm categorias separadas da ferramenta aberta',as
 
 test('Progresso e Preferências usam destinos claros e sem rolagem horizontal',async({page})=>{
   await enter(page,'progress');
+  await page.getByText('Mais recursos',{exact:true}).click();
   await page.getByRole('button',{name:'Preparação N5'}).click();
   await expect(page.getByRole('heading',{name:'Preparação N5'})).toBeVisible();
-  await page.getByRole('button',{name:/Voltar ao resumo/}).click();
+  await page.getByRole('button',{name:/Voltar ao meu espaço/}).click();
+  await page.getByText('Mais recursos',{exact:true}).click();
   await page.getByRole('button',{name:'Simulados'}).click();
   await expect(page.getByRole('heading',{name:'Simulados e prática'})).toBeVisible();
   await page.goto('/?view=settings');
@@ -68,9 +72,11 @@ test('Progresso e Preferências usam destinos claros e sem rolagem horizontal',a
 
 test('voltar e avançar do navegador restauram as subpáginas sem perder o menu',async({page})=>{
   await enter(page,'practice');
+  await page.getByText('Outros exercícios',{exact:true}).click();
   await page.getByRole('button',{name:'Escuta'}).click();
   await expect(page).toHaveURL(/sub_practice=listening/);
   await page.goBack();
+  await page.getByText('Outros exercícios',{exact:true}).click();
   await expect(page.getByRole('button',{name:'Escuta'})).toBeVisible();
   await page.goForward();
   await expect(page.getByRole('heading',{name:'Prática de escuta'})).toBeVisible();
@@ -85,6 +91,7 @@ test('voltar e avançar do navegador restauram as subpáginas sem perder o menu'
 
 test('Praticar não duplica desafio nem continuidade da Trilha e separa digitação',async({page})=>{
   await enter(page,'practice');
+  await page.getByText('Outros exercícios',{exact:true}).click();
   await expect(page.getByRole('button',{name:'Desafio rápido'})).toHaveCount(1);
   await expect(page.getByRole('heading',{name:'Continue sua Trilha'})).toHaveCount(0);
   await expect(page.getByRole('heading',{name:'Digite em japonês'})).toHaveCount(0);
@@ -92,5 +99,6 @@ test('Praticar não duplica desafio nem continuidade da Trilha e separa digitaç
   await expect(page.getByRole('heading',{name:'Digite em japonês'})).toBeVisible();
   await expect(page.getByRole('button',{name:'Desafio rápido'})).toHaveCount(0);
   await page.goBack();
+  await page.getByText('Outros exercícios',{exact:true}).click();
   await expect(page.getByRole('button',{name:'Digitação japonesa'})).toBeVisible();
 });

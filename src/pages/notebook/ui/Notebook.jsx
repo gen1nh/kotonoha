@@ -221,7 +221,7 @@ export default function Notebook({ state, update, toast, speak, go }) {
   return (
     <div className="w-full space-y-6">
       {showMenu&&<section className="space-y-3" aria-label="Áreas do Caderno">
-        <button type="button" className="min-h-11 text-sm font-bold text-primary-strong" onClick={()=>go("practice")}>← Voltar a Praticar</button>
+        <button type="button" className="min-h-11 text-sm font-bold text-primary-strong" onClick={()=>go("progress")}>← Voltar ao meu espaço</button>
         <h1 className="text-2xl font-black text-ink-strong">Caderno</h1>
         <p className="text-sm text-muted">Encontre suas anotações, dúvidas e registros sem misturar as ferramentas.</p>
         <div className="grid grid-cols-2 gap-3">
@@ -229,9 +229,12 @@ export default function Notebook({ state, update, toast, speak, go }) {
             {id:'notes',title:'Minhas anotações',description:'Notas e resumos de estudo.',icon:'learn',meta:notes.length+' notas'},
             {id:'errors',title:'Meus erros',description:'Respostas que precisam de revisão.',icon:'review',meta:(state.errorMemory?.length||0)+' registros'},
             {id:'doubts',title:'Minhas dúvidas',description:'Perguntas guardadas nas lições.',icon:'chat',meta:doubts.length+' dúvidas'},
-            {id:'kanban',title:'Meu planejamento',description:'Organize tarefas e ideias.',icon:'review',meta:kanban.length+' itens'},
           ].map(item=><NavigationTile key={item.id} {...item} onClick={()=>{setTab(item.id);}}/>)}
         </div>
+        <details className="rounded-xl border border-line bg-paper p-3">
+         <summary className="min-h-11 cursor-pointer text-sm font-semibold text-ink-strong">Organização pessoal · opcional</summary>
+         <div className="mt-3"><NavigationTile title="Meu planejamento" description="Organize tarefas e ideias." icon="review" meta={kanban.length+' itens'} onClick={()=>setTab('kanban')}/></div>
+        </details>
       </section>}
       {!showMenu&&<>
         <div className="flex flex-wrap items-center justify-between gap-3">
@@ -239,7 +242,7 @@ export default function Notebook({ state, update, toast, speak, go }) {
           {tab==='notes'&&<button type="button" className="min-h-11 rounded-xl bg-primary text-white px-4 text-sm font-bold" onClick={()=>handleCreateNote()}>+ Nova Nota</button>}
         </div>
         <h1 className="text-xl font-black text-ink-strong">{({notes:'Minhas anotações',errors:'Meus erros',doubts:'Minhas dúvidas',kanban:'Meu planejamento'})[tab]}</h1>
-      <div className="rounded-xl border border-line p-4 bg-paper"><p className="text-sm text-muted">Notas, planejamento, dúvidas e erros no mesmo caderno. Seus flashcards pessoais entram nas revisões.</p></div>
+
       {/* ABA 1: QUADRO KANBAN ("Meu Fluxo de Japonês") */}
       {tab === "kanban" && (
         <div className="space-y-6">

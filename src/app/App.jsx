@@ -114,7 +114,7 @@ export default function App(){
     setRoute({view:target,topic,level,blocked:false});
   };
   const go=view=>{if(view==='review')setReviewContext(null);navigateTo(view);};
-  const goBack=()=>{if(route.view==='review'&&reviewContext?.view==='lesson')navigateTo('lesson',reviewContext.topic,reviewContext.level);else if(route.view==='lesson'||route.view==='checkpoint')navigateTo('path');else if(route.view==='review')navigateTo(reviewContext?.view||'practice');else if(['home','path','practice','progress'].includes(route.view))navigateTo('home');else navigateTo('practice');};
+  const goBack=()=>{if(route.view==='review'&&reviewContext?.view==='lesson')navigateTo('lesson',reviewContext.topic,reviewContext.level);else if(route.view==='lesson'||route.view==='checkpoint')navigateTo('path');else if(route.view==='review')navigateTo(reviewContext?.view||'progress');else if(['home','path','progress'].includes(route.view))navigateTo('home');else navigateTo('progress');};
   const openGuidedLesson=(topic,level=courseLevel(state))=>navigateTo('lesson',topic,level);
   const openCheckpoint=topic=>navigateTo('checkpoint',topic);
   const study=(type=null)=>{

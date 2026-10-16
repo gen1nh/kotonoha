@@ -19,8 +19,8 @@ const LineSimulator=lazy(()=>import('../pages/conversation/index.js'));
 const PitchAccentLab=lazy(()=>import('../pages/pronunciation/index.js'));
 const Notebook=lazy(()=>import('../pages/notebook/index.js'));
 
-const PAGE_TITLES={home:'Início',path:'Trilha',practice:'Praticar',progress:'Progresso',learn:'Biblioteca',lesson:'Lição',checkpoint:'Checkpoint',review:'Revisão',notebook:'Caderno',errors:'Diário de erros',syntax:'Laboratório de frases',line:'Conversação',pitch:'Pronúncia',settings:'Preferências'};
-const PRACTICE_VIEWS=['learn','review','notebook','errors','syntax','line','pitch'];
+const PAGE_TITLES={home:'Hoje',path:'Trilha',practice:'Treinos extras',progress:'Meu espaço',learn:'Biblioteca',lesson:'Lição',checkpoint:'Teste rápido',review:'Revisão',notebook:'Caderno',errors:'Diário de erros',syntax:'Laboratório de frases',line:'Conversação',pitch:'Pronúncia',settings:'Preferências'};
+const PERSONAL_VIEWS=['practice','learn','review','notebook','errors','syntax','line','pitch','settings'];
 const IMMERSIVE_VIEWS=['lesson','review','checkpoint'];
 
 export default function Shell({view,state,shared,message,install,installPrompt}) {
@@ -32,9 +32,9 @@ export default function Shell({view,state,shared,message,install,installPrompt})
   const [onboardingOpen,setOnboardingOpen]=useState(()=>!state.onboardingCompleted);
   const immersive=IMMERSIVE_VIEWS.includes(view);
   const xp=(state.stats?.correct||0)*15;
-  const navActive=id=>view===id||(id==='practice'&&PRACTICE_VIEWS.includes(view));
+  const navActive=id=>view===id||(id==='progress'&&PERSONAL_VIEWS.includes(view));
   const onCloseOnboarding=()=>{setOnboardingOpen(false);shared.update(s=>{s.onboardingCompleted=true;});};
-  const onFinishOnboarding=()=>{setOnboardingOpen(false);shared.go('path');};
+  const onFinishOnboarding=()=>{setOnboardingOpen(false);shared.go('home');};
   const back=()=>shared.goBack();
   return <>
     <div className="min-h-[100dvh] flex flex-col lg:flex-row bg-paper text-ink w-full">
@@ -73,7 +73,7 @@ export default function Shell({view,state,shared,message,install,installPrompt})
             {view==='settings'&&<Settings {...shared} theme={theme} setTheme={setTheme} install={install} installPrompt={installPrompt} onOpenOnboarding={()=>setOnboardingOpen(true)}/>}
           </Suspense></section>
         </main>
-        {!immersive&&<nav aria-label="Navegação móvel" className="lg:hidden fixed inset-x-0 bottom-0 z-30 bg-paper/95 backdrop-blur-md border-t border-line grid grid-cols-4 px-2 pt-1 pb-[calc(0.5rem+env(safe-area-inset-bottom))] mobile-tabbar">{NAVIGATION.map(item=><NavItem mobile key={item.id} item={item} active={navActive(item.id)} onClick={()=>shared.go(item.id)}/>)}</nav>}
+        {!immersive&&<nav aria-label="Navegação móvel" className="lg:hidden fixed inset-x-0 bottom-0 z-30 bg-paper/95 backdrop-blur-md border-t border-line grid grid-cols-3 px-2 pt-1 pb-[calc(0.5rem+env(safe-area-inset-bottom))] mobile-tabbar">{NAVIGATION.map(item=><NavItem mobile key={item.id} item={item} active={navActive(item.id)} onClick={()=>shared.go(item.id)}/>)}</nav>}
       </div>
     </div>
     {onboardingOpen&&<OnboardingModal state={state} update={shared.update} onClose={onCloseOnboarding} onComplete={onFinishOnboarding}/>}

@@ -28,7 +28,7 @@ function CheckpointResult({unit,questions,answers,score,passed,next,onNext,onRet
      : `A meta é ${PASS_PERCENT}% de acertos. Confira a correção e tente novamente quando estiver pronto.`}
      {passed&&!approved?' Esta etapa já foi aprovada anteriormente; uma nova tentativa não apaga sua aprovação.':''}
    </p>
-   {unit.kind==='listening'&&<p className="text-xs text-muted text-center">Voz sintetizada e transcrição são recursos formativos, não uma avaliação auditiva oficial.</p>}
+   {unit.kind==='listening'&&<p className="text-xs text-muted text-center">Esta é uma atividade de prática com a voz do aparelho, não uma prova oficial de compreensão auditiva.</p>}
    <div className="space-y-2">
     {approved
      ? <Button variant="primary" className="w-full" onClick={onNext}>{next?'Próxima microlição →':'Voltar à Trilha →'}</Button>
@@ -102,11 +102,11 @@ export default function CheckpointPlayer({state,topic,update,go,openGuidedLesson
  if(!unit)return <p role="alert">Checkpoint indisponível. <button onClick={()=>go('path')}>Voltar à Trilha</button></p>;
  if(result!==null)return <CheckpointResult unit={unit} questions={questions} answers={answers} score={result} passed={passed} next={next} onNext={()=>next?openGuidedLesson(next.id,'N5'):go('path')} onRetry={retry} onReviewLesson={()=>openGuidedLesson(topic,'N5')} onPath={()=>go('path')}/>;
  return <div className="mx-auto max-w-2xl space-y-4 pb-8">
-  <header className="rounded-3xl border border-line bg-paper p-5 space-y-2"><p className="font-black text-xs text-primary-strong">CHECKPOINT · N5</p><h1 className="text-2xl font-black text-ink-strong">{unit.title}</h1><p className="text-sm text-muted">Avaliação da microlição. Mínimo de {PASS_PERCENT}% para avançar. Seu rascunho é salvo automaticamente neste aparelho.</p></header>
+  <header className="rounded-3xl border border-line bg-paper p-5 space-y-2"><p className="font-black text-xs text-primary-strong">TESTE RÁPIDO · N5</p><h1 className="text-2xl font-black text-ink-strong">{unit.title}</h1><p className="text-sm text-muted">Responda às perguntas e confira o resultado no final. Você precisa acertar pelo menos {PASS_PERCENT}% para continuar.</p></header>
   {questions.length>=4&&<div className="rounded-2xl border border-line bg-paper p-4 space-y-3" aria-label="Progresso do checkpoint">
     <div className="flex items-center justify-between gap-3"><span className="text-sm font-bold text-ink-strong">Questão {activeQuestion+1} de {questions.length}</span><span className="text-xs text-muted">{questions.filter(q=>answers[q.id]!==undefined).length} respondidas</span></div>
     <div role="progressbar" aria-label="Questão atual" aria-valuemin={1} aria-valuemax={questions.length} aria-valuenow={activeQuestion+1} className="h-2 overflow-hidden rounded-full bg-raised"><div className="h-full rounded-full bg-primary" style={{width:`${100*(activeQuestion+1)/questions.length}%`}}/></div>
-    <p className="text-xs text-muted">Responda uma questão por vez. O resultado aparece somente após finalizar.</p>
+    <p className="text-xs text-muted">Uma pergunta por vez. Você verá o resultado no final.</p>
   </div>}
   {questions.length<4?<p role="alert">Esta avaliação não tem perguntas suficientes. Retorne à Trilha.</p>:
    <section className="space-y-3" aria-label="Questões do checkpoint">{questions.map((q,i)=>i!==activeQuestion?null:<fieldset key={q.id} disabled={result!==null} className="rounded-2xl border border-line bg-paper p-4 space-y-3"><legend className="sr-only">Questão {i+1}</legend><p className="text-xs font-black text-primary-strong">QUESTÃO {i+1} DE {questions.length}</p><p className="font-bold text-ink-strong">{q.prompt}</p>
@@ -116,7 +116,7 @@ export default function CheckpointPlayer({state,topic,update,go,openGuidedLesson
       <AudioRateControl rate={speechRate} onChange={setSpeechRate} defaultRate={readingPreferences.speechRate}/>
       <button type="button" disabled={result!==null} onClick={()=>revealTranscript(q.id)} className="block min-h-10 text-xs underline text-primary-strong font-bold">Não consegui ouvir · mostrar texto</button>
       {(revealed[q.id]||result!==null)&&<p lang="ja" className="font-jp text-lg">{q.spokenText}</p>}
-      <p className="text-xs text-muted">Ouça ou revele o texto antes de concluir esta questão. Se consultar o texto, o resultado será registrado como prática de leitura, não como evidência auditiva.</p>
+      <p className="text-xs text-muted">Ouça a frase antes de responder. Se o áudio não funcionar, revele o texto. Nesse caso, a atividade conta como leitura.</p>
     </div>}
     <div className="space-y-2">{q.options.map(opt=><label key={opt} className={`min-h-12 flex items-center gap-3 rounded-xl border-2 p-3 cursor-pointer ${answers[q.id]===opt?'border-primary bg-accent-soft':'border-line bg-surface'}`}><input type="radio" name={`q-${q.id}`} checked={answers[q.id]===opt} onChange={()=>answer(q.id,opt)}/><span className="text-sm text-ink-strong">{opt}</span></label>)}</div>{result!==null&&<div className="rounded-xl bg-raised p-3 space-y-2" role="status">
        <p className="text-sm font-bold text-ink-strong">{answers[q.id]===q.answer?'✓ Você acertou esta questão.':'Resposta correta: '+q.answer}</p>
@@ -128,7 +128,7 @@ export default function CheckpointPlayer({state,topic,update,go,openGuidedLesson
   </nav>}
   {audioNotice&&<p role="alert" className="text-sm text-muted">{audioNotice}</p>}
   <Button variant="primary" size="lg" className="w-full" disabled={!ready||questions.length<4||activeQuestion!==questions.length-1} onClick={grade}>Finalizar e ver resultado</Button>
-  {passed&&result===null&&<p className="text-xs text-muted">Você já foi aprovado nesta etapa. Refazer não apaga sua aprovação.</p>}
+  {passed&&result===null&&<p className="text-xs text-muted">Você já concluiu esta lição. Uma nova tentativa não apaga sua conquista.</p>}
   <button type="button" onClick={()=>go('path')} className="min-h-11 text-primary-strong font-bold">← Voltar à Trilha</button>
  </div>;
 }
