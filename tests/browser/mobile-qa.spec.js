@@ -1,5 +1,5 @@
 import {test,expect} from '@playwright/test';
-import {initialState,N5_UNITS,checkpointQuestions} from '../../src/entities/study/index.js';
+import {initialState,N5_UNITS,checkpointQuestions,cardIdsForUnit} from '../../src/entities/study/index.js';
 
 const seeded=()=>{const state=initialState();state.onboardingCompleted=true;return state;};
 async function openWithState(page,state=seeded(),view='home'){
@@ -42,6 +42,7 @@ test('lousa de kana aceita traço, desfazer e limpar sem scroll do canvas',async
  const canvas=page.locator('canvas[data-drawing-surface]');
  await expect(canvas).toBeVisible();
  await expect(canvas).toHaveCSS('touch-action','none');
+ await canvas.scrollIntoViewIfNeeded();
  const box=await canvas.boundingBox();
  expect(box).not.toBeNull();
  expect(box.width).toBeGreaterThan(180);
@@ -65,7 +66,9 @@ test('lousa de kana aceita traço, desfazer e limpar sem scroll do canvas',async
 });
 
 test('checkpoint retoma a primeira pergunta pendente após reiniciar no WebKit móvel',async({page})=>{
- const state=seeded(),unit=N5_UNITS[0],questions=checkpointQuestions(state,unit.id);
+ const state=seeded(),unit=N5_UNITS[0];
+ for(const id of cardIdsForUnit(unit)) state.cards[id].seen=true;
+ const questions=checkpointQuestions(state,unit.id);
  state.drafts[`checkpoint:${unit.id}`]={answers:{[questions[0].id]:questions[0].answer},result:null};
  await openWithState(page,state,'checkpoint&topic='+encodeURIComponent(unit.id)+'&level=N5');
  await expect(page.getByText(`QUESTÃO 2 DE ${questions.length}`,{exact:true})).toBeVisible();
