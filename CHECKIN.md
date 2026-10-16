@@ -55,7 +55,9 @@ Os itens concluídos abaixo fazem parte da `main` após o PR #24. Isso **não si
 - [x] PR #24 integrado à `main` após CI verde (merge `e191c5947d12a0dcc0b2e37d6512742508473d1c`).
 - [ ] Confirmar CI da `main` após mesclagem e validar o deploy real da Vercel.
 
-## Ajustes de UX motivados pelo uso real (PR #25)
+## Ajustes de UX motivados pelo uso real (PR #25 · integrado)
+
+Integrado por squash à `main`: `a83f9497518ce3b90cde5335f41540a8d7b9c46f`. CI completo do commit do PR (Chromium, WebKit, build e auditorias): https://github.com/gen1nh/kotonoha/actions/runs/38830612713
 
 - [x] A Trilha voltou a exibir uma timeline real; **só as cinco etapas** são expansíveis. Capítulos não exigem outro clique.
 - [x] Status das lições em texto simples, sem pílulas verdes/azuis. Removido o componente não utilizado `LearningStatus.jsx`.
@@ -64,9 +66,10 @@ Os itens concluídos abaixo fazem parte da `main` após o PR #24. Isso **não si
 - [x] Hoje apresenta a atividade recomendada, o momento do ciclo Aprender/Revisar/Conferir e cores de fundo discretas.
 - [x] Meu espaço tem quatro recursos de estudo em cards pastéis e links diretos para preparação, simulados e preferências.
 - [x] Testes de navegador adaptados para os novos fluxos sem sanfonas aninhadas.
-- [ ] Verificar CI de Chromium/WebKit, build, arquitetura e currículo no **SHA final do PR #25** antes de mesclar.
+- [x] CI Chromium/WebKit, build, arquitetura e currículo aprovado no SHA final do PR #25 (`aee90f81b93860d6dc9101adcfaf601869075ed8`).
 - [ ] Validar contraste, responsividade, dark mode e toque em iPhone real; documentar ajustes após teste com usuários.
-- [ ] Após merge, validar CI na `main` e implantação real na Vercel.
+- [x] Integrado à `main` via PR #25, sem mudança do modelo de dados ou currículo.
+- [ ] Confirmar CI da `main` após o merge e implantação real na Vercel.
 
 **Regra de design:** cores pastéis diferenciam grupos de ferramentas e superfícies, *não* status pedagógicos. Não reintroduzir tags de estado nem esconder lições atrás de capítulos expansíveis. O aluno deve acessar uma lição após **no máximo um clique para abrir sua etapa**. A correção só aparece **depois** de uma avaliação finalizada.
 
