@@ -135,7 +135,7 @@ export function Learn({
         <p className="text-sm text-muted">Leia os exemplos, ouça a pronúncia e pratique. Para avançar, retorne à lição guiada na Trilha. As fontes e mídias abaixo são materiais opcionais.</p>
         <div className="flex flex-wrap gap-3 items-center">
           <button type="button" onClick={() => go('path')} className="text-sm font-bold text-primary underline underline-offset-4">← Voltar para minha trilha</button>
-          <button type="button" onClick={() => go('progress')} className="rounded-xl border-2 border-primary px-3 py-2 text-sm font-bold text-primary-strong">Treinar mais →</button>
+          <button type="button" onClick={() => go('practice')} className="rounded-xl border border-line px-3 py-2 text-sm font-semibold text-ink-strong">Treinar mais →</button>
         </div>
         <p className="text-xs text-muted">Para aprender algo novo, volte à sua Trilha.</p>
         <label className="flex flex-wrap items-center gap-2 text-sm font-bold text-ink-strong">Nível de referência <select className="min-h-11 rounded-xl border border-line bg-paper px-3 text-ink-strong" value={selectedLevel} onChange={e=>changeLevel(e.target.value)}>{['N5','N4','N3','N2','N1'].map(level=><option key={level} value={level}>{level}</option>)}</select></label>
