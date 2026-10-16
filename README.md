@@ -4,9 +4,9 @@ PWA pessoal para aprender japonês com microlições, prática contextual, check
 
 ## Como funciona
 
-A **Trilha é o único currículo**. A Home retoma o próximo passo. Cada unidade inclui uma quantidade pequena de conteúdo, prática e um checkpoint para liberar a seguinte. A aba Praticar disponibiliza revisão e ferramentas extras, mas não cria uma segunda jornada. A Biblioteca apenas consulta conteúdos; escolher um nível de referência **não** desbloqueia lições.
+A **Trilha é o único currículo**. A Home retoma o próximo passo. Cada unidade inclui uma quantidade pequena de conteúdo, prática e um checkpoint para liberar a seguinte. Meu espaço disponibiliza revisão e ferramentas extras, mas não cria uma segunda jornada. A Biblioteca apenas consulta conteúdos; escolher um nível de referência **não** desbloqueia lições.
 
-A navegação mobile contém quatro áreas: **Início, Trilha, Praticar, Progresso**. As tarefas imersivas ocultam a barra inferior. O design system usa **Nunito** em português, **Zen Maru Gothic** em japonês (com fallback local) e componentes arredondados/táteis inspirados na identidade original do projeto. Tema claro/escuro disponível.
+A navegação principal contém três áreas: **Hoje, Trilha e Meu espaço**. As tarefas imersivas ocultam a barra inferior. O design system usa **Nunito** em português, **Zen Maru Gothic** em japonês (com fallback local) e componentes arredondados/táteis inspirados na identidade original do projeto. Tema claro/escuro disponível.
 
 O conteúdo N5 inclui 220 microlições de hiragana, katakana, vocabulário, kanji em contexto, gramática, leitura e escuta. As seções usam capítulos recolhíveis para navegação mobile. O material expandido é uma base autoral candidata ainda não revisada linguisticamente por especialista. N4–N1 continuam sendo **prévia autoral limitada**; ainda não são cursos completos ou provas JLPT oficiais.
 
@@ -52,6 +52,46 @@ Importar o repositório como **Vite**, diretório raiz `./`, comando de instala�
 
 Não publique nenhuma chave de IA em variáveis `VITE_*`. A integração Groq opcional funciona com chave na sessão do próprio usuário; o caminho `/api/ai` só funciona se houver proxy/backend configurado. No deploy estático, não há backend de IA por padrão.
 
+### Ver as mudanças no navegador antes de publicar
+
+No Windows, instale **Node.js 22.12+** e Git. Abra o PowerShell e execute:
+
+```powershell
+git clone https://github.com/gen1nh/kotonoha.git
+cd kotonoha
+npm ci
+npm run dev
+```
+
+Abra **http://localhost:5173** no navegador. Para atualizar o código em outra sessão: `git pull origin main` e `npm run dev`. Se já tiver dependências antigas, rode `npm ci` novamente. O servidor do Vite fica disponível somente enquanto o terminal está aberto.
+
+Para conferir uma versão de produção localmente:
+
+```powershell
+npm run build
+npm run preview
+```
+
+Acesse **http://localhost:4173**. A versão na Vercel pode continuar desatualizada até que você faça um deploy manual.
+
+### Política de publicação manual (economizar cota Hobby)
+
+`vercel.json` define `git.deploymentEnabled: false`: pushes e PRs no GitHub **não solicitam automaticamente deploys**. Isso evita consumir a cota em cada commit, inclusive nos branches de desenvolvimento. O CI do GitHub continua executando normalmente.
+
+Depois de validar uma versão e confirmar o SHA da `main`, publique apenas sob demanda:
+
+```powershell
+git checkout main
+git pull origin main
+npm ci
+npm run build
+npx vercel --prod
+```
+
+Na primeira vez, faça login na Vercel e vincule a pasta ao **projeto existente** do Kotonoha — não crie outro projeto por engano. `npx vercel --prod` exige sua autorização/autenticação na conta. Alternativamente, use o processo manual autorizado no painel Vercel. Depois, confira o estado **Ready** e o SHA publicado em **Deployments**, abra a URL de produção e teste os caminhos principais.
+
+**Importante:** esta opção **não publica automaticamente** após um merge, mesmo com CI verde. Se quiser retomar automação de produção no futuro, revise `git.deploymentEnabled` deliberadamente em outro PR. O `CHECKIN.md` registra essa decisão e os motivos.
+
 ## Dados, offline e segurança
 
 - O progresso permanece no dispositivo, em `localStorage` com a chave legada `kotonoha.v1` para preservar dados de versões anteriores.
@@ -74,7 +114,7 @@ Não publique nenhuma chave de IA em variáveis `VITE_*`. A integração Groq op
 | `src/entities/study/model/checkpoints.js` | Questões e critérios de avaliação |
 | `src/entities/study/model/state.js` | Estado, SRS, normalização e backups |
 | `src/app/App.jsx` | Persistência e navegação |
-| `src/app/Shell.jsx` | Layout, quatro destinos, tarefas imersivas |
+| `src/app/Shell.jsx` | Layout, três destinos, tarefas imersivas |
 | `src/pages/` | Home, Trilha, Lição, Revisão, Caderno, Prática etc. |
 | `src/app/index.css` | Tokens de cor/tema, Nunito e estilos responsivos |
 | `design-system/kotonoha/MASTER.md` | Especificação visual vigente |

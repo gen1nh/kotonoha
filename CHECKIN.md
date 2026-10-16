@@ -73,6 +73,16 @@ Integrado por squash à `main`: `a83f9497518ce3b90cde5335f41540a8d7b9c46f`. CI c
 
 **Regra de design:** cores pastéis diferenciam grupos de ferramentas e superfícies, *não* status pedagógicos. Não reintroduzir tags de estado nem esconder lições atrás de capítulos expansíveis. O aluno deve acessar uma lição após **no máximo um clique para abrir sua etapa**. A correção só aparece **depois** de uma avaliação finalizada.
 
+## Publicação e visualização no navegador — decisão aprovada
+
+- [x] Desligar deployments Git automáticos na Vercel via `vercel.json` (`git.deploymentEnabled: false`). **Builds e testes do GitHub Actions continuam ativos**.
+- [x] Documentar o fluxo local de prévia com `npm ci`, `npm run dev` e `http://localhost:5173`, ou `npm run preview` para simular produção.
+- [x] Documentar publicação **manual** depois de CI aprovado usando `npx vercel --prod`, com login e vínculo ao projeto Vercel existente.
+- [ ] Verificar se o painel da Vercel passou a respeitar a nova configuração após mesclar. Pode existir um último deploy do commit que muda `vercel.json`, ou a cota ainda pode estar esgotada.
+- [ ] Quando o limite de build estiver liberado, fazer um único deployment manual e confirmar status **Ready**, commit publicado e interface atual. Não declarar publicado antes disso.
+
+**Motivo:** a conta Hobby atingiu `build-rate-limit` após muitos commits. Evitar deploy Git por commit; o GitHub Actions valida os commits, mas **não publica**. O campo `Ignored Build Step` pode contar para a cota mesmo quando um build é cancelado; por isso preferimos desativar o gatilho de deploy Git, mantendo a Vercel para publicações autorizadas. Para reverter esta política, reabilitar `git.deploymentEnabled` explicitamente (e atualizar estas instruções). Consulte o README, seção "Ver as mudanças no navegador antes de publicar".
+
 ## Pendências obrigatórias antes da 1.0
 
 - [ ] Revisão linguística japonesa **independente** de todas as 220 unidades e respectivos exemplos, feedback e distratores.
@@ -122,7 +132,7 @@ Verifique também os workflows GitHub Actions do **SHA final da branch** e da `m
 
 ## Próxima ação ao retomar
 
-1. Confirmar o GitHub Actions da `main` após o merge do PR #24 e verificar que a Vercel realmente publicou o commit atual.
+1. Confirmar CI da `main` após integrar a configuração manual e, quando liberada a cota, publicar **intencionalmente** pelo projeto Vercel existente; não esperar deploy automático.
 2. Fazer testes com aprendizes iniciantes e aparelhos reais; observar pontos de confusão antes de alterar os fluxos novamente.
 3. Concluir as caixas pendentes deste arquivo e do `docs/RELEASE_1_0_CHECKLIST.md`, sem começar outra auditoria genérica.
 4. Atualizar este CHECKIN sempre que mudar código, resultado de testes ou condição de lançamento.
