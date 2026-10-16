@@ -57,7 +57,7 @@ export default function Shell({view,state,shared,message,install,installPrompt})
           </div>
         </header>}
         <main id="main-content" tabIndex={-1} className={`flex-1 w-full min-w-0 px-4 sm:px-7 lg:px-10 py-5 lg:py-8 ${immersive?'pb-[calc(2rem+env(safe-area-inset-bottom))]':'pb-[calc(6.5rem+env(safe-area-inset-bottom))] lg:pb-10'}`}>
-          <section id={`view-${view}`} className="w-full min-w-0"><Suspense fallback={<p role="status" aria-live="polite" className="p-4 text-sm text-muted">Carregando conteúdo…</p>}>
+          <section id={`view-${view}`} className="mx-auto w-full max-w-[52rem] min-w-0"><Suspense fallback={<p role="status" aria-live="polite" className="p-4 text-sm text-muted">Carregando conteúdo…</p>}>
             {view==='home'&&<Home {...shared}/>}
             {view==='path'&&<PathTimeline {...shared}/>}
             {view==='lesson'&&<LessonPlayer {...shared} topic={shared.route.topic} level={shared.route.level}/>}
