@@ -6,7 +6,7 @@
 
 - **Repositório:** https://github.com/gen1nh/kotonoha
 - **Branch principal:** `main`
-- **Branch de refatoração UX atual:** `feat/guided-ux-consolidation-20261015` (mesclar apenas com CI aprovado)
+- **PR da refatoração UX:** https://github.com/gen1nh/kotonoha/pull/24 · branch `feat/guided-ux-consolidation-20261015` (mesclar apenas com CI aprovado)
 - **Produto:** aplicativo PWA de japonês, uso pessoal, curso N5 guiado, SRS, Biblioteca, Caderno, escuta e avaliação.
 - **Versão do pacote:** confirmar `package.json` antes de citar; **não chamar de 1.0** sem fechar os gates.
 - **Documentos canônicos:** `docs/RELEASE_1_0_CHECKLIST.md`, `docs/UX_ARCHITECTURE.md`, `docs/N5_CURRICULUM_MAP.md`, `docs/TEACHING_FLOW_AUDIT.md`. Relatórios antigos em `docs/history/` são históricos, não novos requisitos.
@@ -43,9 +43,13 @@ Estas tarefas marcadas **implementadas no código da branch**, não equivalem a 
 - [x] Trilha prioriza a lição atual e recolhe outras lições por capítulo.
 - [x] Primeiro acesso explica a próxima atividade sem exigir meta antes de começar.
 - [x] Praticar muda para Treinos extras e recolhe o catálogo de atividades.
-- [ ] Aplicar linguagem simples e status semânticos consistentemente em **todas** as telas de estudo e recursos.
-- [ ] Repassar textos longos em Biblioteca, Caderno, Simulados, Preferências, lições de leitura/escuta e alertas.
-- [ ] Testes E2E da navegação em três destinos e dos acessos antigos, inclusive mobile, histórico, offline e dark mode.
+- [x] Padronizar componentes de botões, cards, status e navegação; restringir verde sólido à CTA e estados pontuais.
+- [x] Simplificar textos da Home, lições, testes, Biblioteca e preparação N5; final de revisão retorna a Hoje.
+- [ ] Revisar a linguagem residual nas telas secundárias (Preferências, Simulados, Caderno e laboratórios) após testes com alunos.
+- [x] Recolher planejamento avançado do Caderno e recursos extras de Meu espaço; preservar seus dados.
+- [ ] Revisar os textos longos restantes de Simulados, Preferências, lições específicas de leitura/escuta e alertas.
+- [x] Atualizar e adicionar cenários E2E de três destinos, primeiro acesso, Biblioteca/Caderno, treinos recolhidos, Simulados e navegação existente.
+- [ ] Confirmar esses E2E aprovados no SHA final (Chromium e WebKit), inclusive mobile, histórico, offline e dark mode.
 - [ ] Verificar acessibilidade WCAG, foco, target touch e contrastes; testar Safari físico.
 - [ ] Confirmar CI verde do commit final e mesclar a PR.
 - [ ] Confirmar CI da `main` após mesclagem e validar o deploy real da Vercel.
@@ -99,7 +103,7 @@ Verifique também os workflows GitHub Actions do **SHA final da branch** e da `m
 
 ## Próxima ação ao retomar
 
-1. Abrir a PR da branch `feat/guided-ux-consolidation-20261015`.
+1. Abrir o **PR #24**: https://github.com/gen1nh/kotonoha/pull/24 (branch `feat/guided-ux-consolidation-20261015`).
 2. Ler seus checks e logs do GitHub Actions, corrigir qualquer falha E2E ou de acessibilidade **antes** do merge.
 3. Concluir os itens não marcados acima sem começar outra auditoria genérica.
 4. Atualizar este CHECKIN com SHAs, evidências verificadas e pendências reais.
