@@ -113,7 +113,11 @@ export default function CheckpointPlayer({state,topic,update,go,openGuidedLesson
   </div>}
   {questions.length<4?<p role="alert">Esta avaliação não tem perguntas suficientes. Retorne à Trilha.</p>:
    <section className="space-y-3" aria-label="Questões do checkpoint">{questions.map((q,i)=>i!==activeQuestion?null:<fieldset key={q.id} disabled={result!==null} className="rounded-2xl border border-line bg-paper p-4 space-y-3"><legend className="sr-only">Questão {i+1}</legend><p className="text-xs font-black text-primary-strong">QUESTÃO {i+1} DE {questions.length}</p><p className="font-bold text-ink-strong">{q.prompt}</p>
-    {q.text&&<p lang="ja" className="font-jp text-lg rounded-xl bg-raised p-3">{q.text}</p>}
+    {q.text&&<button type="button" lang="ja" aria-label="Ouvir texto em japonês" disabled={q.text.includes('＿＿')}
+        onClick={()=>speakJapanese(q.text,setAudioNotice,{rate:speechRate})}
+        className="flex min-h-12 w-full items-center justify-between gap-3 rounded-xl bg-raised p-3 text-left font-jp text-lg text-ink-strong disabled:cursor-default">
+        <span>{q.text}</span>{!q.text.includes('＿＿')&&<span aria-hidden="true">🔊</span>}
+      </button>}
     {q.spokenText&&<div className="rounded-xl bg-raised p-3 space-y-2">
       <button type="button" disabled={result!==null} onClick={()=>speakJapanese(q.spokenText,setAudioNotice,{rate:speechRate,onStart:()=>markAudioPlayed(q.id)})} className="min-h-11 rounded-xl border border-line px-4 text-sm font-bold">▶ Ouvir frase</button>
       <AudioRateControl rate={speechRate} onChange={setSpeechRate} defaultRate={readingPreferences.speechRate}/>
