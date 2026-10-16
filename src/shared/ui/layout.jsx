@@ -46,7 +46,7 @@ export function NavItem({ item, active, mobile = false, count, onClick }) {
         <span className="text-xl relative inline-flex">
           <Icon name={item.icon} />
           {count > 0 && (
-            <span className="absolute -top-1.5 -right-2 px-1 min-w-4 h-4 text-[9px] font-black rounded-full bg-blue text-white flex items-center justify-center shadow-xs">
+            <span className="absolute -top-1.5 -right-2 px-1 min-w-4 h-4 text-[9px] font-black rounded-full bg-blue text-white flex items-center justify-center">
               {count}
             </span>
           )}
@@ -61,7 +61,7 @@ export function NavItem({ item, active, mobile = false, count, onClick }) {
       onClick={onClick}
       className={`w-full flex items-center text-left justify-between px-4 min-h-12 rounded-xl text-sm font-semibold transition-colors cursor-pointer select-none border ${
         active
-          ? "bg-accent-soft text-primary-strong border-primary"
+          ? "bg-accent-soft text-primary-strong border-line"
           : "text-muted hover:bg-raised hover:text-ink-strong border-transparent"
       }`}
       data-view={item.id}
@@ -95,7 +95,7 @@ export function PageHeading({
         <div className="flex items-center gap-2.5">
           {icon && (
             <span
-              className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl ${iconBg} ${iconColor} shadow-xs`}
+              className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl ${iconBg} ${iconColor}`}
             >
               <Icon name={icon} className={`w-5 h-5 ${iconColor}`} />
             </span>
