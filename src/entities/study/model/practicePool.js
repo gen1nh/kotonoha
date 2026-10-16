@@ -1,3 +1,4 @@
+import {N5_UNITS,unitPracticed} from './courseUnits.js';
 /** Optional speed practice may only ask about items encountered in lessons.
  * Avoid repetition until the available pool is exhausted; no remote database needed.
  */
@@ -20,4 +21,26 @@ export function speedPracticeQuestion(pool,used=[],random=Math.random){
  const choices=[target.answer,...others.slice(0,3)];
  for(let i=choices.length-1;i>0;i--){const j=Math.floor(random()*(i+1));[choices[i],choices[j]]=[choices[j],choices[i]];}
  return {...target,choices};
+}
+
+/** Progressive listening: first heard kana/words, then the authored listening
+ * situations from lessons already practiced. Nothing from future N5 units.
+ */
+export function listeningPracticePool(state){
+ const pool=speedPracticePool(state);
+ const distinct=pool.filter(item=>pool.filter(other=>other.answer===item.answer).length===1);
+ const heard=distinct.length<4?[]:distinct.map((item,index)=>{
+  const distractors=distinct.filter(other=>other.answer!==item.answer);
+  const wrong=Array.from({length:3},(_,offset)=>distractors[(index+offset)%distractors.length].answer);
+  const position=index%4;
+  const choices=[...wrong];choices.splice(position,0,item.answer);
+  return {id:`heard:${item.id}`,context:item.hint,spokenText:item.spoken,
+    prompt:item.hint==='Vocabulário N5'?'Qual palavra você ouviu?':'Qual som você ouviu?',
+    choices,answerIndex:position,explanation:`${item.prompt} corresponde a ${item.answer}.`};
+ });
+ // The canonical authored listening course already contains much more than six samples.
+ // Reuse that content only after the learner practices the relevant lesson.
+ const learnedUnits=N5_UNITS.filter(unit=>unit.kind==='listening'&&unitPracticed(state,unit.id));
+ const situations=learnedUnits.flatMap(unit=>unit.items);
+ return [...heard,...situations];
 }
