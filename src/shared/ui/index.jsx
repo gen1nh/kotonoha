@@ -60,12 +60,20 @@ export function Button({
 }
 
 
+/** Pastel is a surface cue, not a competing status or primary action. */
+const NAV_TILE_TONES={
+  sage:"bg-accent-soft/55",
+  sky:"bg-blue-soft/65",
+  peach:"bg-amber-soft/50",
+  lilac:"bg-purple-soft/45",
+  neutral:"bg-paper",
+};
 /** Compact navigation card: an entire, keyboard-accessible touch target. */
-export function NavigationTile({title,description,icon,symbol,meta,onClick,disabled=false,active}) {
+export function NavigationTile({title,description,icon,symbol,meta,onClick,disabled=false,active,tone="neutral"}) {
   return <button type="button" onClick={onClick} disabled={disabled} aria-label={title} aria-current={active===true?"page":undefined}
-    className={cx("group flex min-h-28 w-full flex-col items-start gap-2 rounded-2xl border bg-paper p-4 text-left transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:opacity-55 disabled:cursor-not-allowed",
-      active ? "border-line bg-accent-soft" : "border-line hover:border-edge hover:bg-raised")}>
-    <span aria-hidden="true" className="flex h-10 w-10 items-center justify-center rounded-xl bg-raised text-ink-strong">
+    className={cx("group flex min-h-28 w-full flex-col items-start gap-2 rounded-2xl border border-line p-4 text-left transition-colors hover:border-edge focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:opacity-55 disabled:cursor-not-allowed",
+      active ? "bg-accent-soft" : NAV_TILE_TONES[tone]||NAV_TILE_TONES.neutral)}>
+    <span aria-hidden="true" className="flex h-10 w-10 items-center justify-center rounded-xl bg-paper/70 text-ink-strong">
       {symbol ? <span className="font-jp text-xl font-bold" lang="ja">{symbol}</span> : <Icon name={icon||"learn"} />}
     </span>
     <strong className="text-sm font-black text-ink-strong">{title}</strong>
