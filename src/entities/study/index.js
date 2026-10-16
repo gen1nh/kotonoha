@@ -38,4 +38,4 @@ export * from './model/readingPreferences.js';
 
 
 export { dailyChallenge } from './model/dailyChallenge.js';
-export { speedPracticePool, speedPracticeQuestion } from './model/practicePool.js';
+export { speedPracticePool, speedPracticeQuestion, listeningPracticePool } from './model/practicePool.js';
